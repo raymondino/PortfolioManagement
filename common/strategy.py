@@ -24,7 +24,7 @@ class FixedInvestmentStrategy():
         self.sharpe_ratio_based_on_customized_risk = 0
         self.rebalance_times = 0
 
-    def fit(self, portfolio, show_details):
+    def fit(self, portfolio, show_details, hide_log_during_optimization=False):
         self.snapshots = []  # clear snapshots at each fit
         if len(portfolio.assets) == 0:
             return
@@ -36,20 +36,20 @@ class FixedInvestmentStrategy():
                          self.enable_rebalance, self.rebalance_offset, self.fixed_investment_amount))
 
         # the last day: only vest, no invest
-        # self.final_book_value = self.snapshots[-1].book_value + self.snapshots[-1].money_invested
-        # self.total_investment = self.snapshots[-2].total_investment  # the last day: only vest, no invest
-        # self.monthly_return = self.__get_monthly_return_rate()
-        # self.asset_risk = self.__get_asset_risk()
-        # self.book_risk = self.__get_book_risk()
-        # self.book_gain_risk = self.__get_book_gain_risk()
-        # self.customized_risk = self.__get_customized_risk()
-        # self.sharpe_ratio_based_on_asset_risk = self.monthly_return / self.asset_risk
-        # self.sharpe_ratio_based_on_book_risk = self.monthly_return / self.book_risk
-        # self.sharpe_ratio_based_on_book_gain_risk = self.monthly_return / self.book_gain_risk
-        # self.sharpe_ratio_based_on_customized_risk = self.monthly_return / self.customized_risk
-        # self.rebalance_times = sum([0 if s.rebalanced=="[NOT]" else 1 for s in self.snapshots])
-        if show_details:
-            self.report()
+        self.final_book_value = self.snapshots[-1].book_value + self.snapshots[-1].money_invested
+        self.total_investment = self.snapshots[-2].total_investment  # the last day: only vest, no invest
+        self.monthly_return = self.__get_monthly_return_rate()
+        self.asset_risk = self.__get_asset_risk()
+        self.book_risk = self.__get_book_risk()
+        self.book_gain_risk = self.__get_book_gain_risk()
+        self.customized_risk = self.__get_customized_risk()
+        self.sharpe_ratio_based_on_asset_risk = self.monthly_return / self.asset_risk
+        self.sharpe_ratio_based_on_book_risk = self.monthly_return / self.book_risk
+        self.sharpe_ratio_based_on_book_gain_risk = self.monthly_return / self.book_gain_risk
+        self.sharpe_ratio_based_on_customized_risk = self.monthly_return / self.customized_risk
+        self.rebalance_times = sum([0 if s.rebalanced == "[NOT]" else 1 for s in self.snapshots])
+        if not hide_log_during_optimization:
+            self.report(show_details)
 
     def __get_monthly_return_rate(self):
         def generate_cashflow_over_investment_date():
@@ -118,7 +118,6 @@ class FixedInvestmentStrategy():
             variance += (monthly_rate - (self.snapshots[i].book_value / self.snapshots[i-1].book_value - 1))**2
         return pow(variance, 1/2)/(len(self.snapshots)-1)
 
-
     def print_investment_history(self):
         print("=========================================")
         print("Date\tBook\tGain\tRebalance\tasset shares\tasset values")
@@ -126,21 +125,22 @@ class FixedInvestmentStrategy():
             print(f"{snapshot.snapshot_datetime}\t{snapshot.book_value}\t{snapshot.book_value-snapshot.total_investment}"
                   f"\t{snapshot.rebalanced}\t{snapshot.assets_final_share}\t{snapshot.assets_value}")
 
-    def report(self):
-        # print(f"asset tickers                  : {[a.ticker for a in self.portfolio.assets]}")
-        # print(f"asset weights                  : {['%.2f' % item for item in self.portfolio.asset_weights]}")
-        # print(f"book value                     : {'%.2f' % self.final_book_value}")
-        # print(f"total investment               : {'%.2f' % self.total_investment}")
-        # print(f"average annual return          : {'%.2f' % (self.annual_return*100)}%")
-        # print(f"average monthly return         : {'%.2f' % (self.monthly_return*100)}%")
-        # print(f"asset risk (monthly)           : {'%.6f' % self.asset_risk}")
-        # print(f"book risk (monthly)            : {'%.6f' % self.book_risk}")
-        # print(f"book gain risk (monthly)       : {'%.6f' % self.book_gain_risk}")
-        # print(f"customized risk (monthly)      : {'%.6f' % self.customized_risk}")
-        # print(f"sharpe (asset risk monthly)    : {'%.2f' % self.sharpe_ratio_based_on_asset_risk}")
-        # print(f"sharpe (book risk monthly)     : {'%.2f' % self.sharpe_ratio_based_on_book_risk}")
-        # print(f"sharpe (book gain risk monthly): {'%.2f' % self.sharpe_ratio_based_on_book_gain_risk}")
-        # print(f"sharpe (customized risk)       : {'%.2f' % self.sharpe_ratio_based_on_customized_risk}")
-        # print(f"rebalance times                : {self.rebalance_times}")
-        # print(f"rebalance offset               : {self.rebalance_offset}")
-        self.print_investment_history()
+    def report(self, show_details=False):
+        print(f"asset tickers                  : {[a.ticker for a in self.portfolio.assets]}")
+        print(f"asset weights                  : {['%.2f' % item for item in self.portfolio.asset_weights]}")
+        print(f"book value                     : {'%.2f' % self.final_book_value}")
+        print(f"total investment               : {'%.2f' % self.total_investment}")
+        print(f"average annual return          : {'%.2f' % (self.annual_return*100)}%")
+        print(f"average monthly return         : {'%.2f' % (self.monthly_return*100)}%")
+        print(f"asset risk (monthly)           : {'%.6f' % self.asset_risk}")
+        print(f"book risk (monthly)            : {'%.6f' % self.book_risk}")
+        print(f"book gain risk (monthly)       : {'%.6f' % self.book_gain_risk}")
+        print(f"customized risk (monthly)      : {'%.6f' % self.customized_risk}")
+        print(f"sharpe (asset risk monthly)    : {'%.2f' % self.sharpe_ratio_based_on_asset_risk}")
+        print(f"sharpe (book risk monthly)     : {'%.2f' % self.sharpe_ratio_based_on_book_risk}")
+        print(f"sharpe (book gain risk monthly): {'%.2f' % self.sharpe_ratio_based_on_book_gain_risk}")
+        print(f"sharpe (customized risk)       : {'%.2f' % self.sharpe_ratio_based_on_customized_risk}")
+        print(f"rebalance times                : {self.rebalance_times}")
+        print(f"rebalance offset               : {self.rebalance_offset}")
+        if show_details:
+            self.print_investment_history()
