@@ -1,7 +1,7 @@
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
-from common.asset import Asset
+from common.asset import *
 
 
 class Portfolio:
@@ -12,9 +12,9 @@ class Portfolio:
         self.full_asset_price_history = []
         self.full_asset_price_history_change = []
 
-    def invest(self, asset_tickers):
+    def invest(self, asset_tickers, period=None, start_date=None, end_date=None):
         for ticker in asset_tickers:
-            self.assets.append(Asset(ticker))
+            self.assets.append(AssetFactory.get_asset(ticker, period=period, start=start_date, end=end_date))
             self.asset_shares[ticker] = 0
         self.asset_weights = [1/len(asset_tickers)] * len(asset_tickers) if len(asset_tickers) > 0 and len(self.asset_weights) == 0 else self.asset_weights
 
