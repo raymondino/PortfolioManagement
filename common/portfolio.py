@@ -27,8 +27,8 @@ class Portfolio:
         self.full_asset_price_history_change = self.full_asset_price_history_change.dropna(axis=0,how='all')
         return self
 
-    def using_strategy(self, investing_strategy, show_details=False):
-        investing_strategy.fit(self, show_details)
+    def using_strategy(self, investing_strategy, show_details=False, show_plots=False):
+        investing_strategy.fit(self, show_details, show_plots)
         return self
 
     def get_assets_correlation(self):
