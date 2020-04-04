@@ -1,4 +1,4 @@
-from common.strategy import FixedInvestmentStrategy
+from strategy.fixed_investment_strategy import FixedInvestmentStrategy
 from scipy.optimize import minimize
 import numpy as np
 

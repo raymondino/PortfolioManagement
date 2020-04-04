@@ -3,9 +3,9 @@ import yfinance as yf
 
 class AssetFactory():
     @staticmethod
-    def get_asset(ticker, ohlc="Open", period='max', interval='1mo', start=None, end=None):
+    def get_asset(ticker, ohlc="Open", period='max', start=None, end=None):
         asset = Asset()
-        return asset.set_ticker(ticker).set_ohlc(ohlc).set_period(period).set_start_date(start).set_end_date(end).set_interval(interval).get_data()
+        return asset.set_ticker(ticker).set_ohlc(ohlc).set_period(period).set_start_date(start).set_end_date(end).get_data()
 
 
 class Asset:
@@ -13,7 +13,7 @@ class Asset:
         self.ticker = None
         self.ohlc = None
         self.period = None
-        self.interval = None
+        self.interval = '1d'
         self.start_date = None
         self.end_date = None
         self.price = None
@@ -31,10 +31,6 @@ class Asset:
         self.period = p
         return self
 
-    def set_interval(self, i):
-        self.interval = i
-        return self
-
     def set_start_date(self, s):
         self.start_date = s
         return self
@@ -49,3 +45,14 @@ class Asset:
         self.price = data[[self.ticker]][data[self.ticker] > 0.000001]
         self.price_change = self.price.pct_change().dropna(axis=0, how='all')
         return self
+
+    def get_risk(self):
+        if self.price_change is None:
+            return -1
+        return self.price_change.std().item()
+
+    def get_return_mean(self):
+        if self.price_change is None:
+            return -1
+        return self.price_change.mean().item()
+
