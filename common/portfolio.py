@@ -13,6 +13,7 @@ class Portfolio:
         self.full_asset_price_history_change = []
 
     def invest(self, asset_tickers, period=None, start_date=None, end_date=None):
+        self.assets = []
         for ticker in asset_tickers:
             self.assets.append(AssetFactory.get_asset(ticker, period=period, start=start_date, end=end_date))
             self.asset_shares[ticker] = 0

@@ -38,20 +38,25 @@ def validate_optimized_portfolio_weights(assets_list):
 
 
 def optimize_portfolio_with_mpt():
-    """
-    optimize your portfolio with modern portfolio theory
-    """
-    mpt = MPT(allocate_risk_free_asset=True, risk_free_annual_yield=0.009)  # update risk_free_annual_yield each time. Use 3-month T-bill annual yield rate
     ptf = Portfolio()
-    # use all the history data
-    ptf.invest(assets_list, period="max").using_strategy(mpt, show_details=True, show_plots=False)  # show_plots=True will be slow for ploting >= 4 assets
 
-    # specify a period
+    # do not allocate risk-free asset
+    mpt = MPT()
+    # allocate risk-free asset. please update risk_free_annual_yield each time, use 3-month T-bill annual yield rate
+    # mpt = MPT(allocate_risk_free_asset=True, risk_free_annual_yield=0.009)
+
+    # specify an investing period for optimization
     # ptf.invest(assets_list, period="max", start_date="2019-01-01", end_date="2020-01-01").using_strategy(mpt, show_details=True, show_plots=False)
+    # use all the history data for optimization, show_plots=True will be slow for ploting >= 4 assets
+    # ptf.invest(assets_list, period="max").using_strategy(mpt, show_details=True, show_plots=True)
+
+    # evaluation
+    mpt.portfolio = ptf
+    mpt.evaluate(assets_list)
 
 
 if __name__ == "__main__":
-    assets_list = ["AMZN", "GLD", "AAPL", "FB", "MSFT", "GOOG", "EQIX", "TSLA"]
+    assets_list = ["MSFT", "GLD"]
 
     # step 1: optimize the portfolio with a pre-set end_date. Comment line 46 before running
     # optimize_portfolio_weights(assets_list, start_date="2017-12-31", end_date='2018-12-31')
