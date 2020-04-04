@@ -31,12 +31,12 @@ class MPT:
             print("======MPT optimization========")
             print(f"investing assets: {[asset.ticker for asset in self.portfolio.assets]}")
             print(f"risk optimized weights: {list(np.around(np.array(risk_optimized_weights),2))}")
-            print(f"risk optimized yearly return: {round(risk_optimized_portfolio_mean*252, 2)}")  # there about 252 trading days per year
-            print(f"risk optimized yearly risk: {round(risk_optimized_portfolio_risk*np.sqrt(252), 2)}")
+            print(f"risk optimized yearly return: {round(risk_optimized_portfolio_mean*252, 6)}")  # there about 252 trading days per year
+            print(f"risk optimized yearly risk: {round(risk_optimized_portfolio_risk*np.sqrt(252), 6)}")
             print("==============================")
             print(f"sharpe ratio optimized weights: {list(np.around(np.array(sharpe_optmized_weights),2))}")
-            print(f"sharpe ratio optimized yearly return: {round(sharpe_optimized_portfolio_mean*252, 2)}")
-            print(f"sharpe ratio optimized yearly risk: {round(sharpe_optimized_portfolio_risk*np.sqrt(252), 2)}")
+            print(f"sharpe ratio optimized yearly return: {round(sharpe_optimized_portfolio_mean*252, 6)}")
+            print(f"sharpe ratio optimized yearly risk: {round(sharpe_optimized_portfolio_risk*np.sqrt(252), 6)}")
 
         # step 3: if allocating risk free asset
         mean1 = []
