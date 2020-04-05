@@ -11,6 +11,7 @@
     - follow the comments in main.py to run the code
 - evaluate your portfolio:
     - follow the comments in the main.py to run the code 
+- a presentation of modern portfolio theory & how to use it for portfolio optimization: [click me](https://docs.google.com/presentation/d/1qQLCrJ5L-x1EnufmW91YT8Xu5nBM4e8IyP8v7rfWVOc/edit?usp=sharing)
 
-#####Enjoy!
+Enjoy! :-)
 RY
