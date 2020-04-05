@@ -8,10 +8,10 @@ import matplotlib.pyplot as plt
 
 
 class MPT:
-    def __init__(self, allocate_risk_free_asset=False, risk_free_annual_yield=None):
+    def __init__(self, risk_free_annual_yield=None):
         self.portfolio = None
         self.risk_free_daily_yield = 0
-        if allocate_risk_free_asset and risk_free_annual_yield is not None:
+        if risk_free_annual_yield is not None:
             self.risk_free_daily_yield = pow(1 + risk_free_annual_yield, 1/365) - 1
 
     def fit(self, portfolio, show_details=True, show_plot=False):
