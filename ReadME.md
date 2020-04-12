@@ -13,5 +13,19 @@
     - follow the comments in the main.py to run the code 
 - a presentation of modern portfolio theory & how to use it for portfolio optimization: [click me](https://docs.google.com/presentation/d/1qQLCrJ5L-x1EnufmW91YT8Xu5nBM4e8IyP8v7rfWVOc/edit?usp=sharing)
 
+# a fix to yfinance
+line 286 in yfinance\base.py, replace with this
+```python
+        if len(holders) > 1:
+            self._institutional_holders = holders[1]
+            if 'Date Reported' in self._institutional_holders:
+                self._institutional_holders['Date Reported'] = _pd.to_datetime(
+                    self._institutional_holders['Date Reported'])
+            if '% Out' in self._institutional_holders:
+                self._institutional_holders['% Out'] = self._institutional_holders[
+                                                           '% Out'].str.replace('%', '').astype(float) / 100
+
+```
+
 Enjoy! :-)
 RY

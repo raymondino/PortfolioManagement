@@ -35,11 +35,11 @@ def mpt_optimization():
 
 
 def company_fundamental_analysis():
-
     """
     get fundamental analysis for a company
     """
-    # a_company = Company("MSFT")
+    # a_company = Company("MU")
+    # a_company.print_balance_sheet()
     # a_company.analyze_profitability(show_plot=False)
     # a_company.analyze_operational_capability(show_plot=False)
     # a_company.analyze_solvency(show_plot=False)
@@ -49,12 +49,17 @@ def company_fundamental_analysis():
     """
     choose companies to invest based on their excess return
     """
+    # company_tickers_list = ["EQIX", "CCI", "AMT", "CCOI", "COR", "DLR", "QTS", "CONE", "SBAC", "GDS"]
     company_tickers_list = ["MSFT", "AAPL", "V", "INTC", "MA", "CSCO", "ADBE", "NVDA", "CRM", "ORCL", "PYPL", "ACN",
                             "IBM", "AVGO", "TXN", "QCOM", "FIS", "INTU", "ADP", "FISV", "NOW", "MU", "AMD", "AMAT",
                             "CASH"]
-    # company_tickers_list = ["EQIX", "CCI", "AMT", "CCOI", "COR", "DLR", "QTS", "CONE", "SBAC", "GDS"]
-    Company.choose_stock_based_on_excess_return(company_tickers_list, risk_free_return=0.0025,
-                                                latest_five_years_stock_market_return=0.0668)
+    Company.choose_stock_based_on_excess_return(company_tickers_list, risk_free_return=0.0025, latest_five_years_stock_market_return=0.0668)
+
+    """
+    compare different companies balance sheet
+    """
+    # company_tickers_list=["DPZ", "PZZA", "SBUX", "YUM", "MCD"]
+    # Company.compare_companies_balance_sheet(company_tickers_list)
 
 
 if __name__ == "__main__":
