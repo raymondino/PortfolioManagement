@@ -1,0 +1,2 @@
+1. plot the history optimized sharpe & risk to prediction-ground truth as well, to see if the history optimized sharpe & risk is a good prediction for the prediction sharpe/risk
+2. calculate which compounded return is higher when optimizing sharpe or risk
