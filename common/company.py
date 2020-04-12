@@ -89,7 +89,7 @@ class Company:
 
         return assets, liabilities, equity
 
-    def analyze_profitability(self, show_plot=False):
+    def analyze_profitability(self, show_table=True):
         # profitability analysis
         self.gross_margin_rate = self.gross_margin / self.revenue
         self.net_income_rate = self.net_income / self.revenue
@@ -97,14 +97,12 @@ class Company:
 
         profitability = pd.concat([self.gross_margin_rate, self.net_income_rate, self.return_on_total_assets], axis=1)
         profitability.columns = ["gross margin rate", "net income rate", "return on total assets"]
-        print(f"{self.ticker} Profitability Analysis")
-        print(tabulate(profitability, headers='keys', tablefmt='grid'))
-        if show_plot:
-            profitability["date"] = profitability.index.strftime('%Y-%m-%d')
-            profitability.plot(x='date', kind="bar", figsize=(9, 6))
-            plt.show()
+        if show_table:
+            print(f"{self.ticker} Profitability Analysis")
+            print(tabulate(profitability, headers='keys', tablefmt='grid'))
+        return profitability
 
-    def analyze_operational_capability(self, show_plot=False):
+    def analyze_operational_capability(self, show_table=True):
         # operational capability analysis
         self.total_assets_turnover_rate = self.revenue / self.total_assets
         self.total_assets_turnover_days = 365 / self.total_assets_turnover_rate
@@ -123,14 +121,12 @@ class Company:
         operational_cap_days.columns = ['account receivables turnover days', 'inventories turn over days',
                                         'current assets turnover days', 'fixed assets turnover days',
                                         'total assets turnover days']
-        print(f"{self.ticker} Operational Capability Analysis")
-        print(tabulate(operational_cap_days, headers='keys', tablefmt='grid'))
-        if show_plot:
-            operational_cap_days["date"] = operational_cap_days.index.strftime('%Y-%m-%d')
-            operational_cap_days.plot(x='date', kind="bar", table=True, figsize=(9, 6))
-            plt.show()
+        if show_table:
+            print(f"{self.ticker} Operational Capability Analysis")
+            print(tabulate(operational_cap_days, headers='keys', tablefmt='grid'))
+        return operational_cap_days
 
-    def analyze_solvency(self, show_plot=False):
+    def analyze_solvency(self, show_table=True):
         # solvency analysis
         self.current_ratio = self.total_current_assets / self.total_current_liabilities
         self.acid_test_ratio = (self.total_current_assets - self.inventories) / self.total_current_liabilities
@@ -142,12 +138,10 @@ class Company:
         solvency.columns = ['current ratio (short term solvency)', 'acid test ratio (short term solvency)',
                             'times interest earned (pay interest solvency)',
                             'asset-to-liability ratio (general solvency)']
-        print(f"{self.ticker} Solvency Analysis")
-        print(tabulate(solvency, headers='keys', tablefmt='grid'))
-        if show_plot:
-            solvency["date"] = solvency.index.strftime('%Y-%m-%d')
-            solvency.plot(x='date', kind="bar", figsize=(9, 6))
-            plt.show()
+        if show_table:
+            print(f"{self.ticker} Solvency Analysis")
+            print(tabulate(solvency, headers='keys', tablefmt='grid'))
+        return solvency
 
     def analyze_extreme_situations(self, show_plot=False):
         """
@@ -266,6 +260,29 @@ class Company:
         print(tabulate(liabilities, headers='keys', tablefmt='grid'))
         print(tabulate(equities, headers='keys', tablefmt='grid'))
 
+    @staticmethod
+    def compare_companies_fundamentals(company_ticker_list):
+        profitibilities = []
+        operational_caps = []
+        solvencies = []
+        for ticker in company_ticker_list:
+            try:
+                com = Company(ticker)
+                profitibilities.append(com.analyze_profitability(show_table=False).head(1).transpose())
+                operational_caps.append(com.analyze_operational_capability(show_table=False).head(1).transpose())
+                solvencies.append(com.analyze_solvency(show_table=False).head(1).transpose())
+            except Exception:
+                print(f" - {ticker} has problems when calculating fundamentals")
+        p = pd.concat(profitibilities, axis=1)
+        o = pd.concat(operational_caps, axis=1)
+        s = pd.concat(solvencies, axis=1)
+        p.columns = o.columns = s.columns = company_ticker_list
+        print(f"profitability comparison")
+        print(tabulate(p, headers='keys', tablefmt='grid'))
+        print(f"operational capability comparison")
+        print(tabulate(o, headers='keys', tablefmt='grid'))
+        print(f"solvency comparison")
+        print(tabulate(s, headers='keys', tablefmt='grid'))
 
 
 
