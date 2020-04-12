@@ -1,12 +1,16 @@
 from tools.mpt_optimizer import *
+from common.company import *
 
 
-if __name__ == "__main__":
-
+def mpt_optimization():
     """
     fill in the tickers of the assets you would like to invest in, as many as you want.
     """
-    assets_list = ["MSFT", "GLD", "FB", "GOOG"]
+    # assets_list = ["VGLT", "BLV", "GLD", "MSFT", "SPY"]
+    # p = Portfolio()
+    #
+    # p.invest(assets_list)
+    # p.plot_asset_correlation()
 
     """
     uncomment this line only to optimize the portfolio without risk free asset
@@ -19,7 +23,7 @@ if __name__ == "__main__":
     results will be output in console. Get risk_free_annual_yield from:
     https://www.treasury.gov/resource-center/data-chart-center/interest-rates/Pages/TextView.aspx?data=yield
     """
-    mpt_optimization(assets_list, risk_free_annual_yield=0.009)
+    # mpt_optimization(assets_list, risk_free_annual_yield=0.009)
 
     """
     uncomment this line only to evaluate MPT for your portfolio
@@ -27,3 +31,42 @@ if __name__ == "__main__":
     returns are intended to provide you return info, should not be used as a metric to judge MPT performance.
     """
     # mpt_evaluation(assets_list, risk_free_annual_yield=0.09)
+
+
+def company_fundamental_analysis():
+    """
+    get fundamental analysis for a company
+    """
+    # a_company = Company("AMZN")
+    # a_company.print_balance_sheet()
+    # a_company.analyze_profitability()
+    # a_company.analyze_operational_capability()
+    # a_company.analyze_solvency()
+    # a_company.analyze_extreme_situations()
+    # a_company.analyze_investment_value(risk_free_return=0.0025, latest_five_years_stock_market_return=0.0668)
+
+    """
+    choose companies to invest based on their excess return
+    """
+    # company_tickers_list = ["EQIX", "CCI", "AMT", "CCOI", "COR", "DLR", "QTS", "CONE", "SBAC", "GDS"]
+    # company_tickers_list = ["MSFT", "AAPL", "V", "INTC", "MA", "CSCO", "ADBE", "NVDA", "CRM", "ORCL", "PYPL", "ACN",
+    #                         "IBM", "AVGO", "TXN", "QCOM", "FIS", "INTU", "ADP", "FISV", "NOW", "MU", "AMD", "AMAT",
+    #                         "CASH"]
+    # company_tickers_list = ["AMD", "NVDA", "INTC", "TSM", "MU", "AVGO", "QCOM", "TXN"]
+    # Company.choose_stock_based_on_excess_return(company_tickers_list, risk_free_return=0.0025, latest_five_years_stock_market_return=0.0668)
+
+    """
+    compare different companies balance sheet
+    """
+    # company_tickers_list=["MSFT", "AMZN"]
+    # Company.compare_companies_balance_sheet(company_tickers_list)
+
+    """
+    compare different companies fundamentals
+    """
+    # company_tickers_list = ["AMD", "NVDA", "INTC", "TSM", "MU", "AVGO", "QCOM", "TXN"]
+    # Company.compare_companies_fundamentals(company_tickers_list)
+
+
+if __name__ == "__main__":
+    company_fundamental_analysis()
