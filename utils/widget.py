@@ -7,6 +7,8 @@ def millify(n):
     :param n: the large number
     :return: a human readable number string
     """
+    if math.isnan(n):
+        return n
     millnames = ['', ' K', ' M', ' B', ' T']
     n = float(n)
     millidx = max(0,min(len(millnames)-1,int(math.floor(0 if n == 0 else math.log10(abs(n))/3))))

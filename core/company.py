@@ -50,6 +50,7 @@ class Company:
         data = requests.get(self.bs_url + ("?period=quarter" if self.quarter else "")).json()['financials']
         data = pd.DataFrame.from_dict(data)[bs_items]
         data.reindex(bs_items)
+        data.rename(columns={'Property, Plant & Equipment Net': 'Property, Plant, Equipment Net'}, inplace=True)
         self.balance_sheet = data.T
         self.balance_sheet.columns = self.balance_sheet.iloc[0]
         self.balance_sheet = self.balance_sheet[1:].apply(pd.to_numeric, errors='coerce')
@@ -69,7 +70,10 @@ class Company:
         is_items.insert(7, "Other Income")
         is_items.append("EBIT")
         data.reindex(is_items + is_insights[1:])
-        self.income_statements = data[is_items].T
+        self.income_statements = data[is_items]
+        self.income_statements = self.income_statements.rename(columns={'R&D Expenses': 'RnD Expenses'})
+        self.income_statements = self.income_statements.rename(columns={'SG&A Expense': 'SGnA Expense'})
+        self.income_statements = self.income_statements.T
         self.income_statements.columns = self.income_statements.iloc[0]
         self.income_statements = self.income_statements[1:].apply(pd.to_numeric, errors='coerce')
         self.profitability_insights = data[is_insights].T
@@ -103,7 +107,7 @@ class Company:
             self.balance_sheet.loc['Receivables']/self.balance_sheet.loc['Total assets'],
             self.balance_sheet.loc['Inventories']/self.balance_sheet.loc['Total assets'],
             self.balance_sheet.loc['Total current assets']/self.balance_sheet.loc['Total assets'],
-            self.balance_sheet.loc['Property, Plant & Equipment Net']/self.balance_sheet.loc['Total assets'],
+            self.balance_sheet.loc['Property, Plant, Equipment Net']/self.balance_sheet.loc['Total assets'],
             self.balance_sheet.loc['Goodwill and Intangible Assets']/self.balance_sheet.loc['Total assets'],
             self.balance_sheet.loc['Long-term investments']/self.balance_sheet.loc['Total assets'],
             self.balance_sheet.loc['Total non-current assets']/self.balance_sheet.loc['Total assets'],
@@ -118,7 +122,7 @@ class Company:
             self.balance_sheet.loc['Total liabilities']/self.balance_sheet.loc['Total liabilities']
         ], axis=1)
         bs_structure.columns = ["Cash and short-term investments", "Receivables", "Inventories", "Total current assets",
-                    "Property, Plant & Equipment Net", "Goodwill and Intangible Assets", "Long-term investments",
+                    "Property, Plant, Equipment Net", "Goodwill and Intangible Assets", "Long-term investments",
                     "Total non-current assets", "Total assets", "Payables", "Deposit Liabilities","Short-term debt",
                     "Deferred revenue", "Total current liabilities", "Long-term debt", "Total non-current liabilities",
                     "Total liabilities"]
@@ -140,7 +144,7 @@ class Company:
 
         if show_plot:
             self.income_statements.T.iloc[::-1][
-                ["Revenue", "Cost of Revenue", "Gross Profit", "R&D Expenses", "SG&A Expense", "Interest Expense",
+                ["Revenue", "Cost of Revenue", "Gross Profit", "RnD Expenses", "SGnA Expense", "Interest Expense",
                  "Income Tax Expense", "Operating Income", "Net Income"]].plot.line(subplots=True, title=f"{self.ticker} Income Statements")
             plt.show()
 
@@ -155,7 +159,7 @@ class Company:
             self.cashflow_statements.T.iloc[::-1].plot.line(subplots=True, title=f"{self.ticker} Cash Flow Statements")
             plt.show()
 
-    def get_profitability_insights(self, show_plot=False, show_table=True):
+    def get_profitability_insights(self, show_plot=False, show_table=False):
         if self.balance_sheet is None:
             self.__get_balance_sheet()
         if self.income_statements is None:
@@ -163,14 +167,15 @@ class Company:
         data = self.profitability_insights.T
         stats = pd.concat([
             self.income_statements.loc['Net Income'] / self.balance_sheet.loc['Total assets'],
-            self.income_statements.loc['R&D Expenses'] / self.income_statements.loc['Revenue'],
-            self.income_statements.loc['SG&A Expense'] / self.income_statements.loc['Revenue'],
+            self.income_statements.loc['RnD Expenses'] / self.income_statements.loc['Revenue'],
+            self.income_statements.loc['SGnA Expense'] / self.income_statements.loc['Revenue'],
             self.income_statements.loc['Interest Expense'] / (
                         self.balance_sheet.loc['Short-term debt'] + self.balance_sheet.loc['Long-term debt']),
             self.income_statements.loc['Income Tax Expense'] / self.income_statements.loc['Income Before Income Taxes']
         ], axis=1)
-        stats.columns = ['Return on total assets','R&D Expense Margin', 'SG&A Expense Margin',
+        stats.columns = ['Return on total assets', 'RnD Expense Margin', 'SGnA Expense Margin',
                          'Interest Rate Paid', 'Income Tax Rate']
+        self.profitability_insights = self.profitability_insights.sort_index(ascending=False)
         self.profitability_insights = pd.concat([data, stats], axis=1).T.replace([np.inf, -np.inf], 0)
         self.profitability_insights.insert(loc=0, column="mean", value=self.profitability_insights.mean(axis=1))
 
@@ -181,7 +186,7 @@ class Company:
             self.profitability_insights.T.iloc[:0:-1].plot.line(title=f"{self.ticker} Profitability Analysis")
             plt.show()
 
-    def get_operating_insights(self, show_plot=False, show_table=True):
+    def get_operating_insights(self, show_plot=False, show_table=False):
         if self.balance_sheet is None:
             self.__get_balance_sheet()
         if self.income_statements is None:
@@ -193,11 +198,12 @@ class Company:
                           365/(ins["Revenue"]/bs["Receivables"]),
                           365/(ins["Cost of Revenue"]/bs['Inventories']),
                           365/(ins["Revenue"]/bs["Total current assets"]),
-                          365/(ins["Revenue"]/bs["Property, Plant & Equipment Net"]),
+                          365/(ins["Revenue"]/bs["Property, Plant, Equipment Net"]),
                           365/(ins["Revenue"]/bs["Total assets"])], axis=1)
         self.operating_insights.columns = ["cash turnover days", "receivables turnover days",
                                            "inventories turnover days", "total current assets turnover days",
                                            "fixed assets turnover days", "total assets turnover days"]
+        self.operating_insights = self.operating_insights.sort_index(ascending=False)
         self.operating_insights = self.operating_insights.T.replace([np.inf, -np.inf], 0)
         self.operating_insights.insert(loc=0, column="mean", value=self.operating_insights.mean(axis=1))
 
@@ -208,7 +214,7 @@ class Company:
             self.operating_insights.T.iloc[:0:-1].plot.line(subplots=True, title=f"{self.ticker} Operating Analysis")
             plt.show()
 
-    def get_solvency_insights(self, show_plot=False, show_table=True):
+    def get_solvency_insights(self, show_plot=False, show_table=False):
         if self.balance_sheet is None:
             self.__get_balance_sheet()
         if self.income_statements is None:
@@ -220,6 +226,7 @@ class Company:
                           ins["EBIT"]/ins["Interest Expense"], bs["Total liabilities"]/bs["Total assets"]], axis=1)
         self.solvency_insights.columns = ["current ratio", "acid-test ratio", "times interest earned",
                                           "liability/asset ratio"]
+        self.solvency_insights = self.solvency_insights.sort_index(ascending=False)
         self.solvency_insights = self.solvency_insights.T.replace([np.inf, -np.inf], 0)
         self.solvency_insights.insert(loc=0, column="mean", value=self.solvency_insights.mean(axis=1))
 
@@ -230,7 +237,7 @@ class Company:
             self.solvency_insights.T.iloc[:0:-1].plot.line(subplots=True, title=f"{self.ticker} Solvency Analysis")
             plt.show()
 
-    def get_investment_insights(self, risk_free_return, market_return, show_plot=False):
+    def get_investment_insights(self, risk_free_return, market_return, show_table=False):
         if self.profitability_insights is None:
             self.get_profitability_insights(show_table=False)
         if self.company_value is None:
@@ -253,13 +260,24 @@ class Company:
 
         self.investment_insights = pd.concat([wacc, roic, excess_return, economic_profit], axis=1)
         self.investment_insights.columns = ['wacc', 'roic', 'excess return', 'economic profit']
+        self.investment_insights = self.investment_insights.sort_index(ascending=False)
         self.investment_insights = self.investment_insights.T.replace([np.inf, -np.inf], 0)
         self.investment_insights.insert(loc=0, column="mean", value=self.investment_insights.mean(axis=1))
 
-        self.__print_table_title(f"{self.ticker} Investment Analysis")
-        print(self.investment_insights.applymap(mix_number).to_string())
+        if show_table:
+            self.__print_table_title(f"{self.ticker} Investment Analysis")
+            print(pd.concat([self.investment_insights, self.company_value]).applymap(mix_number).to_string())
 
     def get_dfc_valuation(self, show_plot=False):
         pass
 
-        
+    def print_financials(self):
+        self.print_balance_sheet()
+        self.print_income_statements()
+        self.print_cashflow_statements()
+
+    def get_insights(self, risk_free_return, market_return):
+        self.get_profitability_insights(show_table=True)
+        self.get_operating_insights(show_table=True)
+        self.get_solvency_insights(show_table=True)
+        self.get_investment_insights(risk_free_return, market_return, show_table=True)
