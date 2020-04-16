@@ -1,5 +1,6 @@
 # pycharm files
 .idea/
+jupyternotebook
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
