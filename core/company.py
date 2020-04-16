@@ -86,45 +86,73 @@ class Company:
         self.cashflow_statements.columns = self.cashflow_statements.iloc[0]
         self.cashflow_statements = self.cashflow_statements[1:].apply(pd.to_numeric, errors='coerce')
 
+    def __print_table_title(self, title):
+        print()
+        t = f"========== {title} =========="
+        print("="*len(t))
+        print(t)
+        print("="*len(t))
+
     def print_balance_sheet(self, show_plot=False):
         if self.balance_sheet is None:
             self.__get_balance_sheet()
-        print(f"="*len(f"======== {self.ticker} Balance Sheet ========"))
-        print(f"======== {self.ticker} Balance Sheet ========")
-        print(f"="*len(f"======== {self.ticker} Balance Sheet ========"))
+        self.__print_table_title(f"{self.ticker} Balance Sheet")
         print(self.balance_sheet.applymap(millify).to_string(max_rows=100, max_cols=100))
-        self.balance_sheet.T.iloc[::-1][["Cash and short-term investments", "Receivables", "Inventories",
-                                         "Total assets", "Total liabilities", "Retained earnings (deficit)",
-                                         "Total shareholders equity"]].plot.line(subplots=True,
-                                                                                 title=f"{self.ticker} Balance Sheet")
+        bs_structure = pd.concat([
+            self.balance_sheet.loc['Cash and short-term investments']/self.balance_sheet.loc['Total assets'],
+            self.balance_sheet.loc['Receivables']/self.balance_sheet.loc['Total assets'],
+            self.balance_sheet.loc['Inventories']/self.balance_sheet.loc['Total assets'],
+            self.balance_sheet.loc['Total current assets']/self.balance_sheet.loc['Total assets'],
+            self.balance_sheet.loc['Property, Plant & Equipment Net']/self.balance_sheet.loc['Total assets'],
+            self.balance_sheet.loc['Goodwill and Intangible Assets']/self.balance_sheet.loc['Total assets'],
+            self.balance_sheet.loc['Long-term investments']/self.balance_sheet.loc['Total assets'],
+            self.balance_sheet.loc['Total non-current assets']/self.balance_sheet.loc['Total assets'],
+            self.balance_sheet.loc['Total assets']/self.balance_sheet.loc['Total assets'],
+            self.balance_sheet.loc['Payables']/self.balance_sheet.loc['Total liabilities'],
+            self.balance_sheet.loc['Deposit Liabilities']/self.balance_sheet.loc['Total liabilities'],
+            self.balance_sheet.loc['Short-term debt']/self.balance_sheet.loc['Total liabilities'],
+            self.balance_sheet.loc['Deferred revenue']/self.balance_sheet.loc['Total liabilities'],
+            self.balance_sheet.loc['Total current liabilities']/self.balance_sheet.loc['Total liabilities'],
+            self.balance_sheet.loc['Long-term debt']/self.balance_sheet.loc['Total liabilities'],
+            self.balance_sheet.loc['Total non-current liabilities']/self.balance_sheet.loc['Total liabilities'],
+            self.balance_sheet.loc['Total liabilities']/self.balance_sheet.loc['Total liabilities']
+        ], axis=1)
+        bs_structure.columns = ["Cash and short-term investments", "Receivables", "Inventories", "Total current assets",
+                    "Property, Plant & Equipment Net", "Goodwill and Intangible Assets", "Long-term investments",
+                    "Total non-current assets", "Total assets", "Payables", "Deposit Liabilities","Short-term debt",
+                    "Deferred revenue", "Total current liabilities", "Long-term debt", "Total non-current liabilities",
+                    "Total liabilities"]
+        self.__print_table_title(f"{self.ticker} Balance Sheet Structure")
+        print(bs_structure.T.applymap(percentify).to_string(max_rows=100, max_cols=100))
+
         if show_plot:
+            self.balance_sheet.T.iloc[::-1][
+                ["Cash and short-term investments", "Receivables", "Inventories", "Total assets", "Total liabilities",
+                 "Retained earnings (deficit)", "Total shareholders equity"]].plot.line(subplots=True, title=f"{self.ticker} Balance Sheet")
             plt.show()
 
     def print_income_statements(self, show_plot=False):
         if self.income_statements is None:
             self.__get_income_statements()
-        print()
-        print(f"="*len(f"======== {self.ticker} Income Statements ========"))
-        print(f"======== {self.ticker} Income Statements ========")
-        print(f"="*len(f"======== {self.ticker} Income Statements ========"))
+
+        self.__print_table_title(f"{self.ticker} Income Statements")
         print(self.income_statements.applymap(millify).to_string(max_rows=100, max_cols=100))
-        self.income_statements.T.iloc[::-1][["Revenue", "Cost of Revenue", "Gross Profit", "R&D Expenses",
-                                             "SG&A Expense", "Interest Expense", "Income Tax Expense",
-                                             "Operating Income", "Net Income"]].plot.line(subplots=True,
-                                                                               title=f"{self.ticker} Income Statements")
+
         if show_plot:
+            self.income_statements.T.iloc[::-1][
+                ["Revenue", "Cost of Revenue", "Gross Profit", "R&D Expenses", "SG&A Expense", "Interest Expense",
+                 "Income Tax Expense", "Operating Income", "Net Income"]].plot.line(subplots=True, title=f"{self.ticker} Income Statements")
             plt.show()
 
     def print_cashflow_statements(self, show_plot=False):
         if self.cashflow_statements is None:
             self.__get_cashflow_statements()
-        print()
-        print(f"="*len(f"======== {self.ticker} Cashflow Statements ========"))
-        print(f"======== {self.ticker} Cashflow Statements ========")
-        print(f"="*len(f"======== {self.ticker} Cashflow Statements ========"))
+
+        self.__print_table_title(f"{self.ticker} Cashflow Statements")
         print(self.cashflow_statements.applymap(millify).to_string(max_rows=100, max_cols=100))
-        self.cashflow_statements.T.iloc[::-1].plot.line(subplots=True, title=f"{self.ticker} Cash Flow Statements")
+
         if show_plot:
+            self.cashflow_statements.T.iloc[::-1].plot.line(subplots=True, title=f"{self.ticker} Cash Flow Statements")
             plt.show()
 
     def get_profitability_insights(self, show_plot=False, show_table=True):
@@ -145,11 +173,9 @@ class Company:
                          'Interest Rate Paid', 'Income Tax Rate']
         self.profitability_insights = pd.concat([data, stats], axis=1).T.replace([np.inf, -np.inf], 0)
         self.profitability_insights.insert(loc=0, column="mean", value=self.profitability_insights.mean(axis=1))
+
         if show_table:
-            print()
-            print(f"=" * len(f"======== {self.ticker} Profitability Analysis ========"))
-            print(f"======== {self.ticker} Profitability Analysis ========")
-            print(f"=" * len(f"======== {self.ticker} Profitability Analysis ========"))
+            self.__print_table_title(f"{self.ticker} Profitability Analysis")
             print(self.profitability_insights.applymap(percentify).to_string(max_rows=100, max_cols=100))
         if show_plot:
             self.profitability_insights.T.iloc[:0:-1].plot.line(title=f"{self.ticker} Profitability Analysis")
@@ -174,11 +200,9 @@ class Company:
                                            "fixed assets turnover days", "total assets turnover days"]
         self.operating_insights = self.operating_insights.T.replace([np.inf, -np.inf], 0)
         self.operating_insights.insert(loc=0, column="mean", value=self.operating_insights.mean(axis=1))
+
         if show_table:
-            print()
-            print(f"=" * len(f"======== {self.ticker} Operating Analysis ========"))
-            print(f"======== {self.ticker} Operating Analysis ========")
-            print(f"=" * len(f"======== {self.ticker} Operating Analysis ========"))
+            self.__print_table_title(f"{self.ticker} Operating Analysis")
             print(self.operating_insights.applymap(decimalize).to_string())
         if show_plot:
             self.operating_insights.T.iloc[:0:-1].plot.line(subplots=True, title=f"{self.ticker} Operating Analysis")
@@ -198,11 +222,9 @@ class Company:
                                           "liability/asset ratio"]
         self.solvency_insights = self.solvency_insights.T.replace([np.inf, -np.inf], 0)
         self.solvency_insights.insert(loc=0, column="mean", value=self.solvency_insights.mean(axis=1))
+
         if show_table:
-            print()
-            print(f"=" * len(f"======== {self.ticker} Solvency Analysis ========"))
-            print(f"======== {self.ticker} Solvency Analysis ========")
-            print(f"=" * len(f"======== {self.ticker} Solvency Analysis ========"))
+            self.__print_table_title(f"{self.ticker} Solvency Analysis")
             print(self.solvency_insights.applymap(decimalize).to_string())
         if show_plot:
             self.solvency_insights.T.iloc[:0:-1].plot.line(subplots=True, title=f"{self.ticker} Solvency Analysis")
@@ -233,10 +255,8 @@ class Company:
         self.investment_insights.columns = ['wacc', 'roic', 'excess return', 'economic profit']
         self.investment_insights = self.investment_insights.T.replace([np.inf, -np.inf], 0)
         self.investment_insights.insert(loc=0, column="mean", value=self.investment_insights.mean(axis=1))
-        print()
-        print(f"=" * len(f"======== {self.ticker} Invesetment Analysis ========"))
-        print(f"======== {self.ticker} Invesetment Analysis ========")
-        print(f"=" * len(f"======== {self.ticker} Invesetment Analysis ========"))
+
+        self.__print_table_title(f"{self.ticker} Investment Analysis")
         print(self.investment_insights.applymap(mix_number).to_string())
 
     def get_dfc_valuation(self, show_plot=False):
