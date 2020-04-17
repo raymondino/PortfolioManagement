@@ -24,6 +24,11 @@ def compare_companies(ticker_list, risk_free_return, market_return, quarter=Fals
     :param quarter: whether to see it's quarter report. If false, will see its annual report
     :return:
     """
-    companies = []
+    all_companies_insights = []
     for ticker in ticker_list:
         c = Company(ticker, quarter=quarter)
+        all_companies_insights.append(c.get_insights_summary(risk_free_return, market_return))
+
+    Company.print_table_title(f"{ticker_list} Comparision")
+    print(pd.concat(all_companies_insights, axis=1).applymap(mix_number).to_string())
+

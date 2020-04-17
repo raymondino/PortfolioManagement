@@ -39,6 +39,6 @@ def mix_number(n):
     :param n: a number
     :return: a percentage or a human readable number
     """
-    if -1 <= n <= 1:
+    if -10 <= n <= 10:
         return percentify(n)
     return millify(n)

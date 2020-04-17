@@ -9,6 +9,7 @@ class Company:
     url_prefix_f = "https://financialmodelingprep.com/api/v3/financials/"
     url_prefix_e = "https://financialmodelingprep.com/api/v3/enterprise-value/"
     url_prefix_p = "https://financialmodelingprep.com/api/v3/company/profile/"
+    url_prefix_r = "https://financialmodelingprep.com/api/v3/financial-ratios/"
 
     def __init__(self, ticker, quarter=False):
         self.ticker = ticker
@@ -21,12 +22,14 @@ class Company:
         self.operating_insights = None
         self.solvency_insights = None
         self.investment_insights = None
+        self.insights_summary = None
         self.beta = 0
         self.bs_url = f"{Company.url_prefix_f}/balance-sheet-statement/{ticker}"
         self.is_url = f"{Company.url_prefix_f}/income-statement/{ticker}"
         self.cf_url = f"{Company.url_prefix_f}/cash-flow-statement/{ticker}"
         self.ev_url = f"{Company.url_prefix_e}{ticker}"
         self.pf_url = f"{Company.url_prefix_p}{ticker}"
+        self.fr_url = f"{Company.url_prefix_r}{ticker}"
 
     def __get_beta(self):
         if self.beta == 0:
@@ -90,7 +93,8 @@ class Company:
         self.cashflow_statements.columns = self.cashflow_statements.iloc[0]
         self.cashflow_statements = self.cashflow_statements[1:].apply(pd.to_numeric, errors='coerce')
 
-    def __print_table_title(self, title):
+    @staticmethod
+    def print_table_title(title):
         print()
         t = f"========== {title} =========="
         print("="*len(t))
@@ -100,7 +104,7 @@ class Company:
     def print_balance_sheet(self, show_plot=False):
         if self.balance_sheet is None:
             self.__get_balance_sheet()
-        self.__print_table_title(f"{self.ticker} Balance Sheet")
+        Company.print_table_title(f"{self.ticker} Balance Sheet")
         print(self.balance_sheet.applymap(millify).to_string(max_rows=100, max_cols=100))
         bs_structure = pd.concat([
             self.balance_sheet.loc['Cash and short-term investments']/self.balance_sheet.loc['Total assets'],
@@ -126,7 +130,7 @@ class Company:
                     "Total non-current assets", "Total assets", "Payables", "Deposit Liabilities","Short-term debt",
                     "Deferred revenue", "Total current liabilities", "Long-term debt", "Total non-current liabilities",
                     "Total liabilities"]
-        self.__print_table_title(f"{self.ticker} Balance Sheet Structure")
+        Company.print_table_title(f"{self.ticker} Balance Sheet Structure")
         print(bs_structure.T.applymap(percentify).to_string(max_rows=100, max_cols=100))
 
         if show_plot:
@@ -139,7 +143,7 @@ class Company:
         if self.income_statements is None:
             self.__get_income_statements()
 
-        self.__print_table_title(f"{self.ticker} Income Statements")
+        Company.print_table_title(f"{self.ticker} Income Statements")
         print(self.income_statements.applymap(millify).to_string(max_rows=100, max_cols=100))
 
         if show_plot:
@@ -152,7 +156,7 @@ class Company:
         if self.cashflow_statements is None:
             self.__get_cashflow_statements()
 
-        self.__print_table_title(f"{self.ticker} Cashflow Statements")
+        Company.print_table_title(f"{self.ticker} Cashflow Statements")
         print(self.cashflow_statements.applymap(millify).to_string(max_rows=100, max_cols=100))
 
         if show_plot:
@@ -180,7 +184,7 @@ class Company:
         self.profitability_insights.insert(loc=0, column="mean", value=self.profitability_insights.mean(axis=1))
 
         if show_table:
-            self.__print_table_title(f"{self.ticker} Profitability Analysis")
+            Company.print_table_title(f"{self.ticker} Profitability Analysis")
             print(self.profitability_insights.applymap(percentify).to_string(max_rows=100, max_cols=100))
         if show_plot:
             self.profitability_insights.T.iloc[:0:-1].plot.line(title=f"{self.ticker} Profitability Analysis")
@@ -208,7 +212,7 @@ class Company:
         self.operating_insights.insert(loc=0, column="mean", value=self.operating_insights.mean(axis=1))
 
         if show_table:
-            self.__print_table_title(f"{self.ticker} Operating Analysis")
+            Company.print_table_title(f"{self.ticker} Operating Analysis")
             print(self.operating_insights.applymap(decimalize).to_string())
         if show_plot:
             self.operating_insights.T.iloc[:0:-1].plot.line(subplots=True, title=f"{self.ticker} Operating Analysis")
@@ -231,7 +235,7 @@ class Company:
         self.solvency_insights.insert(loc=0, column="mean", value=self.solvency_insights.mean(axis=1))
 
         if show_table:
-            self.__print_table_title(f"{self.ticker} Solvency Analysis")
+            Company.print_table_title(f"{self.ticker} Solvency Analysis")
             print(self.solvency_insights.applymap(decimalize).to_string())
         if show_plot:
             self.solvency_insights.T.iloc[:0:-1].plot.line(subplots=True, title=f"{self.ticker} Solvency Analysis")
@@ -244,6 +248,13 @@ class Company:
             self.__get_company_value()
         if self.beta == 0:
             self.__get_beta()
+
+        json = requests.get(self.fr_url).json()['ratios']
+        data = []
+        for x in json:
+            data.append({'date': x['date'], 'dividendYield': x['investmentValuationRatios']['dividendYield'],
+                     'dividendPayoutRatio': x['cashFlowIndicatorRatios']['dividendPayoutRatio']})
+        dividend = pd.DataFrame.from_dict(data).set_index('date').apply(pd.to_numeric, errors='coerce')
 
         total_debt = self.balance_sheet.loc['Short-term debt'] + self.balance_sheet.loc['Long-term debt']
         market_cap = self.company_value.loc['Market Capitalization']
@@ -260,13 +271,15 @@ class Company:
 
         self.investment_insights = pd.concat([wacc, roic, excess_return, economic_profit], axis=1)
         self.investment_insights.columns = ['wacc', 'roic', 'excess return', 'economic profit']
+        self.investment_insights = pd.concat([self.investment_insights, dividend], axis=1)
         self.investment_insights = self.investment_insights.sort_index(ascending=False)
         self.investment_insights = self.investment_insights.T.replace([np.inf, -np.inf], 0)
         self.investment_insights.insert(loc=0, column="mean", value=self.investment_insights.mean(axis=1))
+        self.investment_insights = pd.concat([self.investment_insights, self.company_value])
 
         if show_table:
-            self.__print_table_title(f"{self.ticker} Investment Analysis")
-            print(pd.concat([self.investment_insights, self.company_value]).applymap(mix_number).to_string())
+            Company.print_table_title(f"{self.ticker} Investment Analysis")
+            print(self.investment_insights.applymap(mix_number).to_string())
 
     def get_dfc_valuation(self, show_plot=False):
         pass
@@ -275,9 +288,32 @@ class Company:
         self.print_balance_sheet()
         self.print_income_statements()
         self.print_cashflow_statements()
+        pass
 
     def get_insights(self, risk_free_return, market_return):
         self.get_profitability_insights(show_table=True)
         self.get_operating_insights(show_table=True)
         self.get_solvency_insights(show_table=True)
         self.get_investment_insights(risk_free_return, market_return, show_table=True)
+
+    def get_insights_summary(self, risk_free_return, market_return):
+        if self.insights_summary is None:
+            if self.profitability_insights is None:
+                self.get_profitability_insights()
+            if self.operating_insights is None:
+                self.get_operating_insights()
+            if self.solvency_insights is None:
+                self.get_solvency_insights()
+            if self.investment_insights is None:
+                self.get_investment_insights(risk_free_return, market_return)
+
+            p = self.profitability_insights[self.profitability_insights.columns[0:2]]
+            o = self.operating_insights[self.operating_insights.columns[0:2]]
+            s = self.solvency_insights[self.operating_insights.columns[0:2]]
+            i = self.investment_insights[self.investment_insights.columns[0:2]]
+
+            self.insights_summary = pd.concat([p, o, s, i], axis=0)
+            self.insights_summary.columns=pd.MultiIndex.from_tuples([(self.ticker,'mean'),(self.ticker,'latest')])
+
+        return self.insights_summary
+
