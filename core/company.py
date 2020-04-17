@@ -24,6 +24,7 @@ class Company:
         self.investment_insights = None
         self.insights_summary = None
         self.beta = 0
+        self.industry = ""
         self.bs_url = f"{Company.url_prefix_f}/balance-sheet-statement/{ticker}"
         self.is_url = f"{Company.url_prefix_f}/income-statement/{ticker}"
         self.cf_url = f"{Company.url_prefix_f}/cash-flow-statement/{ticker}"
@@ -33,7 +34,9 @@ class Company:
 
     def __get_beta(self):
         if self.beta == 0:
-            self.beta = float(requests.get(self.pf_url).json()["profile"]['beta'])
+            data = requests.get(self.pf_url).json()["profile"]
+            self.beta = float(data['beta'])
+            self.industry = data['industry']
 
     def __get_company_value(self):
         ev_items = ["date", "Stock Price", "Number of Shares", "Market Capitalization", "Enterprise Value"]
@@ -317,3 +320,8 @@ class Company:
 
         return self.insights_summary
 
+    def serilize_company_investment_info(self, risk_free_return, market_return):
+        if self.insights_summary is None:
+            self.get_insights_summary(risk_free_return, market_return)
+
+        return f"{self.ticker}\t{self.industry}\t" + '\t'.join([str(x) for x in self.insights_summary[(self.ticker, "mean")][0:25].values]) + "\n"
