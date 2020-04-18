@@ -33,6 +33,6 @@ if __name__ == "__main__":
     # plot the assets return and risk
     file_path = r"C:\Users\ruya\Documents\PortfolioManagement\data\asset_daily_return_risk.tsv"
     highlights = ["MSFT", "GOOG"]
-    only = []
-    plot_assets_in_return_risk_plane(file_path, set(highlights), set(only))
+    only_show = []
+    plot_assets_in_return_risk_plane(file_path, set(highlights), set(only_show))
 

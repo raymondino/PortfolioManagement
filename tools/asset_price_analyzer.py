@@ -20,14 +20,15 @@ def plot_assets_in_return_risk_plane(file_path, highlight_tickers=set(), only_se
     data['only'] = data['ticker'].apply(lambda x: 1 if x in only_see_tickers else 0)
     data.columns = ['ticker', 'return', 'risk', 'only']
     data = data[data.only == 1] if len(only_see_tickers) > 0 else data
-    plt.rcParams['legend.loc'] = 'upper right'
     for ticker, ret, risk in zip(data.ticker.values, data['return'].values, data['risk'].values):
         if ticker in highlight_tickers:
             label, color, alpha, marker, size = ticker, "#"+''.join([random.choice('0123456789ABCDEF') for j in range(6)]), 1, '^', 20
         else:
             label, color, alpha, marker, size = None, 'black', 0.5, '.', 10
-        plt.scatter(ret, risk, size, color=color, label=label, alpha=alpha, marker=marker)
-    plt.legend()
+        plt.scatter(risk, ret, size, color=color, label=label, alpha=alpha, marker=marker)
+    plt.legend(loc='upper left', bbox_to_anchor=(1.0, 0.5))
+    plt.xlabel('risk - $\sigma$')
+    plt.ylabel('expected daily return - E')
     plt.show()
 
 
@@ -44,7 +45,7 @@ def scrape_asset_prices(ticker_list, file_path):
         fp.write("ticker\texpected daily return\tdaily risk\n")
         tickers_failed = []
         for result in p.imap(price_scraping_worker, ticker_list):
-            if len(result) < 5:
+            if result == 'nan\tnan' or len(result)< 5:
                 tickers_failed.append(result)
             else:
                 fp.write(result)
