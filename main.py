@@ -19,8 +19,9 @@ if __name__ == "__main__":
     # scrape_company_fundamentals(ticker_list, file_path, 0.0014, 0.0668)
 
     # get daily expected return and risk for an asset
-    # a = Asset("MSFT")
+    # a = Asset("LMNL")
     # print(a.get_expected_daily_return_and_risk_from_all_history())
+    # print('\t'.join(['LMNL'] + [str(d) for d in a.get_expected_daily_return_and_risk_from_all_history()])+'\n')
 
     # scrape the ticker list for daily expected return and risk
     # ticker_list = set()
@@ -31,8 +32,8 @@ if __name__ == "__main__":
     # scrape_asset_prices(ticker_list, file_path)
 
     # plot the assets return and risk
-    file_path = r"C:\Users\ruya\Documents\PortfolioManagement\data\asset_daily_return_risk.tsv"
-    highlights = ["MSFT", "GOOG"]
-    only_show = []
-    plot_assets_in_return_risk_plane(file_path, set(highlights), set(only_show))
+    # file_path = r"C:\Users\ruya\Documents\PortfolioManagement\data\asset_daily_return_risk.tsv"
+    # highlights = ["MSFT", "MA", "EQIX"]
+    # only_show = []
+    # plot_assets_in_return_risk_plane(file_path, set(highlights), set(only_show))
 

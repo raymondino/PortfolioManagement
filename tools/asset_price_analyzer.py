@@ -19,6 +19,8 @@ def plot_assets_in_return_risk_plane(file_path, highlight_tickers=set(), only_se
     data = pd.read_csv(file_path, encoding='utf-8', delimiter='\t')
     data['only'] = data['ticker'].apply(lambda x: 1 if x in only_see_tickers else 0)
     data.columns = ['ticker', 'return', 'risk', 'only']
+    data = data[data['return'].notna()]
+    data = data[data['risk'] <= 1]
     data = data[data.only == 1] if len(only_see_tickers) > 0 else data
     for ticker, ret, risk in zip(data.ticker.values, data['return'].values, data['risk'].values):
         if ticker in highlight_tickers:
@@ -44,11 +46,25 @@ def scrape_asset_prices(ticker_list, file_path):
     with open(file_path, 'w', encoding='utf-8') as fp:
         fp.write("ticker\texpected daily return\tdaily risk\n")
         tickers_failed = []
-        for result in p.imap(price_scraping_worker, ticker_list):
-            if result == 'nan\tnan' or len(result)< 5:
-                tickers_failed.append(result)
-            else:
-                fp.write(result)
+        for ticker in ticker_list:
+            a = Asset(ticker)
+            try:
+                t0 = time.clock()
+                data = a.get_expected_daily_return_and_risk_from_all_history()
+                if 'nan\tnan' in data:
+                    tickers_failed.append(ticker)
+                else:
+                    print(f"- {ticker} e-sigma scraping done, takes {round(time.clock() - t0, 2)} seconds")
+                    fp.write('\t'.join([ticker] + [str(d) for d in data]) + '\n')
+            except Exception as e:
+                print(f"cannot scrape {ticker} - {e}")
+                tickers_failed.append(ticker)
+        # the parallel way
+        # for result in p.imap(price_scraping_worker, ticker_list):
+        #     if 'nan\tnan' in result or len(result) < 5:
+        #         tickers_failed.append(result)
+        #     else:
+        #         fp.write(result)
         print(f"failed tickers={tickers_failed}")
 
 
