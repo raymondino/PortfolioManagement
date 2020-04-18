@@ -25,6 +25,9 @@ class Company:
         self.insights_summary = None
         self.beta = 0
         self.industry = ""
+        self.current_market_cap = 0
+        self.current_price = 0
+        self.sector = ""
         self.bs_url = f"{Company.url_prefix_f}/balance-sheet-statement/{ticker}"
         self.is_url = f"{Company.url_prefix_f}/income-statement/{ticker}"
         self.cf_url = f"{Company.url_prefix_f}/cash-flow-statement/{ticker}"
@@ -37,6 +40,9 @@ class Company:
             data = requests.get(self.pf_url).json()["profile"]
             self.beta = float(data['beta'])
             self.industry = data['industry']
+            self.current_market_cap = data['mktCap']
+            self.current_price = data['price']
+            self.sector = data['sector']
 
     def __get_company_value(self):
         ev_items = ["date", "Stock Price", "Number of Shares", "Market Capitalization", "Enterprise Value"]
@@ -324,4 +330,5 @@ class Company:
         if self.insights_summary is None:
             self.get_insights_summary(risk_free_return, market_return)
 
-        return f"{self.ticker}\t{self.industry}\t" + '\t'.join([str(x) for x in self.insights_summary[(self.ticker, "mean")][0:25].values]) + "\n"
+        return f"{self.ticker}\t{self.current_market_cap}\t{self.industry}\t{self.sector}\t{self.current_price}\t" + \
+               '\t'.join([str(x) for x in self.insights_summary[(self.ticker, "mean")][0:25].values]) + "\n"

@@ -3,18 +3,19 @@ from tools.company_fundamentals_analyzer import *
 
 if __name__ == "__main__":
     # analyze a company fundamentals
-    # analyze_company("MA", risk_free_return=0.0025, market_return=0.0668, quarter=True)
+    # analyze_company("EQIX", risk_free_return=0.0025, market_return=0.0668, quarter=False)
 
     # compare a list of companies
-    ticker_list = ["CCO", "OUT", "QUOT", "OMC", "HHS", "NCMI", "IPG", "WPP"]
-    compare_companies(ticker_list, risk_free_return=0.0025, market_return=0.0668)
+    # ticker_list = ["CCO", "OUT", "QUOT", "OMC", "HHS", "NCMI", "IPG", "WPP"]
+    # ticker_list=['MSFT']
+    # compare_companies(ticker_list, risk_free_return=0.0025, market_return=0.0668)
 
     # scrape a list of companies and save to a file
-    # ticker_list = set()
-    # # all_company_list = r"C:\Users\ruya\Documents\PortfolioManagement\data\nasdaq_amex_nyse.txt"
+    ticker_list = set()
+    all_company_list = r"C:\Users\ruya\Documents\PortfolioManagement\data\nasdaq_amex_nyse.txt"
     # all_company_list = r"C:\Users\ruya.REDMOND\Documents\PortfolioManagement\data\nasdaq_amex_nyse.txt"
-    # with open(all_company_list, 'r', encoding='utf-8') as fp:
-    #     ticker_list = set([ticker.strip() for ticker in fp.readlines()])
-    # # file_path = r"C:\Users\ruya\Documents\PortfolioManagement\data\company_scrapings.tsv"
+    with open(all_company_list, 'r', encoding='utf-8') as fp:
+        ticker_list = set([ticker.strip() for ticker in fp.readlines()])
+    file_path = r"C:\Users\ruya\Documents\PortfolioManagement\data\company_scrapings.tsv"
     # file_path = r"C:\Users\ruya.REDMOND\Documents\PortfolioManagement\data\company_scrapings.tsv"
-    # scrape_company_fundamentals(ticker_list, file_path, 0.0014, 0.0668)
+    scrape_company_fundamentals(ticker_list, file_path, 0.0014, 0.0668)
