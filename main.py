@@ -23,9 +23,16 @@ if __name__ == "__main__":
     # print(a.get_expected_daily_return_and_risk_from_all_history())
 
     # scrape the ticker list for daily expected return and risk
-    ticker_list = set()
-    all_company_list = r"C:\Users\ruya\Documents\PortfolioManagement\data\nasdaq_amex_nyse.txt"
-    with open(all_company_list, 'r', encoding='utf-8') as fp:
-        ticker_list = set([ticker.strip() for ticker in fp.readlines()])
+    # ticker_list = set()
+    # all_company_list = r"C:\Users\ruya\Documents\PortfolioManagement\data\nasdaq_amex_nyse.txt"
+    # with open(all_company_list, 'r', encoding='utf-8') as fp:
+    #     ticker_list = set([ticker.strip() for ticker in fp.readlines()])
+    # file_path = r"C:\Users\ruya\Documents\PortfolioManagement\data\asset_daily_return_risk.tsv"
+    # scrape_asset_prices(ticker_list, file_path)
+
+    # plot the assets return and risk
     file_path = r"C:\Users\ruya\Documents\PortfolioManagement\data\asset_daily_return_risk.tsv"
-    scrape_asset_prices(ticker_list, file_path)
+    highlights = ["MSFT", "GOOG"]
+    only = []
+    plot_assets_in_return_risk_plane(file_path, set(highlights), set(only))
+
