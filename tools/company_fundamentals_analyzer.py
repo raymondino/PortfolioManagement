@@ -45,33 +45,39 @@ def scrape_company_fundamentals(ticker_list, file_path, risk_free_return, market
     :return:
     """
     p = multiprocessing.Pool(multiprocessing.cpu_count())
+    items = ['ticker', 'market cap', 'industry', 'sector', 'current price', 'revenue growth', 'gross margin',
+             'net profit margin', 'free cash flow margin', 'return on total assets', 'R&D expense', 'SG&A expenses',
+             'interest rate paid', 'income tax rate', 'cash turnover days', 'receivables turnover days',
+             'inventory turnover days', 'total current assets turnover days', 'fixed assets turnover days',
+             'total assets turnover days', 'current ratio', 'acid-test ratio', 'times interest earned',
+             'liability/asset ratio', 'wacc', 'roic', 'excess return', 'economic profit', 'dividend yield',
+             'dividend payout ratio']
     with open(file_path, 'w') as fp:
-        fp.write("ticker\tmarket cap\tindustry\tsector\tcurrent price\trevenue growth\tgross margin\tnet profit margin\t"
-                 "free cash flow margin\treturn on total assets\tR&D expenses\tSG&A expenses\tinterest rate paid\t"
-                 "income tax rate\tcash turnover days\treceivables turnover days\tinventories turnover days\t"
-                 "total current assets turnover days\tfixed assets turnover days\t"
-                 "total assets turnover days\tcurrent ratio\tacid-test ratio\ttimes interest earned\t"
-                 "liability/asset ratio\twacc\troic\t\excess return\t economic profit\tdividend yield\t"
-                 "dividend payout ratio\n")
+        fp.write('\t'.join(items)+"\n")
         tickers_failed = []
-        for result in p.imap(compane_scraping_workder, [[ticker, risk_free_return, market_return, quarter] for ticker in ticker_list]):
+        for result in p.imap(company_scraping_worker, [[ticker, risk_free_return, market_return, quarter] for
+                                                       ticker in ticker_list]):
             if len(result) <= 5:
                 tickers_failed.append(result)
             else:
                 fp.write(result)
-
         print(f"failed tickers={tickers_failed}")
 
 
-def compane_scraping_workder(args):
+def company_scraping_worker(args):
+    """
+    This is a helper function to parallize the company information scraping.
+    :param args: a list of four arguments: [ticker, risk_free_return, market_return, quarter]
+    :return: the ticker if cannot scrape, or scraping info if can scrape
+    """
     c = Company(args[0], quarter=args[3])
     try:
         t0 = time.clock()
         data = c.serilize_company_investment_info(args[1], args[2])
-        print(f"- {args[0]} scraping done, scraping takes {round(time.clock() - t0, 2)} seconds")
+        print(f"- {args[0]} scraping done, takes {round(time.clock() - t0, 2)} seconds")
         return data
     except Exception:
-        print(f"tried to scrape {args[0]}")
+        print(f"cannot scrape {args[0]}")
         return args[0]
 
 
