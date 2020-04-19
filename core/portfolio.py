@@ -1,7 +1,7 @@
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
-from common.asset import *
+from core.asset import *
 
 
 class Portfolio:
@@ -9,28 +9,33 @@ class Portfolio:
         self.assets = []
         self.asset_shares = {}
         self.asset_weights = []
-        self.full_asset_price_history = []
-        self.full_asset_price_history_change = []
+        self.full_asset_price_history = None
+        self.full_asset_price_history_change = None
 
-    def invest(self, asset_tickers, period=None, start_date=None, end_date=None):
+    def invest(self, asset_tickers, strategy=None, customized_weights=None, show_details=False, show_plot=False,
+               period=None, start_date=None, end_date=None):
         self.assets = []
         for ticker in asset_tickers:
-            self.assets.append(AssetFactory.get_asset(ticker, period=period, start=start_date, end=end_date))
+            a = Asset(ticker)
+            a.get_price(start_date=start_date, end_date=end_date)
+            self.assets.append(a)
             self.asset_shares[ticker] = 0
-        self.asset_weights = [1/len(asset_tickers)] * len(asset_tickers) if len(asset_tickers) > 0 and len(self.asset_weights) == 0 else self.asset_weights
 
-        self.full_asset_price_history = self.assets[0].price
-        self.full_asset_price_history_change = self.assets[0].price_change
+        if customized_weights is not None and len(customized_weights) == len(asset_tickers):
+            self.asset_weights = customized_weights
+        elif len(self.asset_weights) == 0:
+            self.asset_weights = [1/len(asset_tickers)] * len(asset_tickers)
+
+        self.full_asset_price_history = self.assets[0].daily_price
+        self.full_asset_price_history_change = self.assets[0].daily_price_change
         for i in range(1, len(self.assets)):
-            self.full_asset_price_history = pd.merge(self.full_asset_price_history, self.assets[i].price, left_index=True, right_index=True)
-            self.full_asset_price_history_change = pd.merge(self.full_asset_price_history_change, self.assets[i].price_change, left_index=True, right_index=True)
+            self.full_asset_price_history = pd.merge(self.full_asset_price_history, self.assets[i].daily_price, left_index=True, right_index=True)
+            self.full_asset_price_history_change = pd.merge(self.full_asset_price_history_change, self.assets[i].daily_price_change, left_index=True, right_index=True)
         self.full_asset_price_history = self.full_asset_price_history.dropna(axis=0,how='all')
         self.full_asset_price_history_change = self.full_asset_price_history_change.dropna(axis=0,how='all')
-        return self
 
-    def using_strategy(self, investing_strategy, show_details=False, show_plots=False):
-        investing_strategy.fit(self, show_details, show_plots)
-        return self
+        if strategy is not None:
+            strategy.fit(self, customized_weights=customized_weights, show_details=show_details, show_plot=show_plot)
 
     def get_assets_correlation(self):
         return self.full_asset_price_history_change.corr(method="pearson")

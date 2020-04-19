@@ -14,9 +14,9 @@ class MPT:
         if risk_free_annual_yield is not None:
             self.risk_free_daily_yield = pow(1 + risk_free_annual_yield, 1/365) - 1
 
-    def fit(self, portfolio, show_details=True, show_plot=False):
+    def fit(self, portfolio, customized_weights=[], show_details=True, show_plot=False):
         self.portfolio = portfolio
-        self.plot_efficient_frontier(show_details, show_plot)
+        self.plot_efficient_frontier(show_details, show_plot, customized_weights)
 
     def get_stats(self, weights):
         yearly_expected_return = round(np.matmul(np.array(weights), self.portfolio.full_asset_price_history_change.mean().to_numpy().transpose())*252, 6)
@@ -24,12 +24,12 @@ class MPT:
         yearly_sharpe_ratio = (yearly_expected_return - self.risk_free_daily_yield) / yearly_risk
         return yearly_expected_return, yearly_risk, yearly_sharpe_ratio
 
-    def plot_efficient_frontier(self, show_details, show_plots, customized_weights=[]):
+    def plot_efficient_frontier(self, show_details, show_plots, customized_weights=None):
         # step 1: calculate the man-variance for the optimized portfolio
-        risk_optimized_weights = self.__optimize_risk()
+        risk_optimized_weights = self.__optimize_risk() if customized_weights == None or len(customized_weights) == 0 else customized_weights
         risk_optimized_portfolio_mean = np.matmul(np.array(risk_optimized_weights), self.portfolio.full_asset_price_history_change.mean().to_numpy().transpose())
         risk_optimized_portfolio_risk = np.sqrt(np.matmul(np.matmul(np.array(risk_optimized_weights), self.portfolio.get_assets_covariance().to_numpy()), np.array(risk_optimized_weights).transpose()))
-        sharpe_optmized_weights = self.__optimize_sharpe_ratio()
+        sharpe_optmized_weights = self.__optimize_sharpe_ratio() if customized_weights == None or len(customized_weights) == 0 else customized_weights
         sharpe_optimized_portfolio_mean = np.matmul(np.array(sharpe_optmized_weights), self.portfolio.full_asset_price_history_change.mean().to_numpy().transpose())
         sharpe_optimized_portfolio_risk = np.sqrt(np.matmul(np.matmul(np.array(sharpe_optmized_weights), self.portfolio.get_assets_covariance().to_numpy()), np.array(sharpe_optmized_weights).transpose()))
 
@@ -118,7 +118,7 @@ class MPT:
 
             # step 4.5: show the plot
             if show_plots:
-                pl.title("MPT mean-curve plot")
+                pl.title("Efficient Frontier")
                 pl.xlabel("daily risk ($\sigma_p$)")
                 pl.ylabel("expected daily return ($E_p$)")
                 pl.legend(loc='best')
@@ -246,6 +246,5 @@ class MPT:
         df[['predicted_maxsharpe_sharpe', 'actual_maxsharpe_sharpe']].plot(style=['r*-','bo-'], title=f"{tickers} predicted optimized SHARPE v.s. actual optimized SHARPE")
         df[['predicted_maxsharpe_return', 'actual_maxsharpe_return']].plot(style=['r*-','bo-'], title=f"{tickers} predicted v.s. actual RETURN by maximizing SHARPE")
         plt.show()
-
 
 
