@@ -31,10 +31,10 @@ if __name__ == "__main__":
     # some global parameters
     risk_free_return = 0.0025
     market_return = 0.0668
-    quarter = False
+    quarter = True
 
     # adjust the number to toggle functions
-    number = 9
+    number = 0
 
     # get one company fundamentals
     if number == 0:

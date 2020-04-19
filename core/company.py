@@ -74,6 +74,15 @@ class Company:
         data = requests.get(self.is_url + ("?period=quarter" if self.quarter else "")).json()['financials']
         dates = pd.DataFrame.from_dict(data)["date"]
         data = pd.DataFrame.from_dict(data)[is_items[1:] + is_insights[1:]].apply(pd.to_numeric, errors='coerce')
+        data['Revenue Growth'] = data['Revenue'].pct_change(-1)
+        is_insights = is_insights + ['Net Income Growth', 'Operating Income Growth', 'Cost of Revenue Growth',
+                                     'R&D Expenses Growth', 'SG&A Expense Growth']
+        data['Gross Profit Growth'] = data['Gross Profit'].pct_change(-1)
+        data['Net Income Growth'] = data['Net Income'].pct_change(-1)
+        data['Operating Income Growth'] = data['Operating Income'].pct_change(-1)
+        data['Cost of Revenue Growth'] = data['Cost of Revenue'].pct_change(-1)
+        data['R&D Expenses Growth'] = data['R&D Expenses'].pct_change(-1)
+        data['SG&A Expense Growth'] = data['SG&A Expense'].pct_change(-1)
         data = pd.concat([dates, data], axis=1)
         data['Income Before Income Taxes'] = data['Net Income'] + data['Income Tax Expense']
         data['Other Income'] = data['Income Before Income Taxes'] - data['Operating Income']
@@ -289,6 +298,10 @@ class Company:
         if show_table:
             Company.print_table_title(f"{self.ticker} Investment Analysis")
             print(self.investment_insights.applymap(mix_number).to_string())
+            if self.quarter:
+                print("NOTE: in quarter report, ROIC is small because of the net income for each quarter is small. "
+                      "Annual ROIC makes more sense, as it uses annual income. The denominator is debt+equity, which "
+                      "remains the same no matter quarter or annual.")
 
     def get_dfc_valuation(self, show_plot=False):
         pass
