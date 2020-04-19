@@ -29,12 +29,12 @@ def asset_daily_expected_return_risk_scraper():
 
 if __name__ == "__main__":
     # some global parameters
-    risk_free_return = 0.0025
+    risk_free_return = 0.0012
     market_return = 0.0668
-    quarter = True
+    quarter = False
 
     # adjust the number to toggle functions
-    number = 0
+    number = 4
 
     # get one company fundamentals
     if number == 0:
@@ -63,7 +63,7 @@ if __name__ == "__main__":
 
     # scrape companies fundamentals
     elif number == 4:
-        ticker_list_file = r"C:\Users\ruya\Documents\PortfolioManagement\data\nasdaq_amex_nyse.txt"
+        ticker_list_file = r"C:\Users\ruya\Documents\PortfolioManagement\data\all_tickers_amex_nasdaq_nyse_20200419.txt"
         scraping_result_file = r"C:\Users\ruya\Documents\PortfolioManagement\data\company_scrapings.tsv"
         company_fundamentals_scraper()
 
