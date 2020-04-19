@@ -1,7 +1,7 @@
 # Environment Setup
 1. install anaconda
 2. create & activate a virtual environment
-3. install [quantstats](https://github.com/ranaroussi/quantstats) lib: pip install quantstats --upgrade --no-cache-dir 
+3. install [quantstats](https://github.com/ranaroussi/quantstats) lib: ```pip install quantstats --upgrade --no-cache-dir``` 
 4. open this repo with your favourite python IDE, I use pycharm
 5. in your python IDE, set up the project interpreter as your created virtual environment, which is where you installed quantstats
 
