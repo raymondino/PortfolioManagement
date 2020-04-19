@@ -38,14 +38,14 @@ if __name__ == "__main__":
 
     # get one company fundamentals
     if number == 0:
-        ticker = "TSLA"
+        ticker = "MSFT"
         analyze_company(ticker, risk_free_return=risk_free_return, market_return=market_return, quarter=quarter)
 
     # compare fundamentals for a list of companies, specify tickers or read tickers from a file
     elif number == 1:
         ticker_list_file = r"C:\Users\ruya\Documents\PortfolioManagement\data\company_tickers_to_compare_fundamentals.txt"
         # specifying ticker_list will overwrite tickers read from ticker_list_file
-        compare_fundamentals(ticker_list=["MSFT", "TSLA"])
+        compare_fundamentals(ticker_list=["MSFT", "GOOG"])
 
     # get a ticker's daily expected return and risk
     elif number == 2:
@@ -92,7 +92,7 @@ if __name__ == "__main__":
 
     # evaluate MPT optimization
     elif number == 9:
-        asset_tickers = ["MSFT", "GLD"]
+        asset_tickers = ["MSFT", "GOOG", "FB"]
         mpt_evaluation(asset_tickers, risk_free_annual_yield=risk_free_return)
 
     # use customized weights to get the risk/sharpe ratio/return of the portfolio

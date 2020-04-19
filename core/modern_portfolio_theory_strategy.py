@@ -118,7 +118,7 @@ class MPT:
 
             # step 4.5: show the plot
             if show_plots:
-                pl.title("MPT mean-curve plot")
+                pl.title("Efficient Frontier")
                 pl.xlabel("daily risk ($\sigma_p$)")
                 pl.ylabel("expected daily return ($E_p$)")
                 pl.legend(loc='best')
