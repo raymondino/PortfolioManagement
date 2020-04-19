@@ -227,24 +227,24 @@ class MPT:
         # using the latest 1 year of data. By comparing these two values, we can understand to what extend MPT can help
         # predict the optimal portfolio for the next year.
         data = {"predicted_minrisk_risk": predicted_minrisk_risk_history,
-                "actual_minrisk_risk": actual_minrisk_risk_history,
+                "best_minrisk_risk": actual_minrisk_risk_history,
                 "predicted_minrisk_return": predicted_minrisk_return_history,
-                "actual_minrisk_return": actual_minrisk_return_history,
+                "best_minrisk_return": actual_minrisk_return_history,
                 "predicted_minrisk_sharpe": predicted_minrisk_sharpe_history,
-                "actual_minrisk_sharpe":actual_minrisk_sharpe_history,
+                "best_minrisk_sharpe":actual_minrisk_sharpe_history,
                 "predicted_maxsharpe_risk":predicted_maxsharpe_risk_history,
-                "actual_maxsharpe_risk":actual_maxsharpe_risk_history,
+                "best_maxsharpe_risk":actual_maxsharpe_risk_history,
                 "predicted_maxsharpe_return": predicted_maxsharpe_return_history,
-                "actual_maxsharpe_return": actual_maxsharpe_return_history,
+                "best_maxsharpe_return": actual_maxsharpe_return_history,
                 "predicted_maxsharpe_sharpe": predicted_maxsharpe_sharpe_history,
-                "actual_maxsharpe_sharpe": actual_maxsharpe_sharpe_history
+                "best_maxsharpe_sharpe": actual_maxsharpe_sharpe_history
                 }
         df = pd.DataFrame(data, index=dates[1:])
         tickers = [asset.ticker for asset in self.portfolio.assets]
-        df[['predicted_minrisk_risk', 'actual_minrisk_risk']].plot(style=['r*-','bo-'], title=f"{tickers} predicted optimized RISK v.s. actual optimized RISK")
-        df[['predicted_minrisk_return', 'actual_minrisk_return']].plot(style=['r*-','bo-'], title=f"{tickers} predicted v.s. actual RETURN by minimizing RISK")
-        df[['predicted_maxsharpe_sharpe', 'actual_maxsharpe_sharpe']].plot(style=['r*-','bo-'], title=f"{tickers} predicted optimized SHARPE v.s. actual optimized SHARPE")
-        df[['predicted_maxsharpe_return', 'actual_maxsharpe_return']].plot(style=['r*-','bo-'], title=f"{tickers} predicted v.s. actual RETURN by maximizing SHARPE")
+        df[['predicted_minrisk_risk', 'best_minrisk_risk']].plot(style=['r*-','bo-'], title=f"{tickers} predicted optimized RISK v.s. actual optimized RISK")
+        df[['predicted_minrisk_return', 'best_minrisk_return']].plot(style=['r*-','bo-'], title=f"{tickers} predicted v.s. actual RETURN by minimizing RISK")
+        df[['predicted_maxsharpe_sharpe', 'best_maxsharpe_sharpe']].plot(style=['r*-','bo-'], title=f"{tickers} predicted optimized SHARPE v.s. actual optimized SHARPE")
+        df[['predicted_maxsharpe_return', 'best_maxsharpe_return']].plot(style=['r*-','bo-'], title=f"{tickers} predicted v.s. actual RETURN by maximizing SHARPE")
         plt.show()
 
 
