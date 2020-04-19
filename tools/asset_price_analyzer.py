@@ -34,7 +34,7 @@ def plot_assets_in_return_risk_plane(file_path, highlight_tickers=set(), only_se
     plt.show()
 
 
-def scrape_asset_prices(ticker_list, file_path):
+def scrape_asset_return_risk(ticker_list, file_path):
     """
     This function scrapes the price for each ticker, and calculate the daily expected return and risk. Save the data
     to file_path

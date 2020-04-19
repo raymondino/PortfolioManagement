@@ -29,7 +29,10 @@ def compare_companies(ticker_list, risk_free_return, market_return, quarter=Fals
     all_companies_insights = []
     for ticker in ticker_list:
         c = Company(ticker, quarter=quarter)
-        all_companies_insights.append(c.get_insights_summary(risk_free_return, market_return))
+        try:
+            all_companies_insights.append(c.get_insights_summary(risk_free_return, market_return))
+        except Exception as e:
+            print(f"{ticker} cannot scrape - {e}")
 
     Company.print_table_title(f"{ticker_list} Comparision")
     print(pd.concat(all_companies_insights, axis=1).applymap(mix_number).to_string())
