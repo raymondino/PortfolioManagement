@@ -49,9 +49,11 @@ def scrape_company_fundamentals(ticker_list, file_path, risk_free_return, market
     """
     p = multiprocessing.Pool(multiprocessing.cpu_count())
     items = ['ticker', 'market cap', 'industry', 'sector', 'current price', 'revenue growth', 'gross margin',
-             'net profit margin', 'free cash flow margin', 'return on total assets', 'R&D expense', 'SG&A expenses',
-             'interest rate paid', 'income tax rate', 'cash turnover days', 'receivables turnover days',
-             'inventory turnover days', 'total current assets turnover days', 'fixed assets turnover days',
+             'net profit margin', 'free cash flow margin', 'net income growth', 'operating income growth',
+             'cost of revenue growth', 'R&D expenses growth', 'SG&A expense growth', 'return on total assets',
+             'R&D expense margin', 'SG&A expenses margin', 'interest rate paid', 'income tax rate',
+             'cash turnover days', 'receivables turnover days', 'inventory turnover days',
+             'total current assets turnover days', 'fixed assets turnover days',
              'total assets turnover days', 'current ratio', 'acid-test ratio', 'times interest earned',
              'liability/asset ratio', 'wacc', 'roic', 'excess return', 'economic profit', 'dividend yield',
              'dividend payout ratio']

@@ -34,11 +34,11 @@ if __name__ == "__main__":
     quarter = False
 
     # adjust the number to toggle functions
-    number = 4
+    number = 11
 
     # get one company fundamentals
     if number == 0:
-        ticker = "MSFT"
+        ticker = "HHC"
         analyze_company(ticker, risk_free_return=risk_free_return, market_return=market_return, quarter=quarter)
 
     # compare fundamentals for a list of companies, specify tickers or read tickers from a file
@@ -100,6 +100,11 @@ if __name__ == "__main__":
         asset_tickers = ["MSFT", "GOOG", "FB"]
         customize_weights = [0.2, 0.4, 0.4]
         mpt_customize_weights(asset_tickers, customize_weights=customize_weights, risk_free_annual_yield=risk_free_return)
+
+    # get company investment info
+    elif number == 11:
+        ticker = "MSFT"
+        print(Company(ticker).serilize_company_investment_info(risk_free_return, market_return))
 
 
 

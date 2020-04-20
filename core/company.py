@@ -76,13 +76,13 @@ class Company:
         data = pd.DataFrame.from_dict(data)[is_items[1:] + is_insights[1:]].apply(pd.to_numeric, errors='coerce')
         data['Revenue Growth'] = data['Revenue'].pct_change(-1)
         is_insights = is_insights + ['Net Income Growth', 'Operating Income Growth', 'Cost of Revenue Growth',
-                                     'R&D Expenses Growth', 'SG&A Expense Growth']
+                                     'RnD Expenses Growth', 'SGnA Expense Growth']
         data['Gross Profit Growth'] = data['Gross Profit'].pct_change(-1)
         data['Net Income Growth'] = data['Net Income'].pct_change(-1)
         data['Operating Income Growth'] = data['Operating Income'].pct_change(-1)
         data['Cost of Revenue Growth'] = data['Cost of Revenue'].pct_change(-1)
-        data['R&D Expenses Growth'] = data['R&D Expenses'].pct_change(-1)
-        data['SG&A Expense Growth'] = data['SG&A Expense'].pct_change(-1)
+        data['RnD Expenses Growth'] = data['R&D Expenses'].pct_change(-1)
+        data['SGnA Expense Growth'] = data['SG&A Expense'].pct_change(-1)
         data = pd.concat([dates, data], axis=1)
         data['Income Before Income Taxes'] = data['Net Income'] + data['Income Tax Expense']
         data['Other Income'] = data['Income Before Income Taxes'] - data['Operating Income']
@@ -344,4 +344,4 @@ class Company:
             self.get_insights_summary(risk_free_return, market_return)
 
         return f"{self.ticker}\t{self.current_market_cap}\t{self.industry}\t{self.sector}\t{self.current_price}\t" + \
-               '\t'.join([str(x) for x in self.insights_summary[(self.ticker, "mean")][0:25].values]) + "\n"
+               '\t'.join([str(x) for x in self.insights_summary[(self.ticker, "mean")][0:-4].values]) + "\n"
