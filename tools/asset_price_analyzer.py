@@ -50,7 +50,7 @@ def scrape_asset_return_risk(ticker_list, file_path):
             a = Asset(ticker)
             try:
                 t0 = time.clock()
-                data = a.get_expected_daily_return_and_risk_from_all_history()
+                data = a.get_expected_daily_return_and_risk_from_all_history(start='2015-01-01')
                 if 'nan\tnan' in data:
                     tickers_failed.append(ticker)
                 else:

@@ -110,6 +110,8 @@ class Company:
         self.cashflow_statements = data.T
         self.cashflow_statements.columns = self.cashflow_statements.iloc[0]
         self.cashflow_statements = self.cashflow_statements[1:].apply(pd.to_numeric, errors='coerce')
+        self.cashflow_statements.loc['Net Cash Flow'] = self.cashflow_statements.loc["Operating Cash Flow"] + self.cashflow_statements.loc["Financing Cash Flow"] + self.cashflow_statements.loc['Investing Cash flow']
+        print("NOTE: Net cash/flow / Change in cash row is either the total cash or net cash flow. Please refer to 'Net Cash Flow' row for only net cash flow")
 
     @staticmethod
     def print_table_title(title):

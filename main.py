@@ -34,22 +34,22 @@ if __name__ == "__main__":
     quarter = False
 
     # adjust the number to toggle functions
-    number = 11
+    number = 0
 
     # get one company fundamentals
     if number == 0:
-        ticker = "HHC"
+        ticker = "HD"
         analyze_company(ticker, risk_free_return=risk_free_return, market_return=market_return, quarter=quarter)
 
     # compare fundamentals for a list of companies, specify tickers or read tickers from a file
     elif number == 1:
         ticker_list_file = r"C:\Users\ruya\Documents\PortfolioManagement\data\company_tickers_to_compare_fundamentals.txt"
         # specifying ticker_list will overwrite tickers read from ticker_list_file
-        compare_fundamentals(ticker_list=["MSFT", "GOOG"])
+        compare_fundamentals(ticker_list=["T", "VZ"])
 
     # get a ticker's daily expected return and risk
     elif number == 2:
-        ticker = "MSFT"
+        ticker = "MA"
         a = Asset(ticker)
         print('\t'.join([ticker] + [str(d) for d in a.get_expected_daily_return_and_risk_from_all_history()]) + '\n')
 
@@ -57,7 +57,7 @@ if __name__ == "__main__":
     # asset_daily_expected_return_risk_scraper, so if you do not have such file, you need to run that function first
     elif number == 3:
         asset_return_risk_file_path = r"C:\Users\ruya\Documents\PortfolioManagement\data\asset_daily_return_risk.tsv"
-        highlights = ["MSFT"]  # to highlight certain assets
+        highlights = ["NEE", "ABT", "ABBV", "NVO", "PYPL", "GOOG", "MSFT", "MA"]  # to highlight certain assets
         only_show = []  # to only plot certain assets
         plot_assets_in_return_risk_plane(asset_return_risk_file_path, set(highlights), set(only_show))
 
@@ -75,30 +75,30 @@ if __name__ == "__main__":
 
     # plot assets correlation
     elif number == 6:
-        asset_tickers = ["MSFT", "GOOG", "FB"]
+        asset_tickers = ["PEP", "JNJ", "COST", "NEE", "DHR", "AMT", "UNH", "MSFT", "ADBE"]
         p = Portfolio()
         p.invest(asset_tickers)
         p.plot_asset_correlation()
 
     # risk-optimized portfolio with MPT
     elif number == 7:
-        asset_tickers = ["MSFT", "GOOG", "FB"]
-        mpt_optimization(asset_tickers)
+        asset_tickers = ["PEP", "JNJ", "COST", "NEE", "DHR", "AMT", "UNH", "MST", "ADBE"]
+        mpt_optimization(asset_tickers, start_date='2015-01-01')
 
     # sharpe ratio-optimized portfolio with MPT
     elif number == 8:
-        asset_tickers = ["MSFT", "GOOG", "FB"]
-        mpt_optimization(asset_tickers, risk_free_annual_yield=risk_free_return)
+        asset_tickers = ["PEP", "JNJ", "COST", "NEE", "DHR", "AMT", "UNH", "MSFT", "ADBE"]
+        mpt_optimization(asset_tickers, start_date='2015-01-01', risk_free_annual_yield=risk_free_return)
 
     # evaluate MPT optimization
     elif number == 9:
-        asset_tickers = ["MSFT", "GOOG", "FB"]
+        asset_tickers = ["PEP", "JNJ", "COST", "NEE", "DHR", "AMT", "UNH", "MSFT", "ADBE"]
         mpt_evaluation(asset_tickers, risk_free_annual_yield=risk_free_return)
 
     # use customized weights to get the risk/sharpe ratio/return of the portfolio
     elif number == 10:
-        asset_tickers = ["MSFT", "GOOG", "FB"]
-        customize_weights = [0.2, 0.4, 0.4]
+        asset_tickers = ['MSFT', 'UNH', "ADBE", 'COST', 'NEE', 'AMT', 'TMUS', 'DHR']
+        customize_weights = [0.1953, 0.0081, 0.1487, 0.1392, 0.2452, 0.1373, 0.0973, 0.0289]
         mpt_customize_weights(asset_tickers, customize_weights=customize_weights, risk_free_annual_yield=risk_free_return)
 
     # get company investment info
