@@ -38,7 +38,7 @@ if __name__ == "__main__":
 
     # get one company fundamentals
     if number == 0:
-        ticker = "HD"
+        ticker = "MSFT"
         analyze_company(ticker, risk_free_return, quarter=quarter, year=year)
 
     # compare fundamentals for a list of companies, specify tickers or read tickers from a file

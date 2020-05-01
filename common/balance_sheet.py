@@ -53,6 +53,7 @@ class BalanceSheet():
         self.year = year
         self.data = requests.get(self.bs_url + ("?period=quarter" if quarter else "")).json()['financials']
         self.data = pd.DataFrame.from_dict(self.data)[BalanceSheet.bs_full_items]
+        self.data = self.data[self.data.date.str.len() == 10]
         self.balance_sheet = self.data[BalanceSheet.bs_print_items]
         self.balance_sheet.set_index('date', inplace=True, drop=True)
         self.balance_sheet = self.balance_sheet.sort_index(ascending=False).iloc[

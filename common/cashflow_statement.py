@@ -36,6 +36,7 @@ class CashflowStatement:
         self.year = year
         self.data = requests.get(self.cf_url + ("?period=quarter" if self.quarter else "")).json()['financials']
         self.data = pd.DataFrame.from_dict(self.data)[CashflowStatement.cf_full_items]
+        self.data = self.data[self.data.date.str.len() == 10]
         self.data["Net Cash Flow"] = (self.data['Operating Cash Flow'].apply(pd.to_numeric, errors="coerce") +
                                       self.data["Investing Cash flow"].apply(pd.to_numeric, errors="coerce") +
                                       self.data["Financing Cash Flow"].apply(pd.to_numeric, errors="coerce"))

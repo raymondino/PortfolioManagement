@@ -8,7 +8,7 @@ class IncomeStatement:
     is_full_items = [
         "date",
         "Revenue",
-        "Revenue Growth",
+        "Revenue Growth",  # not always correct, I compute it by myself
         "Cost of Revenue",
         "Gross Profit",
         "R&D Expenses",
@@ -52,6 +52,8 @@ class IncomeStatement:
         self.year = year
         self.data = requests.get(self.is_url + ("?period=quarter" if quarter else "")).json()["financials"]
         self.data = pd.DataFrame.from_dict(self.data)[IncomeStatement.is_full_items]
+        self.data = self.data[self.data.date.str.len() == 10]
+        self.data["Revenue Growth"] = self.data["Revenue"].apply(pd.to_numeric, errors="coerce").pct_change(-1)
         self.data["Income Before Tax"] = self.data["Income Tax Expense"].apply(pd.to_numeric, errors="coerce") + \
                                          self.data["Net Income"].apply(pd.to_numeric, errors="coerce")
         self.income_statement = self.data[IncomeStatement.is_print_items]
