@@ -47,6 +47,8 @@ def mix_number(n):
     :param n: a number
     :return: a percentage or a human readable number
     """
+    if n == "NaN" or n == "nan" or n == "Nan" or n == 0:
+        return n
     if -10 <= n <= 10:
         return percentify(n)
     return millify(n)

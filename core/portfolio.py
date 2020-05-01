@@ -17,7 +17,12 @@ class Portfolio:
         self.assets = []
         for ticker in asset_tickers:
             a = Asset(ticker)
-            a.get_price(start_date=start_date, end_date=end_date)
+            if period is not None:
+                a.get_price(period=period)
+            elif start_date or end_date is not None:
+                a.get_price(start_date=start_date, end_date=end_date)
+            else:
+                a.get_price()
             self.assets.append(a)
             self.asset_shares[ticker] = 0
 

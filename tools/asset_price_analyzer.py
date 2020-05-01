@@ -3,6 +3,7 @@ import random
 import multiprocessing
 import os.path
 import matplotlib.pyplot as plt
+import pandas as pd
 from core.asset import *
 
 
@@ -16,21 +17,21 @@ def plot_assets_in_return_risk_plane(file_path, highlight_tickers=set(), only_se
     """
     if not os.path.exists(file_path):
         print(f"cannot find {file_path}")
-    data = pd.read_csv(file_path, encoding='utf-8', delimiter='\t')
-    data['only'] = data['ticker'].apply(lambda x: 1 if x in only_see_tickers else 0)
-    data.columns = ['ticker', 'return', 'risk', 'only']
-    data = data[data['return'].notna()]
-    data = data[data['risk'] <= 1]
+    data = pd.read_csv(file_path, encoding="utf-8", delimiter="\t")
+    data["only"] = data["ticker"].apply(lambda x: 1 if x in only_see_tickers else 0)
+    data.columns = ["ticker", "return", "risk", "only"]
+    data = data[data["return"].notna()]
+    data = data[data["risk"] <= 1]
     data = data[data.only == 1] if len(only_see_tickers) > 0 else data
-    for ticker, ret, risk in zip(data.ticker.values, data['return'].values, data['risk'].values):
+    for ticker, ret, risk in zip(data.ticker.values, data["return"].values, data["risk"].values):
         if ticker in highlight_tickers:
-            label, color, alpha, marker, size = ticker, "#"+''.join([random.choice('0123456789ABCDEF') for j in range(6)]), 1, '^', 20
+            label, color, alpha, marker, size = ticker, "#"+"".join([random.choice("0123456789ABCDEF") for j in range(6)]), 1, "^", 20
         else:
-            label, color, alpha, marker, size = None, 'black', 0.5, '.', 10
+            label, color, alpha, marker, size = None, "black", 0.5, ".", 10
         plt.scatter(risk, ret, size, color=color, label=label, alpha=alpha, marker=marker)
-    plt.legend(loc='upper left', bbox_to_anchor=(1.0, 0.5))
-    plt.xlabel('risk - $\sigma$')
-    plt.ylabel('expected daily return - E')
+    plt.legend(loc="upper left", bbox_to_anchor=(1.0, 0.5))
+    plt.xlabel("risk - $\sigma$")
+    plt.ylabel("expected daily return - E")
     plt.show()
 
 
@@ -43,44 +44,21 @@ def scrape_asset_return_risk(ticker_list, file_path):
     :return:
     """
     p = multiprocessing.Pool(multiprocessing.cpu_count())
-    with open(file_path, 'w', encoding='utf-8') as fp:
+    with open(file_path, "w", encoding="utf-8") as fp:
         fp.write("ticker\texpected daily return\tdaily risk\n")
         tickers_failed = []
         for ticker in ticker_list:
             a = Asset(ticker)
             try:
                 t0 = time.clock()
-                data = a.get_expected_daily_return_and_risk_from_all_history(start='2015-01-01')
-                if 'nan\tnan' in data:
+                data = a.get_expected_daily_return_and_risk()
+                if "nan\tnan" in data:
                     tickers_failed.append(ticker)
                 else:
                     print(f"- {ticker} e-sigma scraping done, takes {round(time.clock() - t0, 2)} seconds")
-                    fp.write('\t'.join([ticker] + [str(d) for d in data]) + '\n')
+                    fp.write("\t".join([ticker] + [str(d) for d in data]) + "\n")
             except Exception as e:
                 print(f"cannot scrape {ticker} - {e}")
                 tickers_failed.append(ticker)
-        # the parallel way
-        # for result in p.imap(price_scraping_worker, ticker_list):
-        #     if 'nan\tnan' in result or len(result) < 5:
-        #         tickers_failed.append(result)
-        #     else:
-        #         fp.write(result)
+
         print(f"failed tickers={tickers_failed}")
-
-
-def price_scraping_worker(ticker):
-    """
-    This is a helper function to parallelize the asset price scraping
-    :param ticker: the ticker to be scraped
-    :return: the daily expected return and risk for ticker if successful, otherwise the ticker itself
-    """
-    a = Asset(ticker)
-    try:
-        t0 = time.clock()
-        data = a.get_expected_daily_return_and_risk_from_all_history()
-        print(f"- {ticker} e-sigma scraping done, takes {round(time.clock() - t0, 2)} seconds")
-        return '\t'.join([ticker] + [str(d) for d in data])+'\n'
-    except Exception as e:
-        print(e)
-        print(f"cannot scrape {ticker}")
-        return ticker

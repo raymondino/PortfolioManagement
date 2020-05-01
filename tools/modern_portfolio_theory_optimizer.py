@@ -31,7 +31,7 @@ def mpt_customize_weights(assets_list, customize_weights, risk_free_annual_yield
                    show_plot=show_plot or show_plots_for_less_than_three_assets)
 
 
-def mpt_optimization(assets_list, risk_free_annual_yield=None, show_details=True, show_plot=False,
+def mpt_optimization(assets_list, risk_free_annual_yield=None, show_details=True, show_plot=False, period='max',
                      start_date=None, end_date=None):
     """
     This function uses the modern portfolio theory to optimize the portfolio.

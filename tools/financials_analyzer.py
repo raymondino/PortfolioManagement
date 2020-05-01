@@ -1,6 +1,7 @@
 import time
 import multiprocessing
 from core.company import *
+from utils.widget import *
 
 
 def analyze_company(ticker, risk_free_return, quarter=False, year=5):
@@ -17,50 +18,47 @@ def analyze_company(ticker, risk_free_return, quarter=False, year=5):
     c.print_quantitative_analysis(risk_free_return)
 
 
-def compare_companies(ticker_list, risk_free_return, quarter=False):
+def compare_companies(ticker_list, risk_free_return, quarter=False, year=5):
     """
     This function compares multiple companies' fundamentals, by comparing the latest report and 10 year mean
     :param ticker: company stock ticker
     :param risk_free_return: the 3-month t-bill return
-    :param market_return: S&P 500 last 5 year compound average return
     :param quarter: whether to see it's quarter report. If false, will see its annual report
+    :param year: see data back to how many years. 5 is the default
     :return:
     """
     all_companies_insights = []
     for ticker in ticker_list:
         c = Company(ticker, quarter=quarter)
         try:
-            all_companies_insights.append(c.get_insights_summary(risk_free_return, market_return))
+            all_companies_insights.append(c.get_fundamentals_summary(risk_free_return))
         except Exception as e:
             print(f"{ticker} cannot scrape - {e}")
-
-    Company.print_table_title(f"{ticker_list} Comparision")
+    print_table_title(f"{ticker_list} Comparision")
     print(pd.concat(all_companies_insights, axis=1).applymap(mix_number).to_string())
 
 
-def scrape_company_fundamentals(ticker_list, file_path, risk_free_return, market_return, quarter=False):
+def scrape_company_fundamentals(ticker_list, file_path, risk_free_return, quarter=False, year=5):
     """
     This function scrapes all the companies in the ticker_list for financial data and save to tsv file.
     :param ticker: company stock ticker
     :param risk_free_return: the 3-month t-bill return
-    :param market_return: S&P 500 last 5 year compound average return
     :param quarter: whether to see it's quarter report. If false, will see its annual report
+    :param year: see data back to how many years. 5 is the default
     :return:
     """
     p = multiprocessing.Pool(multiprocessing.cpu_count())
-    items = ['ticker', 'market cap', 'industry', 'sector', 'current price', 'revenue growth', 'gross margin',
-             'net profit margin', 'free cash flow margin', 'net income growth', 'operating income growth',
-             'cost of revenue growth', 'R&D expenses growth', 'SG&A expense growth', 'return on total assets',
-             'R&D expense margin', 'SG&A expenses margin', 'interest rate paid', 'income tax rate',
-             'cash turnover days', 'receivables turnover days', 'inventory turnover days',
-             'total current assets turnover days', 'fixed assets turnover days',
-             'total assets turnover days', 'current ratio', 'acid-test ratio', 'times interest earned',
-             'liability/asset ratio', 'wacc', 'roic', 'excess return', 'economic profit', 'dividend yield',
-             'dividend payout ratio']
+    items = [
+        'ticker', 'market cap', 'industry', 'sector', 'current price', 'gross margin', 'net income margin',
+        'expenses portion', 'ROE', "ROA", 'receivables turnover days', 'inventories turnover days',
+        'total assets turnover days', 'liability/asset ratio', 'current ratio', 'acid-test ratio', 'revenue growth',
+        'net income growth', 'operating income growth', 'free cash flow growth', 'wacc', 'roic', 'excess return',
+        'economic profit', 'dividend yield', 'dividend payout ratio', 'dcf'
+    ]
     with open(file_path, 'w') as fp:
         fp.write('\t'.join(items)+"\n")
         tickers_failed = []
-        for result in p.imap(company_scraping_worker, [[ticker, risk_free_return, market_return, quarter] for
+        for result in p.imap(company_scraping_worker, [[ticker, risk_free_return, quarter] for
                                                        ticker in ticker_list]):
             if len(result) <= 5:
                 tickers_failed.append(result)
@@ -71,14 +69,14 @@ def scrape_company_fundamentals(ticker_list, file_path, risk_free_return, market
 
 def company_scraping_worker(args):
     """
-    This is a helper function to parallize the company information scraping.
+    This is a helper function to parallelize the company information scraping.
     :param args: a list of four arguments: [ticker, risk_free_return, market_return, quarter]
     :return: the ticker if cannot scrape, or scraping info if can scrape
     """
-    c = Company(args[0], quarter=args[3])
+    c = Company(args[0], quarter=args[2])
     try:
         t0 = time.clock()
-        data = c.serilize_company_investment_info(args[1], args[2])
+        data = c.serialize_fundamentals_summary(args[1])
         print(f"- {args[0]} scraping done, takes {round(time.clock() - t0, 2)} seconds")
         return data
     except Exception:
