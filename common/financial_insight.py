@@ -177,50 +177,56 @@ class FinancialInsight:
             if self.investing is None:
                 print("\nERROR: cannot get DFC valuation without running investing insights first")
                 return
-            current_outstanding_shares = self.__get_company_value().loc["Number of Shares"][0]
-            latest_revenue = self.income_statement.income_statement.loc["Revenue"][0]
-            average_revenue_growth_of_past_5_years = self.growth.loc["Revenue Growth"][0]
-            average_net_income_margin_of_past_5_years = self.profitability.loc["Net Income Margin"][0]
-            average_ratio_of_free_cash_flow_over_net_income = (self.cashflow_statement.cashflow_statement.loc["Free Cash Flow"]/self.income_statement.income_statement.loc["Net Income"]).mean()
-            predicted_net_income_for_coming_5_years = [
-                latest_revenue * (1 + average_revenue_growth_of_past_5_years) * average_net_income_margin_of_past_5_years,
-                latest_revenue * (1 + average_revenue_growth_of_past_5_years) ** 2 * average_net_income_margin_of_past_5_years,
-                latest_revenue * (1 + average_revenue_growth_of_past_5_years) ** 3 * average_net_income_margin_of_past_5_years,
-                latest_revenue * (1 + average_revenue_growth_of_past_5_years) ** 4 * average_net_income_margin_of_past_5_years,
-                latest_revenue * (1 + average_revenue_growth_of_past_5_years) ** 5 * average_net_income_margin_of_past_5_years
-            ]
-            predicted_free_cash_flow_for_coming_5_years = [x * average_ratio_of_free_cash_flow_over_net_income for x in predicted_net_income_for_coming_5_years]
-            perpectual_growth = 0.025
-            average_wacc_of_past_5_years = self.investing.loc['wacc'][0]
-            terminal_value = predicted_free_cash_flow_for_coming_5_years[4] / (average_wacc_of_past_5_years - perpectual_growth)
-            predicted_value = 0
-            for idx, val in enumerate(predicted_free_cash_flow_for_coming_5_years):
-                predicted_value += predicted_free_cash_flow_for_coming_5_years[idx]/(1+average_wacc_of_past_5_years)**(idx+1)
+            try:
+                current_outstanding_shares = self.__get_company_value().loc["Number of Shares"][0]
+                latest_revenue = self.income_statement.income_statement.loc["Revenue"][0]
+                average_revenue_growth_of_past_5_years = self.growth.loc["Revenue Growth"][0]
+                average_net_income_margin_of_past_5_years = self.profitability.loc["Net Income Margin"][0]
+                average_ratio_of_free_cash_flow_over_net_income = (self.cashflow_statement.cashflow_statement.loc["Free Cash Flow"]/self.income_statement.income_statement.loc["Net Income"]).mean()
+                predicted_net_income_for_coming_5_years = [
+                    latest_revenue * (1 + average_revenue_growth_of_past_5_years) * average_net_income_margin_of_past_5_years,
+                    latest_revenue * (1 + average_revenue_growth_of_past_5_years) ** 2 * average_net_income_margin_of_past_5_years,
+                    latest_revenue * (1 + average_revenue_growth_of_past_5_years) ** 3 * average_net_income_margin_of_past_5_years,
+                    latest_revenue * (1 + average_revenue_growth_of_past_5_years) ** 4 * average_net_income_margin_of_past_5_years,
+                    latest_revenue * (1 + average_revenue_growth_of_past_5_years) ** 5 * average_net_income_margin_of_past_5_years
+                ]
+                predicted_free_cash_flow_for_coming_5_years = [x * average_ratio_of_free_cash_flow_over_net_income for x in predicted_net_income_for_coming_5_years]
+                perpectual_growth = 0.025
+                average_wacc_of_past_5_years = self.investing.loc['wacc'][0]
+                terminal_value = predicted_free_cash_flow_for_coming_5_years[4] / (average_wacc_of_past_5_years - perpectual_growth)
+                predicted_value = 0
+                for idx, val in enumerate(predicted_free_cash_flow_for_coming_5_years):
+                    predicted_value += predicted_free_cash_flow_for_coming_5_years[idx]/(1+average_wacc_of_past_5_years)**(idx+1)
 
-            predicted_value += terminal_value/(1+average_wacc_of_past_5_years)**5
-            self.dcf_valuation = predicted_value / current_outstanding_shares
+                predicted_value += terminal_value/(1+average_wacc_of_past_5_years)**5
+                self.dcf_valuation = predicted_value / current_outstanding_shares
+            except Exception:
+                self.dcf_valuation = -1
 
     def get_dcf_valuation_simple(self):
         if self.dcf_valuation == 0:
             if self.growth is None:
                 self.get_growth_insights()
-            current_outstanding_shares = self.__get_company_value().loc["Number of Shares"][0]
-            average_fcf_growth = self.growth.loc["Free Cash Flow Growth"].mean()
-            latest_fcf = self.cashflow_statement.cashflow_statement.loc["Free Cash Flow"][0]
-            predicted_fcf = [
-                latest_fcf * (1 + average_fcf_growth),
-                latest_fcf * (1 + average_fcf_growth) ** 2,
-                latest_fcf * (1 + average_fcf_growth) ** 3,
-                latest_fcf * (1 + average_fcf_growth) ** 4
-            ]
-            perpectual_growth = 0.025
-            average_wacc_of_past_5_years = self.investing.loc['wacc'][0]
-            terminal_value = predicted_fcf[3] / (average_wacc_of_past_5_years - perpectual_growth)
-            predicted_value = 0
-            for idx, val in enumerate(predicted_fcf):
-                predicted_value += predicted_fcf[idx]/(1+average_wacc_of_past_5_years)**(idx+1)
-            predicted_value += terminal_value/(1+average_wacc_of_past_5_years)**5
-            self.dcf_valuation = predicted_value / current_outstanding_shares
+            try:
+                current_outstanding_shares = self.__get_company_value().loc["Number of Shares"][0]
+                average_fcf_growth = self.growth.loc["Free Cash Flow Growth"].mean()
+                latest_fcf = self.cashflow_statement.cashflow_statement.loc["Free Cash Flow"][0]
+                predicted_fcf = [
+                    latest_fcf * (1 + average_fcf_growth),
+                    latest_fcf * (1 + average_fcf_growth) ** 2,
+                    latest_fcf * (1 + average_fcf_growth) ** 3,
+                    latest_fcf * (1 + average_fcf_growth) ** 4
+                ]
+                perpectual_growth = 0.025
+                average_wacc_of_past_5_years = self.investing.loc['wacc'][0]
+                terminal_value = predicted_fcf[3] / (average_wacc_of_past_5_years - perpectual_growth)
+                predicted_value = 0
+                for idx, val in enumerate(predicted_fcf):
+                    predicted_value += predicted_fcf[idx]/(1+average_wacc_of_past_5_years)**(idx+1)
+                predicted_value += terminal_value/(1+average_wacc_of_past_5_years)**5
+                self.dcf_valuation = predicted_value / current_outstanding_shares
+            except Exception:
+                self.dcf_valuation = -1
 
     def get_summary(self, beta, risk_free_return):
         if self.insights_summary is None:
