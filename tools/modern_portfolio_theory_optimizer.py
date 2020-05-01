@@ -1,5 +1,5 @@
 from core.portfolio import Portfolio
-from core.modern_portfolio_theory_strategy import MPT
+from strategy.modern_portfolio_theory_strategy import MPT
 
 
 def mpt_customize_weights(assets_list, customize_weights, risk_free_annual_yield=None, show_details=True,

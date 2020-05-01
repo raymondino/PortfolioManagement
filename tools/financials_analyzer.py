@@ -1,23 +1,23 @@
-from core.company import *
 import time
 import multiprocessing
+from core.company import *
 
 
-def analyze_company(ticker, risk_free_return, market_return, quarter=False):
+def analyze_company(ticker, risk_free_return, quarter=False, year=5):
     """
     This function analyzes one company's fundamentals
     :param ticker: company stock ticker
     :param risk_free_return: the 3-month t-bill return
-    :param market_return: S&P 500 last 5 year compound average return
     :param quarter: whether to see it's quarter report. If false, will see its annual report
+    :param year: see data back to how many years. 5 is the default
     :return:
     """
-    c = Company(ticker, quarter=quarter)
+    c = Company(ticker, quarter=quarter, year=year)
     c.print_financials()
-    c.get_insights(risk_free_return, market_return)
+    c.print_quantitative_analysis(risk_free_return)
 
 
-def compare_companies(ticker_list, risk_free_return, market_return, quarter=False):
+def compare_companies(ticker_list, risk_free_return, quarter=False):
     """
     This function compares multiple companies' fundamentals, by comparing the latest report and 10 year mean
     :param ticker: company stock ticker

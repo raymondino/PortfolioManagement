@@ -1,4 +1,4 @@
-from tools.company_fundamentals_analyzer import *
+from tools.financials_analyzer import *
 from tools.asset_price_analyzer import *
 from tools.modern_portfolio_theory_optimizer import *
 import os
@@ -29,9 +29,9 @@ def asset_daily_expected_return_risk_scraper():
 
 if __name__ == "__main__":
     # some global parameters
-    risk_free_return = 0.0012
-    market_return = 0.0668
+    year = 5
     quarter = False
+    risk_free_return = 0.0012
 
     # adjust the number to toggle functions
     number = 0
@@ -39,7 +39,7 @@ if __name__ == "__main__":
     # get one company fundamentals
     if number == 0:
         ticker = "HD"
-        analyze_company(ticker, risk_free_return=risk_free_return, market_return=market_return, quarter=quarter)
+        analyze_company(ticker, risk_free_return, quarter=quarter, year=year)
 
     # compare fundamentals for a list of companies, specify tickers or read tickers from a file
     elif number == 1:

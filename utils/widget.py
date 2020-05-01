@@ -1,6 +1,14 @@
 import math
 
 
+def print_table_title(title):
+    print()
+    t = f"========== {title} =========="
+    print("=" * len(t))
+    print(t)
+    print("=" * len(t))
+
+
 def millify(n):
     """
     A helper function to convert large numbers to human-readable numbers
