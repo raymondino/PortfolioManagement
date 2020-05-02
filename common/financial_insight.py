@@ -199,7 +199,7 @@ class FinancialInsight:
                     predicted_value += predicted_free_cash_flow_for_coming_5_years[idx]/(1+average_wacc_of_past_5_years)**(idx+1)
 
                 predicted_value += terminal_value/(1+average_wacc_of_past_5_years)**5
-                self.dcf_valuation = predicted_value / current_outstanding_shares
+                self.dcf_valuation = predicted_value / current_outstanding_shares if current_outstanding_shares != 0 else 0
             except Exception:
                 self.dcf_valuation = -1
 

@@ -11,7 +11,7 @@ if __name__ == "__main__":
     risk_free_return = 0.009
 
     # adjust the number to toggle functions
-    number = 0
+    number = 1
 
     # get fundamentals & insights for a company
     if number == 0:
