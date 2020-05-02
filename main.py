@@ -8,14 +8,14 @@ if __name__ == "__main__":
     # some global parameters
     year = 5
     quarter = False
-    risk_free_return = 0.0012
+    risk_free_return = 0.009
 
     # adjust the number to toggle functions
-    number = 1
+    number = 0
 
     # get fundamentals & insights for a company
     if number == 0:
-        analyze_company("MSFT", risk_free_return, quarter=quarter, year=year)
+        analyze_company("CELGZ", risk_free_return, quarter=quarter, year=year)
 
     # scrape (possibly) all US listed companies' fundamentals
     elif number == 1:
@@ -40,7 +40,7 @@ if __name__ == "__main__":
 
     # get a ticker's daily expected return and risk over past 5 years
     elif number == 3:
-        ticker = "MSFT"
+        ticker = "SFNC"
         print('\t'.join([ticker] + [str(d) for d in Asset(ticker).get_expected_daily_return_and_risk()]) + '\n')
 
     # scrape asset price expected daily return and risk

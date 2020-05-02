@@ -59,9 +59,9 @@ class FinancialInsight:
         self.get_solvency_insights()
         self.get_growth_insights()
         self.get_investing_insights(beta, risk_free_return)
-        self.__print__insights()
         if not self.quarter:
             self.get_dcf_valuation()
+        self.__print__insights()
 
     def get_profitability_insights(self):
         if self.profitability is None:
@@ -81,7 +81,7 @@ class FinancialInsight:
             ]
             self.profitability = self.profitability.sort_index().iloc[:(self.year if not self.quarter else 3 * self.year)].T
             self.profitability.columns = self.balance_sheet.balance_sheet.columns
-            self.profitability = self.profitability.apply(pd.to_numeric, errors='coerce')
+            self.profitability = self.profitability.apply(pd.to_numeric, errors='coerce').fillna(0)
             self.profitability.insert(loc=0, column="mean", value=self.profitability.mean(axis=1))
 
     def get_operation_insights(self):
@@ -99,7 +99,7 @@ class FinancialInsight:
             ]
             self.operation = self.operation.sort_index().iloc[:(self.year if not self.quarter else 3 * self.year)].T
             self.operation.columns = self.balance_sheet.balance_sheet.columns
-            self.operation = self.operation.apply(pd.to_numeric, errors='coerce')
+            self.operation = self.operation.apply(pd.to_numeric, errors='coerce').fillna(0)
             self.operation.insert(loc=0, column="mean", value=self.operation.mean(axis=1))
 
     def get_solvency_insights(self):
@@ -115,7 +115,7 @@ class FinancialInsight:
             ], axis=1)
             self.solvency.columns = ["Liability/Asset Ratio", "Current Ratio", "Acid-test Ratio"]
             self.solvency = self.solvency.sort_index().iloc[:(self.year if not self.quarter else 3 * self.year)].T
-            self.solvency = self.solvency.apply(pd.to_numeric, errors='coerce')
+            self.solvency = self.solvency.apply(pd.to_numeric, errors='coerce').fillna(0)
             self.solvency.columns = self.balance_sheet.balance_sheet.columns
             self.solvency.insert(loc=0, column="mean", value=self.solvency.mean(axis=1))
 
@@ -131,7 +131,7 @@ class FinancialInsight:
                 "Revenue Growth", "Net Income Growth", "Operating Income Growth", "Free Cash Flow Growth"
             ]
             self.growth = self.growth.sort_index().iloc[:(self.year if not self.quarter else 3 * self.year)].T
-            self.growth = self.growth.apply(pd.to_numeric, errors='coerce')
+            self.growth = self.growth.apply(pd.to_numeric, errors='coerce').fillna(0)
             self.growth.columns = self.balance_sheet.balance_sheet.columns
             self.growth.insert(loc=0, column="mean", value=self.growth.mean(axis=1))
 
@@ -151,7 +151,7 @@ class FinancialInsight:
             total_debt = self.balance_sheet.balance_sheet.loc["Short-term debt"] + \
                          self.balance_sheet.balance_sheet.loc["Long-term debt"]
             market_cap = self.__get_company_value().loc["Market Capitalization"]
-            interest_rate = (self.income_statement.income_statement.loc["Interest Expense"] / total_debt).replace([np.inf, -np.inf], 0)
+            interest_rate = (self.income_statement.income_statement.loc["Interest Expense"] / total_debt).replace([np.inf, -np.inf], 0).fillna(0)
             income_tax = self.income_statement.income_statement.loc["Income Tax Expense"] / \
                          self.income_statement.income_statement.loc["Income Before Tax"]
             capm = risk_free_return + float(beta)*(market_return - risk_free_return)
@@ -164,7 +164,7 @@ class FinancialInsight:
             self.investing = pd.concat([wacc, roic, excess_return, economic_profit], axis=1)
             self.investing.columns = ["wacc", "roic", "excess return", "economic profit"]
             self.investing = pd.concat([self.investing.T, dividend])
-            self.investing = self.investing.apply(pd.to_numeric, errors='coerce')
+            self.investing = self.investing.apply(pd.to_numeric, errors='coerce').fillna(0)
             self.investing.insert(loc=0, column="mean", value=self.investing.mean(axis=1))
             self.investing = pd.concat([self.investing, self.company_value])
 
@@ -215,7 +215,8 @@ class FinancialInsight:
                     latest_fcf * (1 + average_fcf_growth),
                     latest_fcf * (1 + average_fcf_growth) ** 2,
                     latest_fcf * (1 + average_fcf_growth) ** 3,
-                    latest_fcf * (1 + average_fcf_growth) ** 4
+                    latest_fcf * (1 + average_fcf_growth) ** 4,
+                    latest_fcf * (1 + average_fcf_growth) ** 5
                 ]
                 perpectual_growth = 0.025
                 average_wacc_of_past_5_years = self.investing.loc['wacc'][0]

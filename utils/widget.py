@@ -29,6 +29,8 @@ def percentify(n):
     :param n: a number
     :return: a percentage string
     """
+    if n == 0:
+        return n
     return '{:.2f}{}'.format(n*100, '%')
 
 
