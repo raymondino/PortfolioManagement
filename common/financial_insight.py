@@ -81,7 +81,7 @@ class FinancialInsight:
             ]
             self.profitability = self.profitability.sort_index().iloc[:(self.year if not self.quarter else 3 * self.year)].T
             self.profitability.columns = self.balance_sheet.balance_sheet.columns
-            self.profitability = self.profitability.apply(pd.to_numeric, errors='coerce').fillna(0)
+            self.profitability = self.profitability.apply(pd.to_numeric, errors='coerce').replace([np.inf, -np.inf], 0).fillna(0)
             self.profitability.insert(loc=0, column="mean", value=self.profitability.mean(axis=1))
 
     def get_operation_insights(self):
@@ -99,7 +99,7 @@ class FinancialInsight:
             ]
             self.operation = self.operation.sort_index().iloc[:(self.year if not self.quarter else 3 * self.year)].T
             self.operation.columns = self.balance_sheet.balance_sheet.columns
-            self.operation = self.operation.apply(pd.to_numeric, errors='coerce').fillna(0)
+            self.operation = self.operation.apply(pd.to_numeric, errors='coerce').replace([np.inf, -np.inf], 0).fillna(0)
             self.operation.insert(loc=0, column="mean", value=self.operation.mean(axis=1))
 
     def get_solvency_insights(self):
@@ -115,7 +115,7 @@ class FinancialInsight:
             ], axis=1)
             self.solvency.columns = ["Liability/Asset Ratio", "Current Ratio", "Acid-test Ratio"]
             self.solvency = self.solvency.sort_index().iloc[:(self.year if not self.quarter else 3 * self.year)].T
-            self.solvency = self.solvency.apply(pd.to_numeric, errors='coerce').fillna(0)
+            self.solvency = self.solvency.apply(pd.to_numeric, errors='coerce').replace([np.inf, -np.inf], 0).fillna(0)
             self.solvency.columns = self.balance_sheet.balance_sheet.columns
             self.solvency.insert(loc=0, column="mean", value=self.solvency.mean(axis=1))
 
@@ -131,7 +131,7 @@ class FinancialInsight:
                 "Revenue Growth", "Net Income Growth", "Operating Income Growth", "Free Cash Flow Growth"
             ]
             self.growth = self.growth.sort_index().iloc[:(self.year if not self.quarter else 3 * self.year)].T
-            self.growth = self.growth.apply(pd.to_numeric, errors='coerce').fillna(0)
+            self.growth = self.growth.apply(pd.to_numeric, errors='coerce').replace([np.inf, -np.inf], 0).fillna(0)
             self.growth.columns = self.balance_sheet.balance_sheet.columns
             self.growth.insert(loc=0, column="mean", value=self.growth.mean(axis=1))
 
@@ -164,7 +164,7 @@ class FinancialInsight:
             self.investing = pd.concat([wacc, roic, excess_return, economic_profit], axis=1)
             self.investing.columns = ["wacc", "roic", "excess return", "economic profit"]
             self.investing = pd.concat([self.investing.T, dividend])
-            self.investing = self.investing.apply(pd.to_numeric, errors='coerce').fillna(0)
+            self.investing = self.investing.apply(pd.to_numeric, errors='coerce').replace([np.inf, -np.inf], 0).fillna(0)
             self.investing.insert(loc=0, column="mean", value=self.investing.mean(axis=1))
             self.investing = pd.concat([self.investing, self.company_value])
 

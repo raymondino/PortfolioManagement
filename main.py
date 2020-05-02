@@ -15,7 +15,7 @@ if __name__ == "__main__":
 
     # get fundamentals & insights for a company
     if number == 0:
-        analyze_company("CELGZ", risk_free_return, quarter=quarter, year=year)
+        analyze_company("NAK", risk_free_return, quarter=quarter, year=year)
 
     # scrape (possibly) all US listed companies' fundamentals
     elif number == 1:
