@@ -30,7 +30,6 @@ class FinancialInsight:
             data = pd.DataFrame.from_dict(data)[ev_items]
             data = data[data.date.isin(self.balance_sheet.balance_sheet.columns)]
             self.company_value = data.set_index('date').T
-            # self.company_value = data.set_index('date', inplace=True, drop=True).sort_index().T # .iloc[:(self.year if not self.quarter else 3*self.year)]
             self.company_value = self.company_value[1:].apply(pd.to_numeric, errors="coerce")
         return self.company_value
 
@@ -48,6 +47,8 @@ class FinancialInsight:
         if not self.quarter:
             print_table_title(f"{self.ticker} DCF")
             print(f"${self.dcf_valuation}")
+            if self.dcf_valuation < 0:
+                print("might be WACC < 0.025, leading to the terminal value to be negative, thus DCF is negative")
 
     def print_financials(self):
         self.balance_sheet.print()
