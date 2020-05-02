@@ -36,5 +36,5 @@ class Company:
             self.financial_insights = FinancialInsight(self.ticker)
         self.financial_insights.get_summary(self.beta, risk_free_return)
         return f"{self.ticker}\t{self.current_market_cap}\t{self.industry}\t{self.sector}\t{self.current_price}\t" + \
-               '\t'.join([str(x) for x in self.financial_insights.insights_summary[(self.ticker, "mean")][0:21].values])\
+               '\t'.join([str(x) for x in self.financial_insights.insights_summary[(self.ticker, "mean")][0:22].values])\
                + f"\t{self.financial_insights.dcf_valuation}\n"

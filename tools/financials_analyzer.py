@@ -53,13 +53,12 @@ def scrape_company_fundamentals(ticker_list, file_path, risk_free_return, quarte
         "expenses portion", "ROE", "ROA", "receivables turnover days", "inventories turnover days",
         "total assets turnover days", "liability/asset ratio", "current ratio", "acid-test ratio", "revenue growth",
         "net income growth", "operating income growth", "free cash flow growth", "wacc", "roic", "excess return", 
-        "stockholders equity growth", "economic profit", "dividend yield", "dividend payout ratio", "dcf"
+        "economic profit", "stockholders equity growth", "dividend yield", "dividend payout ratio", "dcf"
     ]
     with open(file_path, "w") as fp:
         fp.write("\t".join(items)+"\n")
         tickers_failed = []
-        for result in p.imap(company_scraping_worker, [[ticker, risk_free_return, quarter] for
-                                                       ticker in ticker_list]):
+        for result in p.imap(company_scraping_worker, [[ticker, risk_free_return, quarter] for ticker in ticker_list]):
             if len(result) <= 5:
                 tickers_failed.append(result)
             else:
