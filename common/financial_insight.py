@@ -28,8 +28,9 @@ class FinancialInsight:
             ev_items = ["date", "Stock Price", "Number of Shares", "Market Capitalization", "Enterprise Value"]
             data = requests.get(ev_url + ("?period=quarter" if self.quarter else "")).json()["enterpriseValues"]
             data = pd.DataFrame.from_dict(data)[ev_items]
-            self.company_value = data.sort_index().iloc[:(self.year if not self.quarter else 3*self.year)].T
-            self.company_value.columns = self.company_value.iloc[0]
+            data = data[data.date.isin(self.balance_sheet.balance_sheet.columns)]
+            self.company_value = data.set_index('date').T
+            # self.company_value = data.set_index('date', inplace=True, drop=True).sort_index().T # .iloc[:(self.year if not self.quarter else 3*self.year)]
             self.company_value = self.company_value[1:].apply(pd.to_numeric, errors="coerce")
         return self.company_value
 
@@ -163,6 +164,7 @@ class FinancialInsight:
             economic_profit = excess_return * invested_capital
             self.investing = pd.concat([wacc, roic, excess_return, economic_profit], axis=1)
             self.investing.columns = ["wacc", "roic", "excess return", "economic profit"]
+            self.investing["stockholders equity growth"] = self.balance_sheet.balance_sheet.loc["Total shareholders equity growth"]
             self.investing = pd.concat([self.investing.T, dividend])
             self.investing = self.investing.apply(pd.to_numeric, errors='coerce').replace([np.inf, -np.inf], 0).fillna(0)
             self.investing.insert(loc=0, column="mean", value=self.investing.mean(axis=1))

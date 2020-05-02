@@ -11,11 +11,11 @@ if __name__ == "__main__":
     risk_free_return = 0.009
 
     # adjust the number to toggle functions
-    number = 1
+    number = 0
 
     # get fundamentals & insights for a company
     if number == 0:
-        analyze_company("NAK", risk_free_return, quarter=quarter, year=year)
+        analyze_company("CMG", risk_free_return, quarter=quarter, year=year)
 
     # scrape (possibly) all US listed companies' fundamentals
     elif number == 1:
