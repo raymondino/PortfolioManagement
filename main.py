@@ -11,11 +11,11 @@ if __name__ == "__main__":
     risk_free_return = 0.009
 
     # adjust the number to toggle functions
-    number = 0
+    number = 10
 
     # get fundamentals & insights for a company
     if number == 0:
-        analyze_company("WELL", risk_free_return, quarter=quarter, year=year)
+        analyze_company("LGND", risk_free_return, quarter=quarter, year=year)
 
     # scrape (possibly) all US listed companies' fundamentals
     elif number == 1:
@@ -40,8 +40,8 @@ if __name__ == "__main__":
 
     # get a ticker's daily expected return and risk over past 5 years
     elif number == 3:
-        ticker = "SFNC"
-        print('\t'.join([ticker] + [str(d) for d in Asset(ticker).get_expected_daily_return_and_risk()]) + '\n')
+        ticker = "MSFT"
+        print('\t'.join([ticker] + [str(d) for d in Asset(ticker).get_expected_yearly_return_and_risk()]) + '\n')
 
     # scrape asset price expected daily return and risk
     elif number == 4:
@@ -72,16 +72,25 @@ if __name__ == "__main__":
 
     # sharpe ratio-optimized portfolio with MPT
     elif number == 8:
-        asset_tickers = []
+        asset_tickers = ["MSFT", "AAPL", "V", "INTC", "MA"]
         mpt_optimization(asset_tickers, risk_free_return)
 
     # evaluate MPT optimization
     elif number == 9:
-        asset_tickers = []
+        asset_tickers = ["MSFT", "FB", "NEE"]
         mpt_evaluation(asset_tickers, risk_free_return)
 
     # use customized weights to get the risk/sharpe ratio/return of the portfolio
     elif number == 10:
-        asset_tickers = []
-        customize_weights = []
+        asset_tickers = ["MSFT", "AAPL", "V", "INTC", "MA"]
+        customize_weights = [18.46/(18.46+18.25+4.46+3.8+3.5),18.25/(18.46+18.25+4.46+3.8+3.5),4.46/(18.46+18.25+4.46+3.8+3.5),3.8/(18.46+18.25+4.46+3.8+3.5),3.5/(18.46+18.25+4.46+3.8+3.5)]
         mpt_customize_weights(asset_tickers, customize_weights, risk_free_return)
+
+    # plot 20-day risk & return for an asset
+    elif number == 11:
+        # Asset.print_yearly_return_risk(["MKTX", "TPL", "USNA", "ABMD", "LANC", "EXPO", "ASR", "TSM", "DORM",
+        #                                 "MMS", "NTES", "BMI", "SHOO", "LZB", "COLM", "ATHM", "SKX",
+        #                                 "NOAH", "FB", "YY", "GIL", "CTSH", "FNV", "GOOG", "AKAM", "UNF", "FCFS",
+        #                                 "ANET", "MEI", "JOBS"])
+        Asset.print_yearly_return_risk(["MSFT"])
+

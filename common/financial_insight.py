@@ -49,6 +49,7 @@ class FinancialInsight:
             print(f"${self.dcf_valuation}")
             if self.dcf_valuation < 0:
                 print("might be WACC < 0.025, leading to the terminal value to be negative, thus DCF is negative")
+                print("might be FCF or net income is negative, leading to negative future FCF, thus DCF is negative")
 
     def print_financials(self):
         self.balance_sheet.print()

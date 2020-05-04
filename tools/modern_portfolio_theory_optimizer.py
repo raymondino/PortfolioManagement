@@ -48,10 +48,10 @@ def mpt_optimization(assets_list, risk_free_annual_yield=None, show_details=True
     mpt = MPT(risk_free_annual_yield=risk_free_annual_yield)
     show_plots_for_less_than_three_assets = True if len(assets_list) <= 4 else False
     if start_date and end_date is None:
-        ptf.invest(assets_list, mpt, period="max", show_details=show_details,
+        ptf.invest(assets_list, mpt, show_details=show_details,
                    show_plot=show_plot or show_plots_for_less_than_three_assets)
     else:
-        ptf.invest(assets_list, mpt, period="max", start_date=start_date, end_date=end_date, show_details=show_details,
+        ptf.invest(assets_list, mpt, start_date=start_date, end_date=end_date, show_details=show_details,
                    show_plot=show_plot or show_plots_for_less_than_three_assets)
 
 
