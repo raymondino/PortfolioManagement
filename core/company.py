@@ -14,25 +14,33 @@ class Company:
         self.quarter=quarter
         self.year = year
         self.financial_insights = None
-        data = requests.get(f"https://financialmodelingprep.com/api/v3/company/profile/{ticker}").json()["profile"]
-        self.beta = data['beta']
-        self.industry = data['industry']
-        self.current_market_cap = data['mktCap']
-        self.current_price = data['price']
-        self.sector = data['sector']
+        self.beta = 0
+        self.industry = ""
+        self.current_market_cap = ""
+        self.current_price = ""
+        self.sector = ""
         self.stock_average_annual_return = 0
         self.stock_average_annual_risk = 0
         try_times = 0
-        stock = Asset(self.ticker, interval="1mo")
-        stock.get_price()
         try:
             while try_times < 3:
+                data = requests.get(f"https://financialmodelingprep.com/api/v3/company/profile/{ticker}").json()[
+                    "profile"]
+                self.beta = data['beta']
+                self.industry = data['industry']
+                self.current_market_cap = data['mktCap']
+                self.current_price = data['price']
+                self.sector = data['sector']
+                stock = Asset(self.ticker, interval="1mo")
+                stock.get_price()
                 self.beta = stock.get_beta(spy=Company.spy)
                 self.stock_average_annual_return = stock.daily_price_change.mean()[0]*252
                 self.stock_average_annual_risk = stock.daily_price_change.std()[0] * pow(252, 1/2)
                 print(f" -- {self.ticker} got 5 year monthly, annual return & risk")
                 break
-        except:
+        except Exception as e:
+            print(f" -- {self.ticker} cannot get price/profile/beta/return/risk, retrying")
+
             try_times += 1
 
     def print_financials(self):
