@@ -242,12 +242,11 @@ class FinancialInsight:
             self.get_investing_insights(beta, risk_free_return)
             self.get_dcf_valuation()
 
-            p = self.profitability[self.profitability.columns[0:2]]
-            o = self.operation[self.operation.columns[0:2]]
-            s = self.solvency[self.solvency.columns[0:2]]
-            g = self.growth[self.growth.columns[0:2]]
-            i = self.investing[self.investing.columns[0:2]]
-
-            self.insights_summary = pd.concat([p, o, s, g, i], axis=0)
-            self.insights_summary.loc["DCF"] = ["NaN", self.dcf_valuation]
-            self.insights_summary.columns = pd.MultiIndex.from_tuples([(self.ticker, 'mean'), (self.ticker, 'latest')])
+        p = self.profitability[self.profitability.columns[0:2]]
+        o = self.operation[self.operation.columns[0:2]]
+        s = self.solvency[self.solvency.columns[0:2]]
+        g = self.growth[self.growth.columns[0:2]]
+        i = self.investing[self.investing.columns[0:2]]
+        self.insights_summary = pd.concat([p, o, s, g, i], axis=0)
+        self.insights_summary.loc["DCF"] = ["NaN", self.dcf_valuation]
+        self.insights_summary.columns = pd.MultiIndex.from_tuples([(self.ticker, 'mean'), (self.ticker, 'latest')])

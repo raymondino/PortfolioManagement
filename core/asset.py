@@ -4,9 +4,9 @@ import matplotlib.pyplot as plt
 
 
 class Asset:
-    def __init__(self, ticker):
+    def __init__(self, ticker, ohlc="Open"):
         self.ticker = ticker
-        self.ohlc = "Open"
+        self.ohlc = ohlc
         self.daily_price = None
         self.daily_price_change = None
 

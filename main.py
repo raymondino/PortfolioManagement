@@ -11,11 +11,11 @@ if __name__ == "__main__":
     risk_free_return = 0.009
 
     # adjust the number to toggle functions
-    number = 10
+    number = 12
 
     # get fundamentals & insights for a company
     if number == 0:
-        analyze_company("LGND", risk_free_return, quarter=quarter, year=year)
+        analyze_company("TSM", risk_free_return, quarter=quarter, year=year)
 
     # scrape (possibly) all US listed companies' fundamentals
     elif number == 1:
@@ -88,9 +88,13 @@ if __name__ == "__main__":
 
     # plot 20-day risk & return for an asset
     elif number == 11:
-        # Asset.print_yearly_return_risk(["MKTX", "TPL", "USNA", "ABMD", "LANC", "EXPO", "ASR", "TSM", "DORM",
-        #                                 "MMS", "NTES", "BMI", "SHOO", "LZB", "COLM", "ATHM", "SKX",
-        #                                 "NOAH", "FB", "YY", "GIL", "CTSH", "FNV", "GOOG", "AKAM", "UNF", "FCFS",
-        #                                 "ANET", "MEI", "JOBS"])
         Asset.print_yearly_return_risk(["MSFT"])
 
+    # plot company stock price and revenue correlation
+    elif number == 12:
+        c = Company("MSFT")
+        c.plot_stock_price_with_revenue()
+
+    elif number == 13:
+        c = Company("TSM")
+        print(c.serialize_fundamentals_summary(risk_free_return))
