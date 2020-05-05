@@ -6,6 +6,9 @@ from common.financial_insight import *
 
 
 class Company:
+    spy = Asset("SPY", interval="1mo")
+    spy.get_price()
+
     def __init__(self, ticker, quarter=False, year=5):
         self.ticker = ticker
         self.quarter=quarter
@@ -17,6 +20,20 @@ class Company:
         self.current_market_cap = data['mktCap']
         self.current_price = data['price']
         self.sector = data['sector']
+        self.stock_average_annual_return = 0
+        self.stock_average_annual_risk = 0
+        try_times = 0
+        stock = Asset(self.ticker, interval="1mo")
+        stock.get_price()
+        try:
+            while try_times < 3:
+                self.beta = stock.get_beta(spy=Company.spy)
+                self.stock_average_annual_return = stock.daily_price_change.mean()[0]*252
+                self.stock_average_annual_risk = stock.daily_price_change.std()[0] * pow(252, 1/2)
+                print(f" -- {self.ticker} got 5 year monthly, annual return & risk")
+                break
+        except:
+            try_times += 1
 
     def print_financials(self):
         if self.financial_insights is None:
@@ -40,7 +57,8 @@ class Company:
         self.financial_insights.get_summary(self.beta, risk_free_return)
         return f"{self.ticker}\t{self.current_market_cap}\t{self.industry}\t{self.sector}\t{self.current_price}\t" + \
                '\t'.join([str(x) for x in self.financial_insights.insights_summary[(self.ticker, "mean")][0:22].values])\
-               + f"\t{self.financial_insights.dcf_valuation}\n"
+               + f"\t{self.financial_insights.dcf_valuation}\t{self.beta}\t{self.stock_average_annual_return}" \
+                 f"\t{self.stock_average_annual_risk}\n"
 
     def plot_stock_price_with_revenue(self, quarter=True):
         if self.financial_insights is None:
@@ -100,19 +118,4 @@ class Company:
         sns.heatmap(corr, cmap=colormap, annot=True, fmt=".4f")
         plt.xticks(range(len(corr.columns)), corr.columns)
         plt.yticks(range(len(corr.columns)), corr.columns)
-        plt.show()
-
-        # # percentage offset by 4 because usually to compare same quarter performance in different fiscal year.
-        # corr = data.pct_change(4).dropna().applymap(lambda x: 1 if x > 0 else -1)
-        # print(
-        #     "NOTE: this correlation is not pearson correlation, as it's not possible to calculate pearson correlation\n"
-        #     "if std is 0. corr = conv(a, b) / (std(a)*std(b), so if std(a) is 0, this means no meaning. In fact, std(a)\n"
-        #     "can be 0, for example, if your stock price always increase, all the value is 1, thus std is 0")
-        # if corr.shape[0] > 0:
-        #     print(f"price & revenue correlation:{(corr[self.ticker] * corr['Revenue']).sum() / corr.shape[0]}")
-        #     print(f"price & net income correlation:{(corr[self.ticker] * corr['Net Income']).sum() / corr.shape[0]}")
-        #     print(f"price & operating income correlation:{(corr[self.ticker] * corr['Operating Income']).sum() / corr.shape[0]}")
-        #     print(f"price & free cash flow correlation:{(corr[self.ticker] * corr['Free Cash Flow']).sum() / corr.shape[0]}")
-        # else:
-        #     print("ERROR: not enough data to calculate the correlation")
         plt.show()

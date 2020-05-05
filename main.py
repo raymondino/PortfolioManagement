@@ -11,11 +11,11 @@ if __name__ == "__main__":
     risk_free_return = 0.009
 
     # adjust the number to toggle functions
-    number = 12
+    number = 1
 
     # get fundamentals & insights for a company
     if number == 0:
-        analyze_company("TSM", risk_free_return, quarter=quarter, year=year)
+        analyze_company("BABA", risk_free_return, quarter=quarter, year=year)
 
     # scrape (possibly) all US listed companies' fundamentals
     elif number == 1:
@@ -94,7 +94,6 @@ if __name__ == "__main__":
     elif number == 12:
         c = Company("MSFT")
         c.plot_stock_price_with_revenue()
-
     elif number == 13:
-        c = Company("TSM")
-        print(c.serialize_fundamentals_summary(risk_free_return))
+        a = Asset("MSFT")
+        print(a.get_beta())

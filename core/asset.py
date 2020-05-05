@@ -4,15 +4,16 @@ import matplotlib.pyplot as plt
 
 
 class Asset:
-    def __init__(self, ticker, ohlc="Open"):
+    def __init__(self, ticker, ohlc="Open", interval="1d"):
         self.ticker = ticker
         self.ohlc = ohlc
+        self.interval = interval
         self.daily_price = None
         self.daily_price_change = None
 
     def get_price(self, period="5y", start_date=None, end_date=None):
         if self.daily_price or self.daily_price_change is None:
-            data = yf.Ticker(self.ticker).history(period=period, interval="1d", start=start_date, end=end_date,
+            data = yf.Ticker(self.ticker).history(period=period, interval=self.interval, start=start_date, end=end_date,
                                                   auto_adjust=False)[[self.ohlc]].dropna(axis=0, how="all")
             data = data.rename(columns={self.ohlc: self.ticker})
             self.daily_price = data[[self.ticker]][data[self.ticker] > 0.000001]
@@ -23,10 +24,12 @@ class Asset:
             self.get_price(start_date=start)
         return [self.daily_price_change[self.ticker].mean()*252, self.daily_price_change[self.ticker].std()*pow(252, 1/2)]
 
-    def get_beta(self, year=5):
-        spy = Asset("SPY")
-        spy.get_price()
-        if self.daily_price_change is None:
+    # get 5-year monthly beta
+    def get_beta(self, spy=None):
+        if spy is None:
+            spy = Asset("SPY", interval="1mo")
+            spy.get_price()
+        if self.interval != "1mo":
             self.get_price()
         return (spy.daily_price_change["SPY"].cov(self.daily_price_change[self.ticker])/spy.daily_price_change.var())[0]
 
