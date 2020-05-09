@@ -36,11 +36,10 @@ class Company:
                 self.beta = stock.get_beta(spy=Company.spy)
                 self.stock_average_annual_return = stock.daily_price_change.mean()[0]*12  # it's monthly data
                 self.stock_average_annual_risk = stock.daily_price_change.std()[0] * pow(12, 1/2)
-                print(f" -- {self.ticker} got 5 year monthly, annual return & risk")
+                print(f" -- {self.ticker} got 5 year monthly, annual return, risk & beta")
                 break
         except Exception as e:
             print(f" -- {self.ticker} cannot get price/profile/beta/return/risk, retrying")
-
             try_times += 1
 
     def print_financials(self):
@@ -58,6 +57,36 @@ class Company:
             self.financial_insights = FinancialInsight(self.ticker)
         self.financial_insights.get_summary(self.beta, risk_free_return)
         return self.financial_insights.insights_summary
+
+    def get_profitability_summary(self):
+        if self.financial_insights is None:
+            self.financial_insights = FinancialInsight(self.ticker)
+        self.financial_insights.get_profitability_insights()
+        return self.financial_insights.profitability["mean"]
+
+    def get_operating_summary(self):
+        if self.financial_insights is None:
+            self.financial_insights = FinancialInsight(self.ticker)
+        self.financial_insights.get_operation_insights()
+        return self.financial_insights.operation["mean"]
+
+    def get_solvency_summary(self):
+        if self.financial_insights is None:
+            self.financial_insights = FinancialInsight(self.ticker)
+        self.financial_insights.get_solvency_insights()
+        return self.financial_insights.solvency["mean"]
+
+    def get_growth_summary(self):
+        if self.financial_insights is None:
+            self.financial_insights = FinancialInsight(self.ticker)
+        self.financial_insights.get_growth_insights()
+        return self.financial_insights.growth["mean"]
+
+    def get_investing_summary(self, risk_free_return):
+        if self.financial_insights is None:
+            self.financial_insights = FinancialInsight(self.ticker)
+        self.financial_insights.get_investing_insights(self.beta, risk_free_return)
+        return self.financial_insights.investing["mean"]
 
     def serialize_fundamentals_summary(self, risk_free_return):
         if self.financial_insights is None:

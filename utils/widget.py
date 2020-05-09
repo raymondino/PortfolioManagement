@@ -55,6 +55,17 @@ def mix_number(n):
         return percentify(n)
     return millify(n)
 
+
+def rank_number(n):
+    if n == "NaN" or n == "nan" or n == "Nan" or n == 0:
+        return n
+    if n % 1 == 0:
+        return int(n)
+    if -1 < n < 1:
+        return percentify(n)
+    return millify(n)
+
+
 def xnpv(rate, cashflows):
     """
     https://github.com/peliot/XIRR-and-XNPV/blob/master/financial.py

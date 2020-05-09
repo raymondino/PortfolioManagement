@@ -27,22 +27,121 @@ def compare_companies(ticker_list, risk_free_return, quarter=False, year=5):
     :param year: see data back to how many years. 5 is the default
     :return:
     """
-    all_companies_insights = []
+    all_profitability = {}
+    all_operating = {}
+    all_solvency = {}
+    all_growth = {}
+    all_investing = {}
+
     for ticker in ticker_list:
         c = Company(ticker, quarter=quarter)
         try:
-            all_companies_insights.append(c.get_fundamentals_summary(risk_free_return))
+            # From Python 3.6 onwards, the standard dict type maintains insertion order by default
+            all_profitability[ticker] = c.get_profitability_summary()
+            all_operating[ticker] = c.get_operating_summary()
+            all_solvency[ticker] = c.get_solvency_summary()
+            all_growth[ticker] = c.get_growth_summary()
+            all_investing[ticker] = c.get_investing_summary(risk_free_return)[0:7]
         except Exception as e:
+            # need to remove any data of a ticker causing exceptions
+            if ticker in all_profitability:
+                del all_profitability[ticker]
+            if ticker in all_operating:
+                del all_operating[ticker]
+            if ticker in all_solvency:
+                del all_solvency[ticker]
+            if ticker in all_growth:
+                del all_growth[ticker]
+            if ticker in all_investing:
+                del all_investing[ticker]
             print(f"{ticker} cannot scrape - {e}")
-    data = pd.concat(all_companies_insights, axis=1)
-    mean_index = [(t, 'mean') for t in data.columns.get_level_values(0)]  # use data.columns.get_level_values(0) instead of ticker_list because there would potentially be any scraping failure for a company.
-    latest_index = [(t, 'latest') for t in data.columns.get_level_values(0)]
-    print_table_title(f"{ticker_list} Comparision")
-    print(data.applymap(mix_number).to_string())
-    print_table_title(f"{ticker_list} average of Mean")
-    print(pd.DataFrame(data[mean_index].apply(pd.to_numeric, errors='coerce').mean(axis=1)).applymap(mix_number).to_string())
-    print_table_title(f"{ticker_list} average of Latest")
-    print(pd.DataFrame(data[latest_index].apply(pd.to_numeric, errors='coerce').mean(axis=1)).applymap(mix_number).to_string())
+
+    p = pd.concat(list(all_profitability.values()), axis=1)
+    o = pd.concat(list(all_operating.values()), axis=1)
+    s = pd.concat(list(all_solvency.values()), axis=1)
+    g = pd.concat(list(all_growth.values()), axis=1)
+    i = pd.concat(list(all_investing.values()), axis=1)
+
+    p.columns = o.columns = s.columns = g.columns = i.columns = list(all_profitability.keys())
+
+    p, p_new_columns, p_multilevel_index = p.T, [], []
+    o, o_new_columns, o_multilevel_index = o.T, [], []
+    s, s_new_columns, s_multilevel_index = s.T, [], []
+    g, g_new_columns, g_multilevel_index = g.T, [], []
+    i, i_new_columns, i_multilevel_index = i.T, [], []
+
+    for c in p.columns:
+        p_new_columns.append(c)
+        p_new_columns.append(f"{c}_mean")
+        p_new_columns.append(f"{c}_rank")
+        p_multilevel_index.append((c, "value"))
+        p_multilevel_index.append((c, "mean"))
+        p_multilevel_index.append((c, "rank"))
+        p[f"{c}_mean"] = p[c].mean()
+        p[f"{c}_rank"] = p[c].rank(ascending=False if c != "Expenses Portion" else True)
+
+    for c in o.columns:
+        o_new_columns.append(c)
+        o_new_columns.append(f"{c}_mean")
+        o_new_columns.append(f"{c}_rank")
+        o_multilevel_index.append((c, "value"))
+        o_multilevel_index.append((c, "mean"))
+        o_multilevel_index.append((c, "rank"))
+        o[f"{c}_mean"] = o[c].mean()
+        o[f"{c}_rank"] = o[c].rank(ascending=True)
+
+    for c in s.columns:
+        s_new_columns.append(c)
+        s_new_columns.append(f"{c}_mean")
+        s_new_columns.append(f"{c}_rank")
+        s_multilevel_index.append((c, "value"))
+        s_multilevel_index.append((c, "mean"))
+        s_multilevel_index.append((c, "rank"))
+        s[f"{c}_mean"] = s[c].mean()
+        s[f"{c}_rank"] = s[c].rank(ascending=False if c != "Liability/Asset Ratio" else True)
+
+    for c in g.columns:
+        g_new_columns.append(c)
+        g_new_columns.append(f"{c}_mean")
+        g_new_columns.append(f"{c}_rank")
+        g_multilevel_index.append((c, "value"))
+        g_multilevel_index.append((c, "mean"))
+        g_multilevel_index.append((c, "rank"))
+        g[f"{c}_mean"] = g[c].mean()
+        g[f"{c}_rank"] = g[c].rank(ascending=False)
+
+    for c in i.columns:
+        i_new_columns.append(c)
+        i_new_columns.append(f"{c}_mean")
+        i_new_columns.append(f"{c}_rank")
+        i_multilevel_index.append((c, "value"))
+        i_multilevel_index.append((c, "mean"))
+        i_multilevel_index.append((c, "rank"))
+        i[f"{c}_mean"] = i[c].mean()
+        i[f"{c}_rank"] = i[c].rank(ascending=False if c != "wacc" else True)
+
+    p = p[p_new_columns]
+    o = o[o_new_columns]
+    s = s[s_new_columns]
+    g = g[g_new_columns]
+    i = i[i_new_columns]
+
+    p.columns = pd.MultiIndex.from_tuples(p_multilevel_index)
+    o.columns = pd.MultiIndex.from_tuples(o_multilevel_index)
+    s.columns = pd.MultiIndex.from_tuples(s_multilevel_index)
+    g.columns = pd.MultiIndex.from_tuples(g_multilevel_index)
+    i.columns = pd.MultiIndex.from_tuples(i_multilevel_index)
+
+    print_table_title("Profitability Comparison")
+    print(p.applymap(rank_number).to_string())
+    print_table_title("Operation Comparison")
+    print(o.applymap(rank_number).to_string())
+    print_table_title("Solvency Comparison")
+    print(s.applymap(rank_number).to_string())
+    print_table_title("Growth Comparison")
+    print(g.applymap(rank_number).to_string())
+    print_table_title("Investing Comparison")
+    print(i.applymap(rank_number).to_string())
 
 
 def scrape_company_fundamentals(ticker_list, file_path, risk_free_return, quarter=False, year=5):
@@ -89,6 +188,3 @@ def company_scraping_worker(args):
     except Exception:
         print(f"cannot scrape {args[0]}")
         return args[0]
-
-
-

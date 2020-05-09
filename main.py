@@ -15,12 +15,12 @@ if __name__ == "__main__":
 
     # get fundamentals & insights for a company
     if number == 1.1:
-        analyze_company("MSFT", risk_free_return, quarter=quarter, year=year)
+        analyze_company("AAPL", risk_free_return, quarter=quarter, year=year)
 
     # compare fundamentals, specifying ticker_list will overwrite tickers loaded from ticker_list_file
     elif number == 1.2:
         ticker_list_file = r"./data/company_tickers_to_compare_fundamentals.txt"
-        ticker_list = ["MSFT", "GOOG"]
+        ticker_list =["MSFT", "GOOG"]
         if len(ticker_list) == 0 and not os.path.exists(ticker_list_file):
             print(f"ERROR: path does not exist: {ticker_list_file}")
         if len(ticker_list) == 0:
