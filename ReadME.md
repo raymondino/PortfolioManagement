@@ -7,58 +7,54 @@
 
 # How to run
 1. open main.py, go to the main function
-2. set three global variables: ```risk_free_return```, ```market_return```, ```quarter```
+2. set three global variables: ```risk_free_return```, ```year```, ```quarter```
     - ```risk_free_return```: 3-month treasury bill yield. It's updated daily. To get the latest yield, click [here](https://www.treasury.gov/resource-center/data-chart-center/interest-rates/Pages/TextView.aspx?data=yield) 
-    - ```market_return```: this is S&P 500 last 5 year return (either average or compound), use VOO/IVV/SPY last 5 year return is fine
+    - ```year```: how many years back do you want to get the data. max is 10
     - ```quarter```: a boolean value to toggle quarter or annual report for company fundamentals
 3. adjust the ```number``` variable below the global variables to run what you need. 
 4. You will need to read on to know what each number indicates.
 
 # Company Fundamentals Analysis
 - analyze a company's fundamentals
-    - set ```number = 0```
-    - set ```ticker``` to be a company of interest under the code ```if number == 0:```
-    - run main.py
-    - in the console, you will see this company's balance sheet, income statements, cash flow statements up to past 10 years.
-    - also includes insights on company's balance sheet structure, analysis of profitability, operating capabilities, solvency, and investment value
-    - profitability analysis includes:
-        - revenue growth
-        - gross margin
-        - net profit margin
-        - free cash flow margin
-        - return on total assets
-        - research & development expense margin
-        - sales, marketing, administrative expense margin
-        - interest rate paid
-        - income tax rate
-    - operating capabilities analysis includes:
-        - cash turnover days
-        - account receivables turnover days
-        - inventories turnover days
-        - total current assets turnover days
-        - fixed assets turnover days
-        - total assets turnover days
-    - solvency analysis includes:
-        - current ratio
-        - acid-test ratio
-        - times interest earned
-        - total liability/total asset ratio
-    - investment value analysis includes:
-        - weighted average capital cost (wacc)
-        - return on invested capital (roic)
-        - excess return
-        - economic profit
-        - dividend yield
-        - dividend payout ratio
-        - stock price
-        - number of shares
-        - market capitalization
-        - enterprise value
+    - set ```number = 1.1```, fill in the function with a company stock ticker
+    - run ```main.py``` 
+    - it will print historical financials including balance sheet, income statements, & cash flow statements
+    - the console also shows the following analysis:
+        - profitability:
+            - Gross Margin
+            - Net Profit Margin
+            - Expenses Portion
+            - ROE
+            - ROA
+        - operating:
+            - Receivables Turnover Days
+            - Inventories Turnover Days
+            - Total Assets Turnover Days
+        - solvency:
+            - Liability/Asset Ratio
+            - Current Ratio
+            - Acid-test Ratio
+        - growth:
+            - Revenue Growth
+            - Net Income Growth
+            - Operating Income Growth
+            - Free Cash Flow Growth
+        - investing:
+            - wacc
+            - roic
+            - excess return
+            - economic profit
+            - stockholders equity growth
+            - dividendYield
+            - dividendPayoutRatio
+            - Number of Shares
+            - Market Capitalization
+            - Enterprise Value
  
  # Companies' Fundamentals Comparison
- - set ```number = 1```
+ - set ```number = 1.2```
  - either prepare a .txt file containing company tickers at each line, or specify the company tickers in ```ticker_list``` variable
- - run main.py
+ - run ```main.py```
  - it will produce a table comparing different companies profitability, operating capabilities, solvency and investment value
  - the comparison provides both mean and latest values
  - below picture shows an example
@@ -66,7 +62,7 @@
  ![Companies' Fundamentals Comparion](docs/2_companies_fundamentals_comparison.jpg?raw=true "Companies' Fundamentals Comparion")
 
 # Plot Assets Correlations
-- set ```number = 6```
+- set ```number = 3.1```
 - fill in tickers of interested in ```asset_tickers``` variable
 - run main.py
 - it will generate an image describing the pair-wise assets correlations
@@ -78,7 +74,7 @@
     - this slide introduces in great details and a friendly way to help understand & apply MPT optimization
 - #### optimizing risk
     - when optimizing risk, the optimizer will find the optimal weights for the assets to minimize the portfolio risk
-    - set ```number = 7```
+    - set ```number = 3.2```
     - set ```asset_tickers``` to be a list of tickers of interest
     - run main.py
     - in the console, optimal weights for each assets will be provided
@@ -89,7 +85,7 @@
     ![efficient frontier](docs/7_mpt_risk_ef.png?raw=true "efficient frontier")
 - #### optimizing sharpe ratio
     - when optimizing sharpe ratio, the optimizer will find the optimal weights for assets to maximize the portfolio sharpe ratio
-    - set ```number = 8```
+    - set ```number = 3.3```
     - set ```asset_tickers``` to be a list of tickers of interest
     - run main.py
     - in the console, optimal weights for each assets will be provided
@@ -116,8 +112,8 @@
         - apply these weights to the data in year yi, so as to get the best-possible portfolio in that year
     - we compare prediction and ground truth
 - how to run evaluation
-    - set ```number = 9```
-    - fill in ```asset_ticers``` under ```elif number == 9``` with ticker strings of interest
+    - set ```number = 3.4```
+    - fill in ```asset_ticers``` with ticker strings of interest
     - run main.py
     - this will generate 4 pictures
         - risk optimization

@@ -70,55 +70,44 @@ class FinancialInsight:
         if self.profitability is None:
             self.profitability = pd.concat([
                 self.income_statement.data["Gross Margin"],
-                (self.income_statement.data["Net Income"].apply(pd.to_numeric, errors="coerce") /
-                 self.income_statement.data["Revenue"].apply(pd.to_numeric, errors="coerce")),
-                (self.income_statement.data["Operating Expenses"].apply(pd.to_numeric, errors="coerce") /
-                 self.income_statement.data["Revenue"].apply(pd.to_numeric, errors="coerce")),
-                (self.income_statement.data["Net Income"].apply(pd.to_numeric, errors="coerce") /
-                 self.balance_sheet.data["Total shareholders equity"].apply(pd.to_numeric, errors="coerce")),
-                (self.income_statement.data["Net Income"].apply(pd.to_numeric, errors="coerce") /
-                 self.balance_sheet.data["Total assets"].apply(pd.to_numeric, errors="coerce"))
+                self.income_statement.data["Net Income"] / self.income_statement.data["Revenue"],
+                self.income_statement.data["Operating Expenses"] / self.income_statement.data["Revenue"],
+                self.income_statement.data["Net Income"] / self.balance_sheet.data["Total shareholders equity"],
+                self.income_statement.data["Net Income"] / self.balance_sheet.data["Total assets"]
             ], axis=1)
             self.profitability.columns = [
                 "Gross Margin", "Net Income Margin", "Expenses Portion", "ROE", "ROA"
             ]
             self.profitability = self.profitability.sort_index().iloc[:(self.year if not self.quarter else 3 * self.year)].T
             self.profitability.columns = self.balance_sheet.balance_sheet.columns
-            self.profitability = self.profitability.apply(pd.to_numeric, errors='coerce').replace([np.inf, -np.inf], 0).fillna(0)
+            self.profitability = self.profitability.replace([np.inf, -np.inf], 0).fillna(0)
             self.profitability.insert(loc=0, column="mean", value=self.profitability.mean(axis=1))
 
     def get_operation_insights(self):
         if self.operation is None:
             self.operation = pd.concat([
-                365 / (self.income_statement.data["Revenue"].apply(pd.to_numeric, errors="coerce") /
-                       self.balance_sheet.data["Receivables"].rolling(2).mean().shift(-1)),
-                365 / (self.income_statement.data["Cost of Revenue"].apply(pd.to_numeric, errors="coerce") /
-                       self.balance_sheet.data["Inventories"].rolling(2).mean().shift(-1)),
-                356 / (self.income_statement.data["Revenue"].apply(pd.to_numeric, errors="coerce") /
-                       self.balance_sheet.data["Total assets"].rolling(2).mean().shift(-1))
+                365 / (self.income_statement.data["Revenue"] / self.balance_sheet.data["Receivables"].rolling(2).mean().shift(-1)),
+                365 / (self.income_statement.data["Cost of Revenue"] / self.balance_sheet.data["Inventories"].rolling(2).mean().shift(-1)),
+                356 / (self.income_statement.data["Revenue"] / self.balance_sheet.data["Total assets"].rolling(2).mean().shift(-1))
             ], axis=1)
             self.operation.columns = [
-                "Receivables Turnover Period", "Inventories Turnover Period", "Total Assets Turnover Period"
+                "Receivables Turnover Days", "Inventories Turnover Days", "Total Assets Turnover Days"
             ]
             self.operation = self.operation.sort_index().iloc[:(self.year if not self.quarter else 3 * self.year)].T
             self.operation.columns = self.balance_sheet.balance_sheet.columns
-            self.operation = self.operation.apply(pd.to_numeric, errors='coerce').replace([np.inf, -np.inf], 0).fillna(0)
+            self.operation = self.operation.replace([np.inf, -np.inf], 0).fillna(0)
             self.operation.insert(loc=0, column="mean", value=self.operation.mean(axis=1))
 
     def get_solvency_insights(self):
         if self.solvency is None:
             self.solvency = pd.concat([
-                (self.balance_sheet.data["Total liabilities"].apply(pd.to_numeric, errors="coerce") /
-                 self.balance_sheet.data["Total assets"].apply(pd.to_numeric, errors="coerce")),
-                (self.balance_sheet.data["Total current assets"].apply(pd.to_numeric, errors="coerce") /
-                 self.balance_sheet.data["Total current liabilities"].apply(pd.to_numeric, errors="coerce")),
-                ((self.balance_sheet.data["Total current assets"].apply(pd.to_numeric, errors="coerce") -
-                  self.balance_sheet.data["Inventories"].apply(pd.to_numeric, errors="coerce")) /
-                 self.balance_sheet.data["Total current liabilities"].apply(pd.to_numeric, errors="coerce"))
+                self.balance_sheet.data["Total liabilities"] / self.balance_sheet.data["Total assets"],
+                self.balance_sheet.data["Total current assets"] / self.balance_sheet.data["Total current liabilities"],
+                (self.balance_sheet.data["Total current assets"] - self.balance_sheet.data["Inventories"]) / self.balance_sheet.data["Total current liabilities"]
             ], axis=1)
             self.solvency.columns = ["Liability/Asset Ratio", "Current Ratio", "Acid-test Ratio"]
             self.solvency = self.solvency.sort_index().iloc[:(self.year if not self.quarter else 3 * self.year)].T
-            self.solvency = self.solvency.apply(pd.to_numeric, errors='coerce').replace([np.inf, -np.inf], 0).fillna(0)
+            self.solvency = self.solvency.replace([np.inf, -np.inf], 0).fillna(0)
             self.solvency.columns = self.balance_sheet.balance_sheet.columns
             self.solvency.insert(loc=0, column="mean", value=self.solvency.mean(axis=1))
 
@@ -126,15 +115,15 @@ class FinancialInsight:
         if self.growth is None:
             self.growth = pd.concat([
                 self.income_statement.data["Revenue Growth"],
-                self.income_statement.data["Net Income"].apply(pd.to_numeric, errors="coerce").pct_change(-1).dropna()*np.sign(self.income_statement.data["Net Income"].apply(pd.to_numeric, errors="coerce").dropna().shift(periods=-1).dropna()),
-                self.income_statement.data["Operating Income"].apply(pd.to_numeric, errors="coerce").pct_change(-1),
-                self.cashflow_statement.data["Free Cash Flow"].apply(pd.to_numeric, errors="coerce").pct_change(-1)
+                self.income_statement.data["Net Income"].pct_change(-1).dropna()*np.sign(self.income_statement.data["Net Income"].shift(periods=-1).dropna()),
+                self.income_statement.data["Operating Income"].pct_change(-1).dropna()*np.sign(self.income_statement.data["Operating Income"].shift(periods=-1).dropna()),
+                self.cashflow_statement.data["Free Cash Flow"].pct_change(-1).dropna()*np.sign(self.cashflow_statement.data["Free Cash Flow"].shift(periods=-1).dropna())
             ], axis=1)
             self.growth.columns = [
                 "Revenue Growth", "Net Income Growth", "Operating Income Growth", "Free Cash Flow Growth"
             ]
             self.growth = self.growth.sort_index().iloc[:(self.year if not self.quarter else 3 * self.year)].T
-            self.growth = self.growth.apply(pd.to_numeric, errors='coerce').replace([np.inf, -np.inf], 0).fillna(0)
+            self.growth = self.growth.replace([np.inf, -np.inf], 0).fillna(0)
             self.growth.columns = self.balance_sheet.balance_sheet.columns
             self.growth.insert(loc=0, column="mean", value=self.growth.mean(axis=1))
 
