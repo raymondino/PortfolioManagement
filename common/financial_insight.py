@@ -150,7 +150,7 @@ class FinancialInsight:
             wacc = total_debt/(total_debt+market_cap)*interest_rate*(1-income_tax)+market_cap/(total_debt+market_cap)*capm
             invested_capital = total_debt + self.balance_sheet.balance_sheet.loc["Total shareholders equity"]
             roic = self.income_statement.income_statement.loc["Net Income"]/invested_capital
-            excess_return = roic - wacc
+            excess_return = roic - wacc.apply(lambda x : x if x >= 0 else -x)
 
             economic_profit = excess_return * invested_capital
             self.investing = pd.concat([wacc, roic, excess_return, economic_profit], axis=1)
