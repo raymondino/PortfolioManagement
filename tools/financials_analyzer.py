@@ -34,8 +34,15 @@ def compare_companies(ticker_list, risk_free_return, quarter=False, year=5):
             all_companies_insights.append(c.get_fundamentals_summary(risk_free_return))
         except Exception as e:
             print(f"{ticker} cannot scrape - {e}")
+    data = pd.concat(all_companies_insights, axis=1)
+    mean_index = [(t, 'mean') for t in data.columns.get_level_values(0)]  # use data.columns.get_level_values(0) instead of ticker_list because there would potentially be any scraping failure for a company.
+    latest_index = [(t, 'latest') for t in data.columns.get_level_values(0)]
     print_table_title(f"{ticker_list} Comparision")
-    print(pd.concat(all_companies_insights, axis=1).applymap(mix_number).to_string())
+    print(data.applymap(mix_number).to_string())
+    print_table_title(f"{ticker_list} average of Mean")
+    print(pd.DataFrame(data[mean_index].apply(pd.to_numeric, errors='coerce').mean(axis=1)).applymap(mix_number).to_string())
+    print_table_title(f"{ticker_list} average of Latest")
+    print(pd.DataFrame(data[latest_index].apply(pd.to_numeric, errors='coerce').mean(axis=1)).applymap(mix_number).to_string())
 
 
 def scrape_company_fundamentals(ticker_list, file_path, risk_free_return, quarter=False, year=5):

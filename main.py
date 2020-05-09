@@ -11,11 +11,11 @@ if __name__ == "__main__":
     risk_free_return = 0.009
 
     # adjust the number to toggle functions
-    number = 1
+    number = 0
 
     # get fundamentals & insights for a company
     if number == 0:
-        analyze_company("BABA", risk_free_return, quarter=quarter, year=year)
+        analyze_company("CDE", risk_free_return, quarter=quarter, year=year)
 
     # scrape (possibly) all US listed companies' fundamentals
     elif number == 1:
@@ -30,7 +30,8 @@ if __name__ == "__main__":
     # compare fundamentals, specifying ticker_list will overwrite tickers loaded from ticker_list_file
     elif number == 2:
         ticker_list_file = r"./data/company_tickers_to_compare_fundamentals.txt"
-        ticker_list = ["T", "VZ"]
+        ticker_list = ["NEM", "GOLD", "AEM", "KL", "AU", "KGC", "GFI", "BTG", "BVN", "AUY", "NG", "AGI", "SSRM", "PVG", "CDE", "HMY", "IAG", "HL", "EGO", "EQX", "GSS"]
+        # ticker_list = ["NEM", "GOLD"]
         if len(ticker_list) == 0 and not os.path.exists(ticker_list_file):
             print(f"ERROR: path does not exist: {ticker_list_file}")
         if len(ticker_list) == 0:
@@ -38,10 +39,12 @@ if __name__ == "__main__":
                 ticker_list = set([ticker.strip() for ticker in fp.readlines()])
         compare_companies(ticker_list, risk_free_return)
 
-    # get a ticker's daily expected return and risk over past 5 years
+    # get a list of  tickers' annualized return and risk over past 5 years
     elif number == 3:
-        ticker = "MSFT"
-        print('\t'.join([ticker] + [str(d) for d in Asset(ticker).get_expected_yearly_return_and_risk()]) + '\n')
+        ticker_list = ["NEM", "GOLD", "AEM", "KL", "AU", "KGC", "GFI", "BTG", "BVN", "AUY", "NG", "AGI", "SSRM", "PVG", "CDE", "HMY", "IAG", "HL", "EGO", "EQX", "GSS"]
+        print('\t'.join(['ticker', 'annualized return', 'annualized risk', 'beta']))
+        for t in ticker_list:
+            print('\t'.join([t] + [str(round(d, 4)) for d in Asset(t).get_expected_yearly_return_risk_beta()]))
 
     # scrape asset price expected daily return and risk
     elif number == 4:
@@ -60,7 +63,7 @@ if __name__ == "__main__":
 
     # plot portfolio assets correlation
     elif number == 6:
-        asset_tickers = []
+        asset_tickers = ["KL", "GLD", "IVV"]
         p = Portfolio()
         p.invest(asset_tickers)
         p.plot_asset_correlation()
@@ -72,12 +75,12 @@ if __name__ == "__main__":
 
     # sharpe ratio-optimized portfolio with MPT
     elif number == 8:
-        asset_tickers = ["MSFT", "AAPL", "V", "INTC", "MA"]
+        asset_tickers = ["KL", "GLD", "MSFT"]
         mpt_optimization(asset_tickers, risk_free_return)
 
     # evaluate MPT optimization
     elif number == 9:
-        asset_tickers = ["MSFT", "FB", "NEE"]
+        asset_tickers = ["KL", "GLD", "MSFT"]
         mpt_evaluation(asset_tickers, risk_free_return)
 
     # use customized weights to get the risk/sharpe ratio/return of the portfolio
@@ -92,8 +95,11 @@ if __name__ == "__main__":
 
     # plot company stock price and revenue correlation
     elif number == 12:
-        c = Company("MSFT")
+        c = Company("KL")
         c.plot_stock_price_with_revenue()
+
     elif number == 13:
-        a = Asset("MSFT")
-        print(a.get_beta())
+        # a = Asset("MSFT")
+        # print(a.get_beta())
+        c = Company("BT")
+        print(c.serialize_fundamentals_summary(risk_free_return))

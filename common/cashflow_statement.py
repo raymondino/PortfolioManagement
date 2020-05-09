@@ -37,14 +37,14 @@ class CashflowStatement:
         self.data = requests.get(self.cf_url + ("?period=quarter" if self.quarter else "")).json()['financials']
         self.data = pd.DataFrame.from_dict(self.data)[CashflowStatement.cf_full_items]
         self.data = self.data[(self.data.date.str.len() == 10)]
-        self.data["Net Cash Flow"] = (self.data['Operating Cash Flow'].apply(pd.to_numeric, errors="coerce") +
-                                      self.data["Investing Cash flow"].apply(pd.to_numeric, errors="coerce") +
-                                      self.data["Financing Cash Flow"].apply(pd.to_numeric, errors="coerce"))
+
+        columns_to_number = [c for c in CashflowStatement.cf_full_items if c != "date"]
+        self.data[columns_to_number] = self.data[columns_to_number].apply(pd.to_numeric, errors="coerce")
+        self.data["Net Cash Flow"] = self.data[['Operating Cash Flow',"Investing Cash flow","Financing Cash Flow"]].sum(axis=1)
+
         self.cashflow_statement = self.data[CashflowStatement.cf_print_items]
         self.cashflow_statement.set_index('date', inplace=True, drop=True)
-        self.cashflow_statement = self.cashflow_statement.sort_index(ascending=False).iloc[
-                                  :(self.year if not self.quarter else 3 * self.year)].T
-        self.cashflow_statement = self.cashflow_statement.apply(pd.to_numeric, errors='coerce')
+        self.cashflow_statement = self.cashflow_statement.sort_index(ascending=False).iloc[:(self.year if not self.quarter else 3 * self.year)].T
 
     def print(self):
         print_table_title(f"{self.ticker} Cash Flow Statements")

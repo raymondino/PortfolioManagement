@@ -34,8 +34,8 @@ class Company:
                 stock = Asset(self.ticker, interval="1mo")
                 stock.get_price()
                 self.beta = stock.get_beta(spy=Company.spy)
-                self.stock_average_annual_return = stock.daily_price_change.mean()[0]*252
-                self.stock_average_annual_risk = stock.daily_price_change.std()[0] * pow(252, 1/2)
+                self.stock_average_annual_return = stock.daily_price_change.mean()[0]*12  # it's monthly data
+                self.stock_average_annual_risk = stock.daily_price_change.std()[0] * pow(12, 1/2)
                 print(f" -- {self.ticker} got 5 year monthly, annual return & risk")
                 break
         except Exception as e:
@@ -116,10 +116,12 @@ class Company:
         for i, v in enumerate(ys):
             ax.text(i - .35,
                       v / ys[i] + 1000,
-                      f"{ys[i]/1000000000} B",
+                      f"{round(ys[i]/1000000000, 4)} B",
                       fontsize=8,
                       fontweight='bold',
                       color='white')
+        plt.title(f"{self.ticker} Price and Revenue")
+
         corr = data.corr()
         fig, ax = plt.subplots()
         colormap = sns.diverging_palette(220, 10, as_cmap=True)

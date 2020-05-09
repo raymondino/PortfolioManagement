@@ -126,7 +126,7 @@ class FinancialInsight:
         if self.growth is None:
             self.growth = pd.concat([
                 self.income_statement.data["Revenue Growth"],
-                self.income_statement.data["Net Income"].apply(pd.to_numeric, errors="coerce").pct_change(-1),
+                self.income_statement.data["Net Income"].apply(pd.to_numeric, errors="coerce").pct_change(-1).dropna()*np.sign(self.income_statement.data["Net Income"].apply(pd.to_numeric, errors="coerce").dropna().shift(periods=-1).dropna()),
                 self.income_statement.data["Operating Income"].apply(pd.to_numeric, errors="coerce").pct_change(-1),
                 self.cashflow_statement.data["Free Cash Flow"].apply(pd.to_numeric, errors="coerce").pct_change(-1)
             ], axis=1)

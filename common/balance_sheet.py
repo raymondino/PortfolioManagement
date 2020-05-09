@@ -1,5 +1,6 @@
 import pandas as pd
 import requests
+import numpy as np
 from utils.widget import *
 
 
@@ -43,7 +44,8 @@ class BalanceSheet():
         "Property, Plant & Equipment Net", "Goodwill and Intangible Assets", "Long-term investments",
         "Total non-current assets", "Total assets", "Payables", "Short-term debt", "Total current liabilities",
         "Long-term debt", "Deferred revenue", "Total non-current liabilities", "Total liabilities",
-        "Other comprehensive income", "Retained earnings (deficit)", "Total shareholders equity"
+        "Other comprehensive income", "Retained earnings (deficit)", "Total shareholders equity",
+        "Total shareholders equity growth"
     ]
 
     def __init__(self, ticker, quarter=False, year=5):
@@ -54,13 +56,14 @@ class BalanceSheet():
         self.data = requests.get(self.bs_url + ("?period=quarter" if quarter else "")).json()['financials']
         self.data = pd.DataFrame.from_dict(self.data)[BalanceSheet.bs_full_items]
         self.data = self.data[(self.data.date.str.len() == 10)]
+
+        columns_to_number = [c for c in BalanceSheet.bs_full_items if c != "date"]
+        self.data[columns_to_number] = self.data[columns_to_number].apply(pd.to_numeric, errors="coerce")
+        self.data["Total shareholders equity growth"] = self.data["Total shareholders equity"].pct_change(-1).dropna()*np.sign(self.data["Total shareholders equity"].shift(periods=-1).dropna())
+
         self.balance_sheet = self.data[BalanceSheet.bs_print_items]
         self.balance_sheet.set_index('date', inplace=True, drop=True)
-        self.balance_sheet = self.balance_sheet.apply(pd.to_numeric, errors='coerce')
-        self.balance_sheet["Total shareholders equity growth"] = \
-            self.balance_sheet["Total shareholders equity"].pct_change(-1)
-        self.balance_sheet = self.balance_sheet.sort_index(ascending=False).iloc[
-                             :(self.year if not self.quarter else 3 * self.year)].T
+        self.balance_sheet = self.balance_sheet.sort_index(ascending=False).iloc[:(self.year if not self.quarter else 3 * self.year)].T
 
     def print(self):
         print_table_title(f"{self.ticker} Balance Sheet")

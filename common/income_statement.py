@@ -1,5 +1,6 @@
 import pandas as pd
 import requests
+import numpy as np
 from utils.widget import *
 
 
@@ -41,7 +42,7 @@ class IncomeStatement:
     ]
 
     is_print_items = [
-        "date", "Revenue", "Cost of Revenue", "Gross Profit", "R&D Expenses", "SG&A Expense",
+        "date", "Revenue", "Cost of Revenue", "Gross Profit", "R&D Expenses", "SG&A Expense", "Operating Expenses",
         "Operating Income", "Interest Expense", "Income Before Tax", "Income Tax Expense", "Net Income"
     ]
 
@@ -53,15 +54,17 @@ class IncomeStatement:
         self.data = requests.get(self.is_url + ("?period=quarter" if quarter else "")).json()["financials"]
         self.data = pd.DataFrame.from_dict(self.data)[IncomeStatement.is_full_items]
         self.data = self.data[(self.data.date.str.len() == 10)]
-        self.data["Revenue Growth"] = self.data["Revenue"].apply(pd.to_numeric, errors="coerce").pct_change(-1)
-        self.data["Income Before Tax"] = self.data["Income Tax Expense"].apply(pd.to_numeric, errors="coerce") + \
-                                         self.data["Net Income"].apply(pd.to_numeric, errors="coerce")
+
+        columns_to_number = [c for c in IncomeStatement.is_full_items if c != "date"]
+        self.data[columns_to_number] = self.data[columns_to_number].apply(pd.to_numeric, errors="coerce")
+        self.data["Revenue Growth"] = self.data["Revenue"].pct_change(-1).dropna()*np.sign(self.data["Revenue"].shift(periods=-1).dropna())
+        self.data["Income Before Tax"] = self.data["Income Tax Expense"] + self.data["Net Income"]
+
         self.income_statement = self.data[IncomeStatement.is_print_items]
         self.income_statement.set_index('date', inplace=True, drop=True)
-        self.income_statement = self.income_statement.sort_index(ascending=False).iloc[
-                                :(self.year if not self.quarter else 3 * self.year)].T
-        self.income_statement = self.income_statement.apply(pd.to_numeric, errors="coerce")
+        self.income_statement = self.income_statement.sort_index(ascending=False).iloc[:(self.year if not self.quarter else 3 * self.year)].T
 
     def print(self, year=5):
         print_table_title(f"{self.ticker} Income Statements")
         print(self.income_statement.applymap(millify).to_string(max_rows=100, max_cols=100))
+        print("NOTE: Operating Expenses = R&D Expenses + SG&A Expenses + other expenses (compensation)")

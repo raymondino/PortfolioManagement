@@ -147,7 +147,7 @@ class MPT:
 
     def evaluate(self, asset_list):
         # step 0: get the inception date for the latest listed (最后一个上市的) asset in the portfolio
-        self.portfolio.invest(asset_list)
+        self.portfolio.invest(asset_list, period='max')
         inception_date_of_the_latest_listed_asset = self.portfolio.full_asset_price_history.index[0].strftime('%Y-%m-%d')
 
         # step 1: generate a series of dates for evaluation, each with a period of one year
