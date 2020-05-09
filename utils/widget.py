@@ -1,6 +1,14 @@
 import math
 
 
+def print_table_title(title):
+    print()
+    t = f"========== {title} =========="
+    print("=" * len(t))
+    print(t)
+    print("=" * len(t))
+
+
 def millify(n):
     """
     A helper function to convert large numbers to human-readable numbers
@@ -21,6 +29,8 @@ def percentify(n):
     :param n: a number
     :return: a percentage string
     """
+    if n == 0:
+        return n
     return '{:.2f}{}'.format(n*100, '%')
 
 
@@ -39,6 +49,8 @@ def mix_number(n):
     :param n: a number
     :return: a percentage or a human readable number
     """
+    if n == "NaN" or n == "nan" or n == "Nan" or n == 0:
+        return n
     if -10 <= n <= 10:
         return percentify(n)
     return millify(n)

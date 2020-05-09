@@ -1,5 +1,5 @@
 from core.portfolio import Portfolio
-from core.modern_portfolio_theory_strategy import MPT
+from strategy.modern_portfolio_theory_strategy import MPT
 
 
 def mpt_customize_weights(assets_list, customize_weights, risk_free_annual_yield=None, show_details=True,
@@ -31,7 +31,7 @@ def mpt_customize_weights(assets_list, customize_weights, risk_free_annual_yield
                    show_plot=show_plot or show_plots_for_less_than_three_assets)
 
 
-def mpt_optimization(assets_list, risk_free_annual_yield=None, show_details=True, show_plot=False,
+def mpt_optimization(assets_list, risk_free_annual_yield=None, show_details=True, show_plot=False, period='max',
                      start_date=None, end_date=None):
     """
     This function uses the modern portfolio theory to optimize the portfolio.
@@ -46,12 +46,12 @@ def mpt_optimization(assets_list, risk_free_annual_yield=None, show_details=True
     """
     ptf = Portfolio()
     mpt = MPT(risk_free_annual_yield=risk_free_annual_yield)
-    show_plots_for_less_than_three_assets = True if len(assets_list) <= 3 else False
+    show_plots_for_less_than_three_assets = True if len(assets_list) <= 4 else False
     if start_date and end_date is None:
-        ptf.invest(assets_list, mpt, period="max", show_details=show_details,
+        ptf.invest(assets_list, mpt, show_details=show_details,
                    show_plot=show_plot or show_plots_for_less_than_three_assets)
     else:
-        ptf.invest(assets_list, mpt, period="max", start_date=start_date, end_date=end_date, show_details=show_details,
+        ptf.invest(assets_list, mpt, start_date=start_date, end_date=end_date, show_details=show_details,
                    show_plot=show_plot or show_plots_for_less_than_three_assets)
 
 
