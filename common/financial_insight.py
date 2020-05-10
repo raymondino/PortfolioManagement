@@ -1,4 +1,3 @@
-import numpy as np
 from common.balance_sheet import *
 from common.income_statement import *
 from common.cashflow_statement import *

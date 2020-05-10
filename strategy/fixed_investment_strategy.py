@@ -1,4 +1,4 @@
-from core.snapshot import Snapshot
+from common.snapshot import Snapshot
 from utils.widget import xirr
 import numpy as np
 

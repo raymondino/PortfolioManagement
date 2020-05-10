@@ -1,4 +1,3 @@
-import os
 from tools.financials_analyzer import *
 from tools.asset_price_analyzer import *
 from tools.modern_portfolio_theory_optimizer import *
@@ -11,7 +10,7 @@ if __name__ == "__main__":
     risk_free_return = 0.009
 
     # adjust the number to toggle functions
-    number = 1.2
+    number = 2.3
 
     # get fundamentals & insights for a company
     if number == 1.1:
@@ -40,7 +39,7 @@ if __name__ == "__main__":
 
     # get a list of  tickers' annualized return and risk over past 5 years
     elif number == 2.1:
-        ticker_list = ["NEM", "GOLD", "AEM", "KL", "AU", "KGC", "GFI", "BTG", "BVN", "AUY", "NG", "AGI", "SSRM", "PVG", "CDE", "HMY", "IAG", "HL", "EGO", "EQX", "GSS"]
+        ticker_list = ["IVV"]
         print('\t'.join(['ticker', 'annualized return', 'annualized risk', 'beta']))
         for t in ticker_list:
             print('\t'.join([t] + [str(round(d, 4)) for d in Asset(t).get_expected_yearly_return_risk_beta()]))
@@ -60,9 +59,9 @@ if __name__ == "__main__":
         only_show = []  # to only plot certain assets
         plot_assets_in_return_risk_plane(asset_return_risk_file_path, set(highlights), set(only_show))
 
-    # plot portfolio assets correlation
+    # plot portfolio assets correlation using the latest 5 years of daily price
     elif number == 3.1:
-        asset_tickers = ["KL", "GLD", "IVV"]
+        asset_tickers = ["MSFT","VEEV","CPRT","MKTX","MASI","KL","PDEX"]
         p = Portfolio()
         p.invest(asset_tickers)
         p.plot_asset_correlation()
@@ -74,12 +73,12 @@ if __name__ == "__main__":
 
     # sharpe ratio-optimized portfolio with MPT
     elif number == 3.3:
-        asset_tickers = ["KL", "GLD", "MSFT"]
+        asset_tickers = ["MSFT","VEEV","CPRT","MKTX","MASI","KL","PDEX"]
         mpt_optimization(asset_tickers, risk_free_return)
 
     # evaluate MPT optimization
     elif number == 3.4:
-        asset_tickers = ["KL", "GLD", "MSFT"]
+        asset_tickers = ["MSFT","VEEV","CPRT","MKTX","MASI","KL","PDEX"]
         mpt_evaluation(asset_tickers, risk_free_return)
 
     # use customized weights to get the risk/sharpe ratio/return of the portfolio

@@ -1,4 +1,5 @@
 import math
+from scipy.optimize import optimize
 
 
 def print_table_title(title):
