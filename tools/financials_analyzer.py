@@ -78,7 +78,7 @@ def compare_companies(ticker_list, risk_free_return, quarter=False, year=5):
         p_multilevel_index.append((c, "mean"))
         p_multilevel_index.append((c, "rank"))
         p[f"{c}_mean"] = p[c].mean()
-        p[f"{c}_rank"] = p[c].rank(ascending=False if c != "Expenses Portion" else True)
+        p[f"{c}_rank"] = p[c].rank(ascending=False if c not in {"Expenses Margin", "Cost Margin"} else True)
 
     for c in o.columns:
         o_new_columns.append(c)
@@ -155,8 +155,8 @@ def scrape_company_fundamentals(ticker_list, file_path, risk_free_return, quarte
     """
     p = multiprocessing.Pool(multiprocessing.cpu_count())
     items = [
-        "ticker", "market cap", "industry", "sector", "current price", "gross margin", "net income margin",
-        "expenses portion", "ROE", "ROA", "receivables turnover days", "inventories turnover days",
+        "ticker", "market cap", "industry", "sector", "current price", "gross margin", "cost margin",
+        "net income margin", "expenses margin", "ROE", "ROA", "receivables turnover days", "inventories turnover days",
         "total assets turnover days", "liability/asset ratio", "current ratio", "acid-test ratio", "revenue growth",
         "net income growth", "operating income growth", "free cash flow growth", "wacc", "roic", "excess return", 
         "economic profit", "stockholders equity growth", "dividend yield", "dividend payout ratio", "dcf", "beta",

@@ -22,8 +22,9 @@
     - the console also shows the following analysis:
         - profitability:
             - Gross Margin
+            - Cost Margin
             - Net Profit Margin
-            - Expenses Portion
+            - Expenses Margin
             - ROE
             - ROA
         - operating:
