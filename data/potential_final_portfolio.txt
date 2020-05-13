@@ -1,0 +1,32 @@
+C:\Users\ruya\AppData\Local\Continuum\anaconda3\envs\quant\python.exe C:/Users/ruya/Documents/PortfolioManagement/main.py
+======MPT optimization========
+investing assets: ['MSFT', 'ZTS', 'VEEV', 'MKTX', 'WST', 'MASI', 'KL', 'EXPO', 'PDEX']
+risk optimized weights: [0.0866, 0.204, 0.0, 0.1244, 0.189, 0.0782, 0.051, 0.1992, 0.0676]
+risk optimized yearly return: 0.35395
+risk optimized yearly risk: 0.170226
+==============================
+sharpe ratio optimized weights: [0.0854, 0.0778, 0.0595, 0.1418, 0.0934, 0.2147, 0.1596, 0.0463, 0.1215]
+sharpe ratio optimized yearly return: 0.455887
+sharpe ratio optimized yearly risk: 0.194614
+sharpe ratio: 2.342391
+==============================
+allocate 10% risk free asset: yearly return = 0.40642, yearly risk = 0.173207
+allocate 15% risk free asset: yearly return = 0.383935, yearly risk = 0.163476
+allocate 20% risk free asset: yearly return = 0.36145, yearly risk = 0.153745
+allocate 25% risk free asset: yearly return = 0.338965, yearly risk = 0.144015
+allocate 30% risk free asset: yearly return = 0.31648, yearly risk = 0.134284
+allocate 35% risk free asset: yearly return = 0.293995, yearly risk = 0.124553
+allocate 40% risk free asset: yearly return = 0.27151, yearly risk = 0.114822
+allocate 45% risk free asset: yearly return = 0.249025, yearly risk = 0.105092
+allocate 50% risk free asset: yearly return = 0.22654, yearly risk = 0.095361
+allocate 55% risk free asset: yearly return = 0.204054, yearly risk = 0.08563
+allocate 60% risk free asset: yearly return = 0.181569, yearly risk = 0.0759
+allocate 65% risk free asset: yearly return = 0.159084, yearly risk = 0.066169
+allocate 70% risk free asset: yearly return = 0.136599, yearly risk = 0.056438
+allocate 75% risk free asset: yearly return = 0.114114, yearly risk = 0.046707
+allocate 80% risk free asset: yearly return = 0.091629, yearly risk = 0.036977
+allocate 85% risk free asset: yearly return = 0.069144, yearly risk = 0.027246
+allocate 90% risk free asset: yearly return = 0.046659, yearly risk = 0.017515
+allocate 95% risk free asset: yearly return = 0.024174, yearly risk = 0.007785
+
+Process finished with exit code 0

@@ -10,16 +10,16 @@ if __name__ == "__main__":
     risk_free_return = 0.009
 
     # adjust the number to toggle functions
-    number = 2.3
+    number = 1.2
 
     # get fundamentals & insights for a company
     if number == 1.1:
-        analyze_company("AAPL", risk_free_return, quarter=quarter, year=year)
+        analyze_company("GFI", risk_free_return, quarter=quarter, year=year)
 
     # compare fundamentals, specifying ticker_list will overwrite tickers loaded from ticker_list_file
     elif number == 1.2:
         ticker_list_file = r"./data/company_tickers_to_compare_fundamentals.txt"
-        ticker_list =["MSFT", "GOOG"]
+        ticker_list = ["NEM","GOLD","AEM","KL"]
         if len(ticker_list) == 0 and not os.path.exists(ticker_list_file):
             print(f"ERROR: path does not exist: {ticker_list_file}")
         if len(ticker_list) == 0:
@@ -39,10 +39,10 @@ if __name__ == "__main__":
 
     # get a list of  tickers' annualized return and risk over past 5 years
     elif number == 2.1:
-        ticker_list = ["IVV"]
+        ticker_list = ["SPY"]
         print('\t'.join(['ticker', 'annualized return', 'annualized risk', 'beta']))
         for t in ticker_list:
-            print('\t'.join([t] + [str(round(d, 4)) for d in Asset(t).get_expected_yearly_return_risk_beta()]))
+            print('\t'.join([t] + [str(round(d, 4)) for d in Asset(t).get_expected_yearly_return_risk_beta(start='2015-5-8')]))
 
     # scrape asset price expected daily return and risk
     elif number == 2.2:
@@ -55,13 +55,13 @@ if __name__ == "__main__":
     # plot a list of tickers return & risk from a tsv file with 3 columns: ticker, return, and risk
     elif number == 2.3:
         asset_return_risk_file_path = r"./data/asset_daily_return_risk.tsv"
-        highlights = []  # to highlight certain assets
+        highlights =  ['MSFT', 'ZTS', 'VEEV', 'MKTX', 'WST', 'MASI', 'KL', 'EXPO', 'PDEX']  # to highlight certain assets
         only_show = []  # to only plot certain assets
         plot_assets_in_return_risk_plane(asset_return_risk_file_path, set(highlights), set(only_show))
 
     # plot portfolio assets correlation using the latest 5 years of daily price
     elif number == 3.1:
-        asset_tickers = ["MSFT","VEEV","CPRT","MKTX","MASI","KL","PDEX"]
+        asset_tickers = ['MSFT', "AAPL", "AMZN", "GOOG", "FB"]
         p = Portfolio()
         p.invest(asset_tickers)
         p.plot_asset_correlation()
@@ -73,18 +73,19 @@ if __name__ == "__main__":
 
     # sharpe ratio-optimized portfolio with MPT
     elif number == 3.3:
-        asset_tickers = ["MSFT","VEEV","CPRT","MKTX","MASI","KL","PDEX"]
+        asset_tickers = ["AAPL", "GOOG", "FB"]
+        # asset_tickers = ['MSFT', 'ZTS', 'VEEV', 'MKTX', 'WST', 'MASI', 'KL', 'EXPO', 'PDEX']
         mpt_optimization(asset_tickers, risk_free_return)
 
     # evaluate MPT optimization
     elif number == 3.4:
-        asset_tickers = ["MSFT","VEEV","CPRT","MKTX","MASI","KL","PDEX"]
+        asset_tickers = ['MSFT', "AAPL", "AMZN", "GOOG", "FB"]
         mpt_evaluation(asset_tickers, risk_free_return)
 
     # use customized weights to get the risk/sharpe ratio/return of the portfolio
     elif number == 3.5:
-        asset_tickers = ["MSFT", "AAPL", "V", "INTC", "MA"]
-        customize_weights = [18.46/(18.46+18.25+4.46+3.8+3.5),18.25/(18.46+18.25+4.46+3.8+3.5),4.46/(18.46+18.25+4.46+3.8+3.5),3.8/(18.46+18.25+4.46+3.8+3.5),3.5/(18.46+18.25+4.46+3.8+3.5)]
+        asset_tickers =  ['MSFT', "AAPL", "AMZN", "GOOG", "FB"]
+        customize_weights = [0.554, 0, 0.446, 0, 0]
         mpt_customize_weights(asset_tickers, customize_weights, risk_free_return)
 
     # plot 20-day risk & return for an asset
@@ -93,8 +94,8 @@ if __name__ == "__main__":
 
     # plot company stock price and revenue correlation
     elif number == 4.2:
-        c = Company("KL")
-        c.plot_stock_price_with_revenue()
+        c = Company("ZTS")
+        c.plot_stock_price_with_revenue(quarter=False)
 
     elif number == 5:
         # a = Asset("MSFT")

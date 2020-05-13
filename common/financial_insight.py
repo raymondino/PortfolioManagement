@@ -69,13 +69,14 @@ class FinancialInsight:
         if self.profitability is None:
             self.profitability = pd.concat([
                 self.income_statement.data["Gross Margin"],
+                self.income_statement.data["Cost of Revenue"] / self.income_statement.data["Revenue"],
                 self.income_statement.data["Net Income"] / self.income_statement.data["Revenue"],
                 self.income_statement.data["Operating Expenses"] / self.income_statement.data["Revenue"],
                 self.income_statement.data["Net Income"] / self.balance_sheet.data["Total shareholders equity"],
                 self.income_statement.data["Net Income"] / self.balance_sheet.data["Total assets"]
             ], axis=1)
             self.profitability.columns = [
-                "Gross Margin", "Net Income Margin", "Expenses Portion", "ROE", "ROA"
+                "Gross Margin", "Cost Margin", "Net Income Margin", "Expenses Margin", "ROE", "ROA"
             ]
             self.profitability = self.profitability.sort_index().iloc[:(self.year if not self.quarter else 3 * self.year)].T
             self.profitability.columns = self.balance_sheet.balance_sheet.columns
