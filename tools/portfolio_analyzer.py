@@ -1,8 +1,6 @@
 import os
 import json
-import pandas as pd
-import quantstats as qs
-from core.asset import *
+import numpy as np
 from core.portfolio import *
 
 
@@ -32,3 +30,12 @@ def get_portfolio_performance(json_file_path, report_file_path):
         p = assets.sum(axis=1).pct_change().dropna()
         qs.reports.html(p, "IVV", title=report_name, output=report_file_path)
 
+
+def back_test_portfolio(asset_tickers, asset_weights, report_name, report_file_path, initial_fund=10000):
+    p = Portfolio()
+    p.invest(asset_tickers, customized_weights=asset_tickers)
+    p.asset_shares = np.ceil([x*initial_fund for x in asset_weights] / p.full_asset_price_history.iloc[0])
+    book_value = p.full_asset_price_history*p.asset_shares
+    print(f"invested           {book_value.iloc[0].sum()}")
+    print(f"current book value {book_value.iloc[book_value.shape[0]-1].sum()}")
+    qs.reports.html(book_value.sum(axis=1).pct_change().dropna(), "IVV", title=report_name, output=report_file_path)

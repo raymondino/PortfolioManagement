@@ -1,5 +1,6 @@
 import random
 import yfinance as yf
+import quantstats as qs
 import matplotlib.pyplot as plt
 
 
@@ -10,6 +11,11 @@ class Asset:
         self.interval = interval
         self.daily_price = None
         self.daily_price_change = None
+
+    def report_asset_stock_performance(self, report_path):
+        if self.daily_price_change is None:
+            self.get_price()
+        qs.reports.html(self.daily_price_change[self.ticker], "IVV", title=f"{self.ticker} 5Y performance", output=report_path)
 
     def get_price(self, period="5y", start_date=None, end_date=None):
         data = yf.Ticker(self.ticker).history(period=period, interval=self.interval, start=start_date, end=end_date,

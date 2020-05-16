@@ -11,7 +11,7 @@ if __name__ == "__main__":
     risk_free_return = 0.009
 
     # adjust the number to toggle functions
-    number = 4.3
+    number = 3.6
 
     # get fundamentals & insights for a company
     if number == 1.1:
@@ -91,6 +91,25 @@ if __name__ == "__main__":
         # customize_weights = [0.0962, 0.0798, 0.1476, 0.1049, 0.2263, 0.1623, 0.0584, 0.1245]
         mpt_customize_weights(asset_tickers, customize_weights, risk_free_return, start_date="2020-05-08", end_date="2020-05-14")
 
+    # back test portfolio with assets and their specified weights
+    elif number == 3.6:
+        asset_tickers = ['ZTS', 'VEEV', 'MKTX', 'WST', 'MASI', 'KL', 'EXPO', 'SGOL']
+        customized_weights = [0.0962, 0.0798, 0.1476, 0.1049, 0.2263, 0.1623, 0.0584, 0.1245]
+        back_test_portfolio(asset_tickers, customized_weights, "first blood backtest", r"./data/portfolio/firstblood_backtest_report.html")
+
+        asset_tickers = ["MSFT", "AMZN"]
+        customized_weights = [0.554, 0.446]
+        back_test_portfolio(asset_tickers, customized_weights, "mega tech backtest", r"./data/portfolio/megatech_backtest_report.html")
+
+    # generate portfolio reports
+    elif number == 3.7:
+        # this requires you to generate a portfolio json file
+        portfolio_file = r"./data/portfolio/first_blood_20200511.json"
+        get_portfolio_performance(portfolio_file, r"./data/portfolio/first_blood_20200511.html")
+
+        portfolio_file = r"./data/portfolio/mega_tech_20200511.json"
+        get_portfolio_performance(portfolio_file, r"./data/portfolio/mega_tech_20200511.html")
+
     # plot 20-day risk & return for an asset
     elif number == 4.1:
         Asset.print_yearly_return_risk(["MSFT"])
@@ -100,15 +119,10 @@ if __name__ == "__main__":
         c = Company("ZTS")
         c.plot_stock_price_with_revenue(quarter=False)
 
-    # generate portfolio reports
+    # plot a single stock performance
     elif number == 4.3:
-        # this requires you to generate a portfolio json file
-
-        # portfolio_file = r"./data/portfolio/first_blood_20200511.json"
-        # get_portfolio_performance(portfolio_file, r"./data/portfolio/first_blood_20200511.html")
-
-        portfolio_file = r"./data/portfolio/mega_tech_20200511.json"
-        get_portfolio_performance(portfolio_file, r"./data/portfolio/mega_tech_20200511.html")
+        ticker = "AMZN"
+        Asset(ticker).report_asset_stock_performance(report_path=rf"./data/portfolio/{ticker}_report.html")
 
     elif number == 5:
         # a = Asset("MSFT")
