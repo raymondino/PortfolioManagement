@@ -23,7 +23,7 @@ class FinancialInsight:
 
     def __get_company_value(self):
         if self.company_value is None:
-            ev_url = f"https://financialmodelingprep.com/api/v3/enterprise-value/{self.ticker}"
+            ev_url = f"https://financialmodelingprep.com/api/v3/enterprise-value/{self.ticker.replace('-', '.')}"
             ev_items = ["date", "Stock Price", "Number of Shares", "Market Capitalization", "Enterprise Value"]
             data = requests.get(ev_url + ("?period=quarter" if self.quarter else "")).json()["enterpriseValues"]
             data = pd.DataFrame.from_dict(data)[ev_items]
@@ -132,7 +132,7 @@ class FinancialInsight:
         if self.investing is None:
             market_return = 0.1
             data = []
-            json = requests.get(f"https://financialmodelingprep.com/api/v3/financial-ratios/{self.ticker}").json()["ratios"]
+            json = requests.get(f"https://financialmodelingprep.com/api/v3/financial-ratios/{self.ticker.replace('-', '.')}").json()["ratios"]
             for x in json:
                 data.append(
                     {"date": x["date"], "dividendYield": x["investmentValuationRatios"]["dividendYield"],

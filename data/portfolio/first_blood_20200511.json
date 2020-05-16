@@ -1,0 +1,60 @@
+{
+    "name": "first_blood_20200511",
+    "date": "2020-05-11",
+    "assets": [
+        {
+            "ticker": "EXPO",
+            "shares": 9,
+            "price": 66.11,
+            "action": "buy"
+        },
+        {
+            "ticker": "KL",
+            "shares": 38,
+            "price": 42.96,
+            "action": "buy"
+        },
+        {
+            "ticker": "MASI",
+            "shares": 9,
+            "price": 245.99,
+            "action": "buy"
+        },
+        {
+            "ticker": "MKTX",
+            "shares": 3,
+            "price": 506.06,
+            "action": "buy"
+        },
+        {
+            "ticker": "PDEX",
+            "shares": 69,
+            "price": 17.83,
+            "action": "buy"
+        },
+        {
+            "ticker": "SGOL",
+            "shares": 75,
+            "price": 16.66,
+            "action": "buy"
+        },
+        {
+            "ticker": "VEEV",
+            "shares": 4,
+            "price": 195.46,
+            "action": "buy"
+        },
+        {
+            "ticker": "WST",
+            "shares": 5,
+            "price": 204.29,
+            "action": "buy"
+        },
+        {
+            "ticker": "ZTS",
+            "shares": 8,
+            "price": 126.2,
+            "action": "buy"
+        }
+    ]
+}

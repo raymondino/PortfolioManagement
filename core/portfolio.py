@@ -10,6 +10,8 @@ class Portfolio:
         self.asset_weights = []
         self.full_asset_price_history = None
         self.full_asset_price_history_change = None
+        self.total_cost = 0
+        self.book_value = None
 
     def invest(self, asset_tickers, strategy=None, customized_weights=None, show_details=False, show_plot=False,
                period=None, start_date=None, end_date=None):
