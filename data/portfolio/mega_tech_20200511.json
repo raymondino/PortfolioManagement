@@ -1,0 +1,18 @@
+{
+    "name": "mega_tech_20200511",
+    "date": "2020-05-11",
+    "assets": [
+        {
+            "ticker": "AMZN",
+            "shares": 2,
+            "price": 2400.92,
+            "action": "buy"
+        },
+        {
+            "ticker": "MSFT",
+            "shares": 30,
+            "price": 184.63,
+            "action": "buy"
+        }
+    ]
+}
