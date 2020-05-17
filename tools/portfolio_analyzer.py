@@ -33,7 +33,7 @@ def get_portfolio_performance(json_file_path, report_file_path):
 
 def back_test_portfolio(asset_tickers, asset_weights, report_name, report_file_path, initial_fund=10000):
     p = Portfolio()
-    p.invest(asset_tickers, customized_weights=asset_tickers)
+    p.invest(asset_tickers, customized_weights=asset_tickers, ohlc="Close")
     p.asset_shares = np.ceil([x*initial_fund for x in asset_weights] / p.full_asset_price_history.iloc[0])
     book_value = p.full_asset_price_history*p.asset_shares
     print(f"invested           {book_value.iloc[0].sum()}")

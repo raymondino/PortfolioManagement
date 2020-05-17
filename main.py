@@ -74,9 +74,9 @@ if __name__ == "__main__":
 
     # sharpe ratio-optimized portfolio with MPT
     elif number == 3.3:
-        # asset_tickers = ['ZTS', 'VEEV', 'MKTX', 'WST', 'MASI', 'KL', 'EXPO', "SGOL"]
-        asset_tickers = ["MSFT", "BRK-B", "AMZN"]
-        mpt_optimization(asset_tickers, risk_free_return, start_date="2015-05-08", end_date="2020-02-01")
+        asset_tickers = ['ZTS', 'VEEV', 'MKTX', 'WST', 'MASI', 'KL', 'EXPO', "SGOL"]
+        # asset_tickers = ["MSFT", "BRK-B", "AMZN"]
+        mpt_optimization(asset_tickers, risk_free_return)
 
     # evaluate MPT optimization
     elif number == 3.4:
@@ -94,7 +94,8 @@ if __name__ == "__main__":
     # back test portfolio with assets and their specified weights
     elif number == 3.6:
         asset_tickers = ['ZTS', 'VEEV', 'MKTX', 'WST', 'MASI', 'KL', 'EXPO', 'SGOL']
-        customized_weights = [0.0962, 0.0798, 0.1476, 0.1049, 0.2263, 0.1623, 0.0584, 0.1245]
+        # customized_weights = [0.0962, 0.0798, 0.1476, 0.1049, 0.2263, 0.1623, 0.0584, 0.1245]
+        customized_weights = [0.1162, 0.0725, 0.1338, 0.1005, 0.2384, 0.1253, 0.0241, 0.1891]
         back_test_portfolio(asset_tickers, customized_weights, "first blood backtest", r"./data/portfolio/firstblood_backtest_report.html")
 
         asset_tickers = ["MSFT", "AMZN"]
@@ -121,7 +122,7 @@ if __name__ == "__main__":
 
     # plot a single stock performance
     elif number == 4.3:
-        ticker = "AMZN"
+        ticker = "KL"
         Asset(ticker).report_asset_stock_performance(report_path=rf"./data/portfolio/{ticker}_report.html")
 
     elif number == 5:

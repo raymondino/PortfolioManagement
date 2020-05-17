@@ -14,10 +14,10 @@ class Portfolio:
         self.book_value = None
 
     def invest(self, asset_tickers, strategy=None, customized_weights=None, show_details=False, show_plot=False,
-               period=None, start_date=None, end_date=None):
+               period=None, start_date=None, end_date=None, ohlc="Open"):
         self.assets = []
         for ticker in asset_tickers:
-            a = Asset(ticker)
+            a = Asset(ticker, ohlc=ohlc)
             if period is not None:
                 a.get_price(period=period)
             elif start_date or end_date is not None:
