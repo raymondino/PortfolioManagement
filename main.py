@@ -11,7 +11,7 @@ if __name__ == "__main__":
     risk_free_return = 0.009
 
     # adjust the number to toggle functions
-    number = 3.3
+    number = 3.4
 
     # get fundamentals & insights for a company
     if number == 1.1:
@@ -38,7 +38,7 @@ if __name__ == "__main__":
             ticker_list = set([t.strip() for t in fp.readlines()])
         scrape_company_fundamentals(ticker_list, scraping_result_file, risk_free_return)
 
-    # get a list of  tickers' annualized return and risk over past 5 years
+    # get a list of tickers' annualized return and risk over past 5 years
     elif number == 2.1:
         ticker_list = ["EXPO"]
         print('\t'.join(['ticker', 'annualized return', 'annualized risk', 'beta']))
@@ -74,7 +74,7 @@ if __name__ == "__main__":
 
     # sharpe ratio-optimized portfolio with MPT
     elif number == 3.3:
-        asset_tickers = ['MSFT', "AAPL", "AMZN", "GOOG", "FB"]
+        asset_tickers = ['ZTS', 'VEEV', 'MKTX', 'WST', 'MASI', 'KL', 'EXPO', "SGOL", "TSLA"]
         mpt_optimization(asset_tickers, risk_free_return)
 
     # evaluate MPT optimization
