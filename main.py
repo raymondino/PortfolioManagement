@@ -11,7 +11,7 @@ if __name__ == "__main__":
     risk_free_return = 0.009
 
     # adjust the number to toggle functions
-    number = 3.6
+    number = 3.4
 
     # get fundamentals & insights for a company
     if number == 1.1:
@@ -38,7 +38,7 @@ if __name__ == "__main__":
             ticker_list = set([t.strip() for t in fp.readlines()])
         scrape_company_fundamentals(ticker_list, scraping_result_file, risk_free_return)
 
-    # get a list of  tickers' annualized return and risk over past 5 years
+    # get a list of tickers' annualized return and risk over past 5 years
     elif number == 2.1:
         ticker_list = ["EXPO"]
         print('\t'.join(['ticker', 'annualized return', 'annualized risk', 'beta']))
@@ -69,13 +69,12 @@ if __name__ == "__main__":
 
     # risk-optimized portfolio with MPT
     elif number == 3.2:
-        asset_tickers = []
+        asset_tickers = ['ZTS', 'VEEV', 'MKTX', 'WST', 'MASI', 'KL', 'EXPO', "SGOL"]
         mpt_optimization(asset_tickers)
 
     # sharpe ratio-optimized portfolio with MPT
     elif number == 3.3:
-        asset_tickers = ['ZTS', 'VEEV', 'MKTX', 'WST', 'MASI', 'KL', 'EXPO', "SGOL"]
-        # asset_tickers = ["MSFT", "BRK-B", "AMZN"]
+        asset_tickers = ['ZTS', 'VEEV', 'MKTX', 'WST', 'MASI', 'KL', 'EXPO', "SGOL", "TSLA"]
         mpt_optimization(asset_tickers, risk_free_return)
 
     # evaluate MPT optimization
@@ -85,31 +84,29 @@ if __name__ == "__main__":
 
     # use customized weights to get the risk/sharpe ratio/return of the portfolio
     elif number == 3.5:
-        # asset_tickers = ['ZTS', 'VEEV', 'MKTX', 'WST', 'MASI', 'KL', 'EXPO', 'SGOL']
-        asset_tickers = ["CDE", "HL", "SSRM"]
-        customize_weights = [0.33, 0.34, 0.33]
-        # customize_weights = [0.0962, 0.0798, 0.1476, 0.1049, 0.2263, 0.1623, 0.0584, 0.1245]
-        mpt_customize_weights(asset_tickers, customize_weights, risk_free_return, start_date="2020-05-08", end_date="2020-05-14")
+        asset_tickers = ['ZTS', 'VEEV', 'MKTX', 'WST', 'MASI', 'KL', 'EXPO', 'SGOL']
+        customize_weights = [0.0962, 0.0798, 0.1476, 0.1049, 0.2263, 0.1623, 0.0584, 0.1245]
+        mpt_customize_weights(asset_tickers, customize_weights, risk_free_return)
 
     # back test portfolio with assets and their specified weights
     elif number == 3.6:
         asset_tickers = ['ZTS', 'VEEV', 'MKTX', 'WST', 'MASI', 'KL', 'EXPO', 'SGOL']
         # customized_weights = [0.0962, 0.0798, 0.1476, 0.1049, 0.2263, 0.1623, 0.0584, 0.1245]
         customized_weights = [0.1162, 0.0725, 0.1338, 0.1005, 0.2384, 0.1253, 0.0241, 0.1891]
-        back_test_portfolio(asset_tickers, customized_weights, "first blood backtest", r"./data/portfolio/firstblood_backtest_report.html")
+        back_test_portfolio(asset_tickers, customized_weights, "first blood backtest", r"./data/portfolio/firstblood_backtest_report.html", pow(1+risk_free_return, 1/365)-1)
 
         asset_tickers = ["MSFT", "AMZN"]
         customized_weights = [0.554, 0.446]
-        back_test_portfolio(asset_tickers, customized_weights, "mega tech backtest", r"./data/portfolio/megatech_backtest_report.html")
+        back_test_portfolio(asset_tickers, customized_weights, "mega tech backtest", r"./data/portfolio/megatech_backtest_report.html", pow(1+risk_free_return, 1/365)-1)
 
     # generate portfolio reports
     elif number == 3.7:
         # this requires you to generate a portfolio json file
         portfolio_file = r"./data/portfolio/first_blood_20200511.json"
-        get_portfolio_performance(portfolio_file, r"./data/portfolio/first_blood_20200511.html")
+        get_portfolio_performance(portfolio_file, r"./data/portfolio/first_blood_20200511.html", pow(1+risk_free_return, 1/365)-1)
 
         portfolio_file = r"./data/portfolio/mega_tech_20200511.json"
-        get_portfolio_performance(portfolio_file, r"./data/portfolio/mega_tech_20200511.html")
+        get_portfolio_performance(portfolio_file, r"./data/portfolio/mega_tech_20200511.html", pow(1+risk_free_return, 1/365)-1)
 
     # plot 20-day risk & return for an asset
     elif number == 4.1:
@@ -122,7 +119,7 @@ if __name__ == "__main__":
 
     # plot a single stock performance
     elif number == 4.3:
-        ticker = "KL"
+        ticker = "MSFT"
         Asset(ticker).report_asset_stock_performance(report_path=rf"./data/portfolio/{ticker}_report.html")
 
     elif number == 5:
