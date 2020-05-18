@@ -24,22 +24,39 @@ class MPT:
         yearly_sharpe_ratio = (yearly_expected_return - self.risk_free_daily_yield) / yearly_risk
         return yearly_expected_return, yearly_risk, yearly_sharpe_ratio
 
+    def get_sortino_ratio(self, weights):
+        portfolio_daily_return = (weights * self.portfolio.full_asset_price_history_change).sum(axis=1)
+        sortino_optimized_portfolio_mean_return = portfolio_daily_return.mean() - self.risk_free_daily_yield
+        sortino_optimized_portfolio_risk = np.sqrt(((portfolio_daily_return[portfolio_daily_return < self.risk_free_daily_yield]-self.risk_free_daily_yield)**2).sum() / len(portfolio_daily_return))
+        sortino_ratio = (sortino_optimized_portfolio_mean_return / sortino_optimized_portfolio_risk)
+        return sortino_optimized_portfolio_mean_return, sortino_ratio
+
     def plot_efficient_frontier(self, show_details, show_plots, customized_weights=None):
         # step 1: calculate the man-variance for the optimized portfolio
         risk_optimized_weights = self.__optimize_risk() if customized_weights == None or len(customized_weights) == 0 else customized_weights
         risk_optimized_portfolio_mean = np.matmul(np.array(risk_optimized_weights), self.portfolio.full_asset_price_history_change.mean().to_numpy().transpose())
         risk_optimized_portfolio_risk = np.sqrt(np.matmul(np.matmul(np.array(risk_optimized_weights), self.portfolio.get_assets_covariance().to_numpy()), np.array(risk_optimized_weights).transpose()))
-        sharpe_optmized_weights = self.__optimize_sharpe_ratio() if customized_weights == None or len(customized_weights) == 0 else customized_weights
-        sharpe_optimized_portfolio_mean = np.matmul(np.array(sharpe_optmized_weights), self.portfolio.full_asset_price_history_change.mean().to_numpy().transpose())
-        sharpe_optimized_portfolio_risk = np.sqrt(np.matmul(np.matmul(np.array(sharpe_optmized_weights), self.portfolio.get_assets_covariance().to_numpy()), np.array(sharpe_optmized_weights).transpose()))
+
+        sharpe_optimized_weights = self.__optimize_sharpe_ratio() if customized_weights == None or len(customized_weights) == 0 else customized_weights
+        sharpe_optimized_portfolio_mean = np.matmul(np.array(sharpe_optimized_weights), self.portfolio.full_asset_price_history_change.mean().to_numpy().transpose())
+        sharpe_optimized_portfolio_risk = np.sqrt(np.matmul(np.matmul(np.array(sharpe_optimized_weights), self.portfolio.get_assets_covariance().to_numpy()), np.array(sharpe_optimized_weights).transpose()))
+
+        sortino_optimized_weights = self.__optimize_sortino_ratio() if customized_weights == None or len(customized_weights) == 0 else customized_weights
+        portfolio_daily_return = (sortino_optimized_weights * self.portfolio.full_asset_price_history_change).sum(axis=1)
+        sortino_optimized_portfolio_mean = portfolio_daily_return.mean() - self.risk_free_daily_yield
+        sortino_optimized_portfolio_risk = np.sqrt(((portfolio_daily_return[portfolio_daily_return < self.risk_free_daily_yield]-self.risk_free_daily_yield)**2).sum() / len(portfolio_daily_return))
 
         # step 2: report
         if show_details:
             print("======MPT optimization========")
             print(f"investing assets: {[asset.ticker for asset in self.portfolio.assets]}")
             print(f"risk optimized weights: {list(np.around(np.array(risk_optimized_weights),4))}")
-            print(f"risk optimized yearly return: {round(risk_optimized_portfolio_mean*252, 6)}")  # there about 252 trading days per year
-            print(f"risk optimized yearly risk: {round(risk_optimized_portfolio_risk*np.sqrt(252), 6)}")
+            print(f"risk optimized annualized return: {round(risk_optimized_portfolio_mean*252, 6)}")  # there about 252 trading days per year
+            print(f"risk optimized annualized risk: {round(risk_optimized_portfolio_risk*np.sqrt(252), 6)}")
+            print("==============================")
+            print(f"sortino ratio optimized weights: {list(np.around(np.array(sortino_optimized_weights), 4))}")
+            print(f"sortino ratio daily: {round((sortino_optimized_portfolio_mean / sortino_optimized_portfolio_risk), 6)}")
+            print(f"sortino ratio annualized: {round((sortino_optimized_portfolio_mean * pow(252, 1/2) / sortino_optimized_portfolio_risk), 6)}")
 
         # step 3: if allocating risk free asset
         mean1 = []
@@ -50,29 +67,29 @@ class MPT:
                 std1.append((1-w) * sharpe_optimized_portfolio_risk)
             if show_details:
                 print("==============================")
-                print(f"sharpe ratio optimized weights: {list(np.around(np.array(sharpe_optmized_weights), 4))}")
-                print(f"sharpe ratio optimized yearly return: {round(sharpe_optimized_portfolio_mean * 252, 6)}")
-                print(f"sharpe ratio optimized yearly risk: {round(sharpe_optimized_portfolio_risk * np.sqrt(252), 6)}")
+                print(f"sharpe ratio optimized weights: {list(np.around(np.array(sharpe_optimized_weights), 4))}")
+                print(f"sharpe ratio optimized annualized return: {round(sharpe_optimized_portfolio_mean * 252, 6)}")
+                print(f"sharpe ratio optimized annualized risk: {round(sharpe_optimized_portfolio_risk * np.sqrt(252), 6)}")
                 print(f"sharpe ratio: {round((252 * sharpe_optimized_portfolio_mean - self.risk_free_daily_yield) / (sharpe_optimized_portfolio_risk * np.sqrt(252)), 6)}")
                 print("==============================")
-                print(f"allocate 10% risk free asset: yearly return = {round(mean1[11]*252,6)}, yearly risk = {round(std1[11]*np.sqrt(252),6)}")
-                print(f"allocate 15% risk free asset: yearly return = {round(mean1[16]*252,6)}, yearly risk = {round(std1[16]*np.sqrt(252),6)}")
-                print(f"allocate 20% risk free asset: yearly return = {round(mean1[21]*252,6)}, yearly risk = {round(std1[21]*np.sqrt(252),6)}")
-                print(f"allocate 25% risk free asset: yearly return = {round(mean1[26]*252,6)}, yearly risk = {round(std1[26]*np.sqrt(252),6)}")
-                print(f"allocate 30% risk free asset: yearly return = {round(mean1[31]*252,6)}, yearly risk = {round(std1[31]*np.sqrt(252),6)}")
-                print(f"allocate 35% risk free asset: yearly return = {round(mean1[36]*252,6)}, yearly risk = {round(std1[36]*np.sqrt(252),6)}")
-                print(f"allocate 40% risk free asset: yearly return = {round(mean1[41]*252,6)}, yearly risk = {round(std1[41]*np.sqrt(252),6)}")
-                print(f"allocate 45% risk free asset: yearly return = {round(mean1[46]*252,6)}, yearly risk = {round(std1[46]*np.sqrt(252),6)}")
-                print(f"allocate 50% risk free asset: yearly return = {round(mean1[51]*252,6)}, yearly risk = {round(std1[51]*np.sqrt(252),6)}")
-                print(f"allocate 55% risk free asset: yearly return = {round(mean1[56]*252,6)}, yearly risk = {round(std1[56]*np.sqrt(252),6)}")
-                print(f"allocate 60% risk free asset: yearly return = {round(mean1[61]*252,6)}, yearly risk = {round(std1[61]*np.sqrt(252),6)}")
-                print(f"allocate 65% risk free asset: yearly return = {round(mean1[66]*252,6)}, yearly risk = {round(std1[66]*np.sqrt(252),6)}")
-                print(f"allocate 70% risk free asset: yearly return = {round(mean1[71]*252,6)}, yearly risk = {round(std1[71]*np.sqrt(252),6)}")
-                print(f"allocate 75% risk free asset: yearly return = {round(mean1[76]*252,6)}, yearly risk = {round(std1[76]*np.sqrt(252),6)}")
-                print(f"allocate 80% risk free asset: yearly return = {round(mean1[81]*252,6)}, yearly risk = {round(std1[81]*np.sqrt(252),6)}")
-                print(f"allocate 85% risk free asset: yearly return = {round(mean1[86]*252,6)}, yearly risk = {round(std1[86]*np.sqrt(252),6)}")
-                print(f"allocate 90% risk free asset: yearly return = {round(mean1[91]*252,6)}, yearly risk = {round(std1[91]*np.sqrt(252),6)}")
-                print(f"allocate 95% risk free asset: yearly return = {round(mean1[96]*252,6)}, yearly risk = {round(std1[96]*np.sqrt(252),6)}")
+                print(f"allocate 10% risk free asset: annualized return = {round(mean1[11]*252,6)}, annualized risk = {round(std1[11]*np.sqrt(252),6)}")
+                print(f"allocate 15% risk free asset: annualized return = {round(mean1[16]*252,6)}, annualized risk = {round(std1[16]*np.sqrt(252),6)}")
+                print(f"allocate 20% risk free asset: annualized return = {round(mean1[21]*252,6)}, annualized risk = {round(std1[21]*np.sqrt(252),6)}")
+                print(f"allocate 25% risk free asset: annualized return = {round(mean1[26]*252,6)}, annualized risk = {round(std1[26]*np.sqrt(252),6)}")
+                print(f"allocate 30% risk free asset: annualized return = {round(mean1[31]*252,6)}, annualized risk = {round(std1[31]*np.sqrt(252),6)}")
+                print(f"allocate 35% risk free asset: annualized return = {round(mean1[36]*252,6)}, annualized risk = {round(std1[36]*np.sqrt(252),6)}")
+                print(f"allocate 40% risk free asset: annualized return = {round(mean1[41]*252,6)}, annualized risk = {round(std1[41]*np.sqrt(252),6)}")
+                print(f"allocate 45% risk free asset: annualized return = {round(mean1[46]*252,6)}, annualized risk = {round(std1[46]*np.sqrt(252),6)}")
+                print(f"allocate 50% risk free asset: annualized return = {round(mean1[51]*252,6)}, annualized risk = {round(std1[51]*np.sqrt(252),6)}")
+                print(f"allocate 55% risk free asset: annualized return = {round(mean1[56]*252,6)}, annualized risk = {round(std1[56]*np.sqrt(252),6)}")
+                print(f"allocate 60% risk free asset: annualized return = {round(mean1[61]*252,6)}, annualized risk = {round(std1[61]*np.sqrt(252),6)}")
+                print(f"allocate 65% risk free asset: annualized return = {round(mean1[66]*252,6)}, annualized risk = {round(std1[66]*np.sqrt(252),6)}")
+                print(f"allocate 70% risk free asset: annualized return = {round(mean1[71]*252,6)}, annualized risk = {round(std1[71]*np.sqrt(252),6)}")
+                print(f"allocate 75% risk free asset: annualized return = {round(mean1[76]*252,6)}, annualized risk = {round(std1[76]*np.sqrt(252),6)}")
+                print(f"allocate 80% risk free asset: annualized return = {round(mean1[81]*252,6)}, annualized risk = {round(std1[81]*np.sqrt(252),6)}")
+                print(f"allocate 85% risk free asset: annualized return = {round(mean1[86]*252,6)}, annualized risk = {round(std1[86]*np.sqrt(252),6)}")
+                print(f"allocate 90% risk free asset: annualized return = {round(mean1[91]*252,6)}, annualized risk = {round(std1[91]*np.sqrt(252),6)}")
+                print(f"allocate 95% risk free asset: annualized return = {round(mean1[96]*252,6)}, annualized risk = {round(std1[96]*np.sqrt(252),6)}")
 
         # step 4: plot mean-variance curve and capital market line
         if show_plots:
@@ -145,6 +162,17 @@ class MPT:
         ans = minimize(sharpe_ratio, param, bounds=bnds, constraints=cons)
         return ans.x
 
+    def __optimize_sortino_ratio(self):
+        def sortino_ratio(param):
+            portfolio_daily_return = (param * self.portfolio.full_asset_price_history_change).sum(axis=1)
+            downside = ((portfolio_daily_return[portfolio_daily_return < self.risk_free_daily_yield] - self.risk_free_daily_yield)**2).sum() / len(portfolio_daily_return)
+            return -1 * (portfolio_daily_return.mean() - self.risk_free_daily_yield) / np.sqrt(downside)
+        param = self.portfolio.asset_weights
+        bnds = tuple([(0, 1)] * (len(param)))
+        cons = ({'type': 'eq', 'fun': lambda param: np.sum(param) - 1})
+        ans = minimize(sortino_ratio, param, bounds=bnds, constraints=cons)
+        return ans.x
+
     def evaluate(self, asset_list):
         # step 0: get the inception date for the latest listed (最后一个上市的) asset in the portfolio
         self.portfolio.invest(asset_list)
@@ -170,10 +198,12 @@ class MPT:
         # these weights to invest the next year only.
         predicted_minrisk_weights_history = []
         predicted_maxsharpe_weights_history = []
+        predicted_maxsortino_weights_history = []
         for date in dates[0:-1]:
             self.portfolio.invest([asset.ticker for asset in self.portfolio.assets], start_date=inception_date, end_date=date)
             predicted_minrisk_weights_history.append(self.__optimize_risk())
             predicted_maxsharpe_weights_history.append(self.__optimize_sharpe_ratio())
+            predicted_maxsortino_weights_history.append(self.__optimize_sortino_ratio())
 
         # step 3: get the predicted sharpe/risk/return with the weights from step 2, also get the actual optimal
         # portfolio using the full year data of the evaluation year.
@@ -183,12 +213,17 @@ class MPT:
         predicted_maxsharpe_risk_history = []
         predicted_maxsharpe_return_history = []
         predicted_maxsharpe_sharpe_history = []
+        predicted_maxsortino_return_history = []
+        predicted_maxsortino_sortino_history = []
         actual_minrisk_risk_history = []
         actual_minrisk_return_history = []
         actual_minrisk_sharpe_history = []
         actual_maxsharpe_risk_history = []
         actual_maxsharpe_return_history = []
         actual_maxsharpe_sharpe_history = []
+        actual_maxsortino_return_history = []
+        actual_maxsortino_sortino_history = []
+
         for i in range(0, len(dates)-1):
             self.portfolio.invest([asset.ticker for asset in self.portfolio.assets], start_date=dates[i], end_date=dates[i+1])
 
@@ -203,6 +238,9 @@ class MPT:
             predicted_maxsharpe_risk_history.append(predicted_maxsharpe_risk)
             predicted_maxsharpe_return_history.append(predicted_maxsharpe_return)
             predicted_maxsharpe_sharpe_history.append(predicted_maxsharpe_sharpe)
+
+            predicted_maxsortino_return, predicted_maxsortino_sortino = self.get_sortino_ratio(predicted_maxsortino_weights_history[i])
+            predictedmaxsortino
 
             # get the actual optimized stats only for this year data --> this is the ceiling of the portfolio
             # performance of this year
