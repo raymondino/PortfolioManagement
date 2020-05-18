@@ -8,11 +8,14 @@ import matplotlib.pyplot as plt
 
 
 class MPT:
-    def __init__(self, risk_free_annual_yield=None):
+    def __init__(self, risk_free_annual_yield=None, target_risk=None):
         self.portfolio = None
         self.risk_free_daily_yield = 0
+        self.target_risk=None
         if risk_free_annual_yield is not None:
             self.risk_free_daily_yield = pow(1 + risk_free_annual_yield, 1/365) - 1
+        if target_risk is not None:
+            self.target_risk = target_risk
 
     def fit(self, portfolio, customized_weights=[], show_details=True, show_plot=False):
         self.portfolio = portfolio
@@ -147,7 +150,9 @@ class MPT:
             return np.sqrt(np.matmul(np.matmul(np.array(param), self.portfolio.get_assets_covariance().to_numpy()), np.array(param).transpose()))
         param = self.portfolio.asset_weights
         bnds = tuple([(0, 1)] * (len(param)))
-        cons = ({'type': 'eq', 'fun': lambda param: np.sum(param) - 1})
+        cons = [{'type': 'eq', 'fun': lambda param: np.sum(param) - 1}]
+        if self.target_risk is not None:
+            cons.append({'type':'eq', 'fun':lambda param: np.sqrt(np.matmul(np.matmul(np.array(param), self.portfolio.get_assets_covariance().to_numpy()), np.array(param).transpose())) - self.target_risk/np.sqrt(252)})
         ans = minimize(risk, param, bounds=bnds, constraints=cons)
         return ans.x
 
@@ -158,7 +163,9 @@ class MPT:
             return -1 * (daily_mean_return - self.risk_free_daily_yield) / daily_risk
         param = self.portfolio.asset_weights
         bnds = tuple([(0, 1)] * (len(param)))
-        cons = ({'type': 'eq', 'fun': lambda param: np.sum(param) - 1})
+        cons = [{'type': 'eq', 'fun': lambda param: np.sum(param) - 1}]
+        if self.target_risk is not None:
+            cons.append({'type':'eq', 'fun':lambda param: np.sqrt(np.matmul(np.matmul(np.array(param), self.portfolio.get_assets_covariance().to_numpy()), np.array(param).transpose())) - self.target_risk/np.sqrt(252)})
         ans = minimize(sharpe_ratio, param, bounds=bnds, constraints=cons)
         return ans.x
 
