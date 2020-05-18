@@ -113,7 +113,7 @@
         - apply these weights to the data in year yi, so as to get the best-possible portfolio in that year
     - we compare prediction and ground truth
 - how to run evaluation
-    - set ```number = 3.4```
+    - set ```number = 3.5```
     - fill in ```asset_ticers``` with ticker strings of interest
     - run main.py
     - this will generate 4 pictures
