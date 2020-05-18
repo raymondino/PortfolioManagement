@@ -11,7 +11,7 @@ if __name__ == "__main__":
     risk_free_return = 0.009
 
     # adjust the number to toggle functions
-    number = 3.4
+    number = 3.7
 
     # get fundamentals & insights for a company
     if number == 1.1:
@@ -77,22 +77,27 @@ if __name__ == "__main__":
         asset_tickers = ['ZTS', 'VEEV', 'MKTX', 'WST', 'MASI', 'KL', 'EXPO', "SGOL", "TSLA"]
         mpt_optimization(asset_tickers, risk_free_return)
 
-    # evaluate MPT optimization
+    # sharpe ratio-optimized portfolio with fixed risk
     elif number == 3.4:
+        asset_tickers = ['ZTS', 'VEEV', 'MKTX', 'WST', 'MASI', 'KL', 'EXPO', "SGOL"]
+        mpt_optimization_fixed_risk(asset_tickers, 0.2064, risk_free_yield=risk_free_return)
+
+    # evaluate MPT optimization
+    elif number == 3.5:
         asset_tickers = ['MSFT', "AAPL", "AMZN", "GOOG", "FB"]
         mpt_evaluation(asset_tickers, risk_free_return)
 
     # use customized weights to get the risk/sharpe ratio/return of the portfolio
-    elif number == 3.5:
+    elif number == 3.6:
         asset_tickers = ['ZTS', 'VEEV', 'MKTX', 'WST', 'MASI', 'KL', 'EXPO', 'SGOL']
         customize_weights = [0.0962, 0.0798, 0.1476, 0.1049, 0.2263, 0.1623, 0.0584, 0.1245]
         mpt_customize_weights(asset_tickers, customize_weights, risk_free_return)
 
     # back test portfolio with assets and their specified weights
-    elif number == 3.6:
+    elif number == 3.7:
         asset_tickers = ['ZTS', 'VEEV', 'MKTX', 'WST', 'MASI', 'KL', 'EXPO', 'SGOL']
         # customized_weights = [0.0962, 0.0798, 0.1476, 0.1049, 0.2263, 0.1623, 0.0584, 0.1245]
-        customized_weights = [0.1162, 0.0725, 0.1338, 0.1005, 0.2384, 0.1253, 0.0241, 0.1891]
+        customized_weights = [0.1345, 0.1058, 0.1488, 0.1111, 0.277, 0.183, 0.0321, 0.0078]
         back_test_portfolio(asset_tickers, customized_weights, "first blood backtest", r"./data/portfolio/firstblood_backtest_report.html", pow(1+risk_free_return, 1/365)-1)
 
         asset_tickers = ["MSFT", "AMZN"]
@@ -100,7 +105,7 @@ if __name__ == "__main__":
         back_test_portfolio(asset_tickers, customized_weights, "mega tech backtest", r"./data/portfolio/megatech_backtest_report.html", pow(1+risk_free_return, 1/365)-1)
 
     # generate portfolio reports
-    elif number == 3.7:
+    elif number == 3.8:
         # this requires you to generate a portfolio json file
         portfolio_file = r"./data/portfolio/first_blood_20200511.json"
         get_portfolio_performance(portfolio_file, r"./data/portfolio/first_blood_20200511.html", pow(1+risk_free_return, 1/365)-1)
