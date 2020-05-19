@@ -2,6 +2,7 @@ from common.snapshot import Snapshot
 from utils.widget import xirr
 import numpy as np
 
+# this code is not used any more
 
 class FixedInvestmentStrategy():
     def __init__(self):

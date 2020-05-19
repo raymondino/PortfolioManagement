@@ -5,7 +5,6 @@ from core.portfolio import *
 from scipy.optimize import minimize
 
 
-
 def get_portfolio_performance(json_file_path, report_file_path, risk_free_return):
     if not os.path.exists(json_file_path):
         print(f"cannot load data from {json_file_path}")

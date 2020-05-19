@@ -2,6 +2,7 @@ from tools.financials_analyzer import *
 from tools.asset_price_analyzer import *
 from tools.modern_portfolio_theory_optimizer import *
 from tools.portfolio_analyzer import *
+from strategy.average_cost_strategy import *
 
 
 if __name__ == "__main__":
@@ -12,7 +13,7 @@ if __name__ == "__main__":
 
     # adjust the number to toggle functions
 
-    number = 3.8
+    number = 3.9
 
     # get fundamentals & insights for a company
     if number == 1.1:
@@ -128,6 +129,14 @@ if __name__ == "__main__":
         ivv.invest(["IVV"], customized_weights=[1], strategy= MPT(risk_free_annual_yield=risk_free_return), show_details=True)
         portfolios= {"first_blood": first_blood, "mega_tech": mega_tech, "ivv": ivv}
         fund_allocation_optimizer(portfolios,risk_free_return)
+
+    # average cost strategy and generate back-test report
+    elif number == 3.9:
+        p = Portfolio()
+        assets_list = ['ZTS', 'VEEV', 'MKTX', 'WST', 'MASI', 'KL', 'EXPO', 'SGOL']
+        assets_weight = [0.1135, 0.0478, 0.1533, 0.1355, 0.2587, 0.1512, 0.0, 0.1401]
+        s = AverageCostStrategy("first blood", risk_free_return, rf"./data/portfolio/first_blood_average_cost_backtest.html", 53000, 0)
+        p.invest(assets_list, customized_weights=assets_weight, strategy=s)
 
     # plot 20-day risk & return for an asset
     elif number == 4.1:
