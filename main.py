@@ -11,7 +11,7 @@ if __name__ == "__main__":
     risk_free_return = 0.009
 
     # adjust the number to toggle functions
-    number = 3.3
+    number = 3.8
 
     # get fundamentals & insights for a company
     if number == 1.1:
@@ -74,7 +74,7 @@ if __name__ == "__main__":
 
     # sharpe ratio-optimized portfolio with MPT
     elif number == 3.3:
-        asset_tickers = ['MSFT', "AAPL", "AMZN", "GOOG", "FB"]
+        asset_tickers = ["MSFT", "AMZN"]
         mpt_optimization(asset_tickers, risk_free_return)
 
     # evaluate MPT optimization
@@ -107,6 +107,21 @@ if __name__ == "__main__":
 
         portfolio_file = r"./data/portfolio/mega_tech_20200511.json"
         get_portfolio_performance(portfolio_file, r"./data/portfolio/mega_tech_20200511.html", pow(1+risk_free_return, 1/365)-1)
+
+    # allocate funds for different portfolios
+    elif number == 3.8:
+        first_blood = Portfolio()
+        first_blood_assets = ['ZTS', 'VEEV', 'MKTX', 'WST', 'MASI', 'KL', 'EXPO', 'SGOL']
+        first_blood_weights = [0.1135, 0.0478, 0.1533, 0.1355, 0.2587, 0.1512, 0.0, 0.1401] #[0.0962, 0.0798, 0.1476, 0.1049, 0.2263, 0.1623, 0.0584, 0.1245]
+        first_blood.invest(first_blood_assets, strategy= MPT(risk_free_annual_yield=risk_free_return), customized_weights=first_blood_weights, show_details=True)
+        mega_tech = Portfolio()
+        mega_tech_assets = ["MSFT", "AMZN"]
+        mega_tech_weights = [0.4616, 0.5384] #[0.554, 0.446]
+        mega_tech.invest(mega_tech_assets, strategy= MPT(risk_free_annual_yield=risk_free_return), customized_weights=mega_tech_weights, show_details=True)
+        ivv = Portfolio()
+        ivv.invest(["IVV"], customized_weights=[1], strategy= MPT(risk_free_annual_yield=risk_free_return), show_details=True)
+        portfolios= {"first_blood": first_blood, "mega_tech": mega_tech, "ivv": ivv}
+        fund_allocation_optimizer(portfolios,risk_free_return)
 
     # plot 20-day risk & return for an asset
     elif number == 4.1:
