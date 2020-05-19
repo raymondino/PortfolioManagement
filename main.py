@@ -76,8 +76,8 @@ if __name__ == "__main__":
 
     # sharpe ratio-optimized portfolio with MPT
     elif number == 3.3:
-        asset_tickers = ['ZTS', 'VEEV', 'MKTX', 'WST', 'MASI', 'KL', 'EXPO', "SGOL", "TSLA"]
-        mpt_optimization(asset_tickers, risk_free_return)
+        asset_tickers = ['ZTS', 'VEEV', 'MKTX', 'WST', 'MASI', 'KL', 'EXPO', "SGOL"]
+        mpt_optimization(asset_tickers, risk_free_return, start_date='2016-12-02', end_date='2017-12-02')
 
     # sharpe ratio-optimized portfolio with fixed risk
     elif number == 3.4:
@@ -139,11 +139,14 @@ if __name__ == "__main__":
         # p.invest(assets_list, customized_weights=assets_weight, strategy=s)
 
         assets_list = ['ZTS', 'VEEV', 'MKTX', 'WST', 'MASI', 'KL', 'EXPO', 'SGOL']
-        assets_weight = [0.1135, 0.0478, 0.1533, 0.1355, 0.2587, 0.1512, 0.0, 0.1401]
-        s = AverageCostStrategy("first blood", risk_free_return, rf"./data/portfolio/first_blood_average_cost_backtest.html", 10000, 1000, allow_fractional_shares=True)
-        p.invest(assets_list, customized_weights=assets_weight, strategy=s)
-        s = AverageCostStrategy("first blood", risk_free_return, rf"./data/portfolio/first_blood_all_in_backtest.html", 53005, 0, allow_fractional_shares=True)
-        p.invest(assets_list, customized_weights=assets_weight, strategy=s)
+        assets_weight = [0.5221, 0.009, 0.0, 0.0352, 0.2209, 0.1032, 0.1096, 0.0]
+        s = AverageCostStrategy(portfolio_name="first blood", risk_free_yearly_return=risk_free_return,
+                                report_path=rf"./data/portfolio/first_blood_average_cost_backtest.html",
+                                initial_fund=10000, fixed_investment_fund=1000, fixed_investment_interval=30,
+                                rebalance_interval=30, rebalance_use_data=30)
+        p.invest(assets_list, customized_weights=assets_weight, strategy=s, start_date="2017-12-03")
+        # s = AverageCostStrategy("first blood", risk_free_return, rf"./data/portfolio/first_blood_all_in_backtest.html", 53005, 0, allow_fractional_shares=True)
+        # p.invest(assets_list, customized_weights=assets_weight, strategy=s)
 
     # plot 20-day risk & return for an asset
     elif number == 4.1:
