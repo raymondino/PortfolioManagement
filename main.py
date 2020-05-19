@@ -8,10 +8,10 @@ if __name__ == "__main__":
     # some global parameters
     year = 5
     quarter = False
-    risk_free_return = 0.009
+    risk_free_return = 1.78/100
 
     # adjust the number to toggle functions
-    number = 3.7
+    number = 1.3
 
     # get fundamentals & insights for a company
     if number == 1.1:
