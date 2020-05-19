@@ -58,8 +58,9 @@ class MPT:
             print(f"risk optimized annualized risk: {round(risk_optimized_portfolio_risk*np.sqrt(252), 6)}")
             print("==============================")
             print(f"sortino ratio optimized weights: {list(np.around(np.array(sortino_optimized_weights), 4))}")
-            print(f"sortino ratio daily: {round((sortino_optimized_portfolio_mean / sortino_optimized_portfolio_risk), 6)}")
-            print(f"sortino ratio annualized: {round((sortino_optimized_portfolio_mean * pow(252, 1/2) / sortino_optimized_portfolio_risk), 6)}")
+            print(f"sortino ratio annualized return: {round(sortino_optimized_portfolio_mean * 252, 6)}")
+            print(f"sortino daily ratio: {round((sortino_optimized_portfolio_mean / sortino_optimized_portfolio_risk), 6)}")
+            print(f"sortino annualized ratio: {round((sortino_optimized_portfolio_mean * pow(252, 1/2) / sortino_optimized_portfolio_risk), 6)}")
 
         # step 3: if allocating risk free asset
         mean1 = []
