@@ -13,7 +13,7 @@ if __name__ == "__main__":
 
     # adjust the number to toggle functions
 
-    number = 3.9
+    number = 3.8
 
     # get fundamentals & insights for a company
     if number == 1.1:
@@ -76,8 +76,9 @@ if __name__ == "__main__":
 
     # sharpe ratio-optimized portfolio with MPT
     elif number == 3.3:
-        asset_tickers = ['ZTS', 'VEEV', 'MKTX', 'WST', 'MASI', 'KL', 'EXPO', "SGOL"]
-        mpt_optimization(asset_tickers, risk_free_return, start_date='2016-12-02', end_date='2017-12-02')
+        # asset_tickers = ['ZTS', 'VEEV', 'MKTX', 'WST', 'MASI', 'KL', 'EXPO', "SGOL"]
+        asset_tickers = ["MSFT", "AMZN"]
+        mpt_optimization(asset_tickers, risk_free_return, start_date='2010-12-31', end_date='2015-12-31')
 
     # sharpe ratio-optimized portfolio with fixed risk
     elif number == 3.4:
@@ -91,32 +92,33 @@ if __name__ == "__main__":
 
     # use customized weights to get the risk/sharpe ratio/return of the portfolio
     elif number == 3.6:
-        asset_tickers = ['ZTS', 'VEEV', 'MKTX', 'WST', 'MASI', 'KL', 'EXPO', 'SGOL']
+        asset_tickers =     ['ZTS', 'VEEV', 'MKTX', 'WST', 'MASI', 'KL', 'EXPO', 'SGOL']
         customize_weights = [0.0962, 0.0798, 0.1476, 0.1049, 0.2263, 0.1623, 0.0584, 0.1245]
         mpt_customize_weights(asset_tickers, customize_weights, risk_free_return)
 
     # back test portfolio with assets and their specified weights
     elif number == 3.7:
-        asset_tickers = ['ZTS', 'VEEV', 'MKTX', 'WST', 'MASI', 'KL', 'EXPO', 'SGOL']
-        # customized_weights = [0.0962, 0.0798, 0.1476, 0.1049, 0.2263, 0.1623, 0.0584, 0.1245]
-        customized_weights = [0.1345, 0.1058, 0.1488, 0.1111, 0.277, 0.183, 0.0321, 0.0078]
+        asset_tickers = ['EXPO', 'KL',  'MASI', 'MKTX', 'SGOL', 'WST', 'VEEV', 'ZTS']
+        customized_weights = [0.0584, 0.1623, 0.2263, 0.1476, 0.1245, 0.1049, 0.0798, 0.0962]
         back_test_portfolio(asset_tickers, customized_weights, "first blood backtest", r"./data/portfolio/firstblood_backtest_report.html", pow(1+risk_free_return, 1/365)-1)
 
-        asset_tickers = ["MSFT", "AMZN"]
-        customized_weights = [0.554, 0.446]
+        asset_tickers = ["AMZN", "MSFT"]
+        customized_weights = [0.446, 0.554]
         back_test_portfolio(asset_tickers, customized_weights, "mega tech backtest", r"./data/portfolio/megatech_backtest_report.html", pow(1+risk_free_return, 1/365)-1)
 
     # generate portfolio reports
     elif number == 3.8:
         # this requires you to generate a portfolio json file
         portfolio_file = r"./data/portfolio/first_blood_20200511.json"
+        print(f"target weight:{[0.0584, 0.1623, 0.2263, 0.1476, 0.1245, 0.1049, 0.0798, 0.0962]}")
         get_portfolio_performance(portfolio_file, r"./data/portfolio/first_blood_20200511.html", pow(1+risk_free_return, 1/365)-1)
 
         portfolio_file = r"./data/portfolio/mega_tech_20200511.json"
+        print(f"target weight:{[0.446, 0.554]}")
         get_portfolio_performance(portfolio_file, r"./data/portfolio/mega_tech_20200511.html", pow(1+risk_free_return, 1/365)-1)
 
     # allocate funds for different portfolios
-    elif number == 3.8:
+    elif number == 3.9:
         first_blood = Portfolio()
         first_blood_assets = ['ZTS', 'VEEV', 'MKTX', 'WST', 'MASI', 'KL', 'EXPO', 'SGOL']
         first_blood_weights = [0.1135, 0.0478, 0.1533, 0.1355, 0.2587, 0.1512, 0.0, 0.1401] #[0.0962, 0.0798, 0.1476, 0.1049, 0.2263, 0.1623, 0.0584, 0.1245]
@@ -131,22 +133,27 @@ if __name__ == "__main__":
         fund_allocation_optimizer(portfolios,risk_free_return)
 
     # average cost strategy and generate back-test report
-    elif number == 3.9:
+    elif number == 3.11:
         p = Portfolio()
-        # assets_list = ["IVV"]
-        # assets_weight = [1]
-        # s = AverageCostStrategy("IVV", risk_free_return, rf"./data/portfolio/IVV_average_cost_backtest.html", 1000, 50, fixed_investment_interval=1, allow_fractional_shares=True)
-        # p.invest(assets_list, customized_weights=assets_weight, strategy=s)
-
         assets_list = ['ZTS', 'VEEV', 'MKTX', 'WST', 'MASI', 'KL', 'EXPO', 'SGOL']
-        assets_weight = [0.5221, 0.009, 0.0, 0.0352, 0.2209, 0.1032, 0.1096, 0.0]
+        assets_weight = [0.3562, 0.0743, 0.0273, 0.0, 0.1549, 0.1915, 0.1958, 0.0]
         s = AverageCostStrategy(portfolio_name="first blood", risk_free_yearly_return=risk_free_return,
-                                report_path=rf"./data/portfolio/first_blood_average_cost_backtest.html",
-                                initial_fund=10000, fixed_investment_fund=1000, fixed_investment_interval=30,
-                                rebalance_interval=30, rebalance_use_data=30)
-        p.invest(assets_list, customized_weights=assets_weight, strategy=s, start_date="2017-12-03")
-        # s = AverageCostStrategy("first blood", risk_free_return, rf"./data/portfolio/first_blood_all_in_backtest.html", 53005, 0, allow_fractional_shares=True)
-        # p.invest(assets_list, customized_weights=assets_weight, strategy=s)
+                                report_path=rf"./data/portfolio/first_blood_DAC_backtest_noREB.html",
+                                initial_fund=10000, fixed_investment_fund=1000, fixed_investment_interval=10,
+                                rebalance_strategy="no", rebalance_interval=20, rebalance_use_data=20)
+        p.invest(assets_list, customized_weights=assets_weight, strategy=s, start_date="2018-12-03")
+
+        s = AverageCostStrategy(portfolio_name="first blood", risk_free_yearly_return=risk_free_return,
+                                report_path=rf"./data/portfolio/first_blood_DAC_backtest_REB.html",
+                                initial_fund=10000, fixed_investment_fund=1000, fixed_investment_interval=10,
+                                rebalance_strategy="yes", rebalance_interval=20, rebalance_use_data=20)
+        p.invest(assets_list, customized_weights=assets_weight, strategy=s, start_date="2018-12-03")
+
+        s = AverageCostStrategy(portfolio_name="first blood", risk_free_yearly_return=risk_free_return,
+                                report_path=rf"./data/portfolio/first_DAC_backtest_MPT.html",
+                                initial_fund=10000, fixed_investment_fund=1000, fixed_investment_interval=10,
+                                rebalance_strategy="mpt", rebalance_interval=20, rebalance_use_data=4)
+        p.invest(assets_list, customized_weights=assets_weight, strategy=s, start_date="2018-12-04")
 
     # plot 20-day risk & return for an asset
     elif number == 4.1:
