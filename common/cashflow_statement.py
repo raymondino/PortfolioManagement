@@ -5,6 +5,8 @@ from utils.widget import *
 
 class CashflowStatement:
     url_prefix_f = "https://financialmodelingprep.com/api/v3/financials/"
+    api_key = "ef7be903a5ace951c13f320358723e0f"
+
     cf_full_items = [
         "date",
         "Depreciation & Amortization",
@@ -34,7 +36,7 @@ class CashflowStatement:
         self.quarter = quarter
         self.ticker = ticker
         self.year = year
-        self.data = requests.get(self.cf_url + ("?period=quarter" if self.quarter else "")).json()['financials']
+        self.data = requests.get(self.cf_url + (f"?period=quarter&apikey={CashflowStatement.api_key}" if quarter else f"?apikey={CashflowStatement.api_key}")).json()['financials']
         self.data = pd.DataFrame.from_dict(self.data)[CashflowStatement.cf_full_items]
         self.data = self.data[(self.data.date.str.len() == 10)]
 

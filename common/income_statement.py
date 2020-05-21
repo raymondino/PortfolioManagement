@@ -6,6 +6,7 @@ from utils.widget import *
 
 class IncomeStatement:
     url_prefix_f = "https://financialmodelingprep.com/api/v3/financials/"
+    api_key = "ef7be903a5ace951c13f320358723e0f"
     is_full_items = [
         "date",
         "Revenue",
@@ -51,7 +52,7 @@ class IncomeStatement:
         self.quarter = quarter
         self.ticker = ticker
         self.year = year
-        self.data = requests.get(self.is_url + ("?period=quarter" if quarter else "")).json()["financials"]
+        self.data = requests.get(self.is_url + (f"?period=quarter&apikey={IncomeStatement.api_key}" if quarter else f"?apikey={IncomeStatement.api_key}")).json()["financials"]
         self.data = pd.DataFrame.from_dict(self.data)[IncomeStatement.is_full_items]
         self.data = self.data[(self.data.date.str.len() == 10)]
 

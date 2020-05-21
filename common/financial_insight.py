@@ -4,6 +4,8 @@ from common.cashflow_statement import *
 
 
 class FinancialInsight:
+    api_key = "ef7be903a5ace951c13f320358723e0f"
+
     def __init__(self, ticker, quarter=False, year=5):
         self.quarter = quarter
         self.ticker = ticker
@@ -23,7 +25,7 @@ class FinancialInsight:
 
     def __get_company_value(self):
         if self.company_value is None:
-            ev_url = f"https://financialmodelingprep.com/api/v3/enterprise-value/{self.ticker.replace('-', '.')}"
+            ev_url = f"https://financialmodelingprep.com/api/v3/enterprise-value/{self.ticker.replace('-', '.')}?apikey={FinancialInsight.api_key}"
             ev_items = ["date", "Stock Price", "Number of Shares", "Market Capitalization", "Enterprise Value"]
             data = requests.get(ev_url + ("?period=quarter" if self.quarter else "")).json()["enterpriseValues"]
             data = pd.DataFrame.from_dict(data)[ev_items]
@@ -132,7 +134,7 @@ class FinancialInsight:
         if self.investing is None:
             market_return = 0.1
             data = []
-            json = requests.get(f"https://financialmodelingprep.com/api/v3/financial-ratios/{self.ticker.replace('-', '.')}").json()["ratios"]
+            json = requests.get(f"https://financialmodelingprep.com/api/v3/financial-ratios/{self.ticker.replace('-', '.')}?apikey={FinancialInsight.api_key}").json()["ratios"]
             for x in json:
                 data.append(
                     {"date": x["date"], "dividendYield": x["investmentValuationRatios"]["dividendYield"],

@@ -27,12 +27,6 @@
             "action": "buy"
         },
         {
-            "ticker": "PDEX",
-            "shares": 69,
-            "price": 17.83,
-            "action": "buy"
-        },
-        {
             "ticker": "SGOL",
             "shares": 75,
             "price": 16.66,
