@@ -13,11 +13,11 @@ if __name__ == "__main__":
 
     # adjust the number to toggle functions
 
-    number = 3.8
+    number = 1.1
 
     # get fundamentals & insights for a company
     if number == 1.1:
-        analyze_company("BRK-B", risk_free_return, quarter=quarter, year=year)
+        analyze_company("ZTS", risk_free_return, quarter=quarter, year=year)
 
     # compare fundamentals, specifying ticker_list will overwrite tickers loaded from ticker_list_file
     elif number == 1.2:
@@ -71,18 +71,18 @@ if __name__ == "__main__":
 
     # risk-optimized portfolio with MPT
     elif number == 3.2:
-        asset_tickers = ['ZTS', 'VEEV', 'MKTX', 'WST', 'MASI', 'KL', 'EXPO', "SGOL"]
+        asset_tickers = ['EXPO', 'KL',  'MASI', 'MKTX', 'SGOL', 'WST', 'VEEV', 'ZTS']
         mpt_optimization(asset_tickers)
 
     # sharpe ratio-optimized portfolio with MPT
     elif number == 3.3:
-        # asset_tickers = ['ZTS', 'VEEV', 'MKTX', 'WST', 'MASI', 'KL', 'EXPO', "SGOL"]
-        asset_tickers = ["MSFT", "AMZN"]
-        mpt_optimization(asset_tickers, risk_free_return, start_date='2010-12-31', end_date='2015-12-31')
+        asset_tickers = ['EXPO', 'KL',  'MASI', 'MKTX', 'SGOL', 'WST', 'VEEV', 'ZTS']
+        # asset_tickers = ["MSFT", "AMZN"]
+        mpt_optimization(asset_tickers, risk_free_return)
 
     # sharpe ratio-optimized portfolio with fixed risk
     elif number == 3.4:
-        asset_tickers = ['ZTS', 'VEEV', 'MKTX', 'WST', 'MASI', 'KL', 'EXPO', "SGOL"]
+        asset_tickers = ['EXPO', 'KL',  'MASI', 'MKTX', 'SGOL', 'WST', 'VEEV', 'ZTS']
         mpt_optimization_fixed_risk(asset_tickers, 0.2064, risk_free_yield=risk_free_return)
 
     # evaluate MPT optimization
@@ -92,19 +92,25 @@ if __name__ == "__main__":
 
     # use customized weights to get the risk/sharpe ratio/return of the portfolio
     elif number == 3.6:
-        asset_tickers =     ['ZTS', 'VEEV', 'MKTX', 'WST', 'MASI', 'KL', 'EXPO', 'SGOL']
+        asset_tickers = ['EXPO', 'KL',  'MASI', 'MKTX', 'SGOL', 'WST', 'VEEV', 'ZTS']
         customize_weights = [0.0962, 0.0798, 0.1476, 0.1049, 0.2263, 0.1623, 0.0584, 0.1245]
         mpt_customize_weights(asset_tickers, customize_weights, risk_free_return)
 
     # back test portfolio with assets and their specified weights
     elif number == 3.7:
+
+        # asset_tickers = ["BABA"]
+        # customized_weights = [1]
+        # back_test_portfolio(asset_tickers, customized_weights, "BABA backtest", r"./data/portfolio/baba_backtest_report.html", pow(1+risk_free_return, 1/365)-1)
+
         asset_tickers = ['EXPO', 'KL',  'MASI', 'MKTX', 'SGOL', 'WST', 'VEEV', 'ZTS']
         customized_weights = [0.0584, 0.1623, 0.2263, 0.1476, 0.1245, 0.1049, 0.0798, 0.0962]
+        # customized_weights = [0.0, 0.1473, 0.2596, 0.1322, 0.1385, 0.1157, 0.0434, 0.1634]
         back_test_portfolio(asset_tickers, customized_weights, "first blood backtest", r"./data/portfolio/firstblood_backtest_report.html", pow(1+risk_free_return, 1/365)-1)
 
-        asset_tickers = ["AMZN", "MSFT"]
-        customized_weights = [0.446, 0.554]
-        back_test_portfolio(asset_tickers, customized_weights, "mega tech backtest", r"./data/portfolio/megatech_backtest_report.html", pow(1+risk_free_return, 1/365)-1)
+        # asset_tickers = ["AMZN", "MSFT"]
+        # customized_weights = [0.446, 0.554]
+        # back_test_portfolio(asset_tickers, customized_weights, "mega tech backtest", r"./data/portfolio/megatech_backtest_report.html", pow(1+risk_free_return, 1/365)-1)
 
     # generate portfolio reports
     elif number == 3.8:
@@ -135,25 +141,29 @@ if __name__ == "__main__":
     # average cost strategy and generate back-test report
     elif number == 3.11:
         p = Portfolio()
+        portfolio_name = "first blood"
+        no_rebalance_report_path = rf"./data/portfolio/{portfolio_name.replace(' ', '_')}_DAC_becktest_noREB.html"
+        rebalance_report_path = rf"./data/portfolio/{portfolio_name.replace(' ', '_')}_DAC_becktest_REB.html"
+        mpt_rebalance_report_path = rf"./data/portfolio/{portfolio_name.replace(' ', '_')}_DAC_becktest_MPT.html"
         assets_list = ['ZTS', 'VEEV', 'MKTX', 'WST', 'MASI', 'KL', 'EXPO', 'SGOL']
         assets_weight = [0.3562, 0.0743, 0.0273, 0.0, 0.1549, 0.1915, 0.1958, 0.0]
-        s = AverageCostStrategy(portfolio_name="first blood", risk_free_yearly_return=risk_free_return,
-                                report_path=rf"./data/portfolio/first_blood_DAC_backtest_noREB.html",
+        s = AverageCostStrategy(portfolio_name=portfolio_name, risk_free_yearly_return=risk_free_return,
+                                report_path=no_rebalance_report_path,
                                 initial_fund=10000, fixed_investment_fund=1000, fixed_investment_interval=10,
                                 rebalance_strategy="no", rebalance_interval=20, rebalance_use_data=20)
-        p.invest(assets_list, customized_weights=assets_weight, strategy=s, start_date="2018-12-03")
+        p.invest(assets_list, customized_weights=assets_weight, strategy=s)
 
-        s = AverageCostStrategy(portfolio_name="first blood", risk_free_yearly_return=risk_free_return,
-                                report_path=rf"./data/portfolio/first_blood_DAC_backtest_REB.html",
+        s = AverageCostStrategy(portfolio_name=portfolio_name, risk_free_yearly_return=risk_free_return,
+                                report_path=rebalance_report_path,
                                 initial_fund=10000, fixed_investment_fund=1000, fixed_investment_interval=10,
                                 rebalance_strategy="yes", rebalance_interval=20, rebalance_use_data=20)
-        p.invest(assets_list, customized_weights=assets_weight, strategy=s, start_date="2018-12-03")
+        p.invest(assets_list, customized_weights=assets_weight, strategy=s)
 
-        s = AverageCostStrategy(portfolio_name="first blood", risk_free_yearly_return=risk_free_return,
-                                report_path=rf"./data/portfolio/first_DAC_backtest_MPT.html",
+        s = AverageCostStrategy(portfolio_name=portfolio_name, risk_free_yearly_return=risk_free_return,
+                                report_path=mpt_rebalance_report_path,
                                 initial_fund=10000, fixed_investment_fund=1000, fixed_investment_interval=10,
                                 rebalance_strategy="mpt", rebalance_interval=20, rebalance_use_data=4)
-        p.invest(assets_list, customized_weights=assets_weight, strategy=s, start_date="2018-12-04")
+        p.invest(assets_list, customized_weights=assets_weight, strategy=s)
 
     # plot 20-day risk & return for an asset
     elif number == 4.1:
