@@ -12,8 +12,7 @@ if __name__ == "__main__":
     risk_free_return = 0.009
 
     # adjust the number to toggle functions
-
-    number = 1.1
+    number = 3.7
 
     # get fundamentals & insights for a company
     if number == 1.1:
@@ -96,24 +95,24 @@ if __name__ == "__main__":
         customize_weights = [0.0962, 0.0798, 0.1476, 0.1049, 0.2263, 0.1623, 0.0584, 0.1245]
         mpt_customize_weights(asset_tickers, customize_weights, risk_free_return)
 
-    # back test portfolio with assets and their specified weights
+    # back test a single stock
     elif number == 3.7:
+        ticker = "MSFT"
+        Asset(ticker).report_asset_stock_performance(report_path=rf"./data/portfolio/{ticker}_report.html")
 
-        # asset_tickers = ["BABA"]
-        # customized_weights = [1]
-        # back_test_portfolio(asset_tickers, customized_weights, "BABA backtest", r"./data/portfolio/baba_backtest_report.html", pow(1+risk_free_return, 1/365)-1)
-
+    # back test portfolio with assets and their specified weights
+    elif number == 3.8:
         asset_tickers = ['EXPO', 'KL',  'MASI', 'MKTX', 'SGOL', 'WST', 'VEEV', 'ZTS']
         customized_weights = [0.0584, 0.1623, 0.2263, 0.1476, 0.1245, 0.1049, 0.0798, 0.0962]
         # customized_weights = [0.0, 0.1473, 0.2596, 0.1322, 0.1385, 0.1157, 0.0434, 0.1634]
         back_test_portfolio(asset_tickers, customized_weights, "first blood backtest", r"./data/portfolio/firstblood_backtest_report.html", pow(1+risk_free_return, 1/365)-1)
 
-        # asset_tickers = ["AMZN", "MSFT"]
-        # customized_weights = [0.446, 0.554]
-        # back_test_portfolio(asset_tickers, customized_weights, "mega tech backtest", r"./data/portfolio/megatech_backtest_report.html", pow(1+risk_free_return, 1/365)-1)
+        asset_tickers = ["AMZN", "MSFT"]
+        customized_weights = [0.446, 0.554]
+        back_test_portfolio(asset_tickers, customized_weights, "mega tech backtest", r"./data/portfolio/megatech_backtest_report.html", pow(1+risk_free_return, 1/365)-1)
 
-    # generate portfolio reports
-    elif number == 3.8:
+    # generate existing portfolio reports
+    elif number == 3.9:
         # this requires you to generate a portfolio json file
         portfolio_file = r"./data/portfolio/first_blood_20200511.json"
         print(f"target weight:{[0.0584, 0.1623, 0.2263, 0.1476, 0.1245, 0.1049, 0.0798, 0.0962]}")
@@ -124,14 +123,14 @@ if __name__ == "__main__":
         get_portfolio_performance(portfolio_file, r"./data/portfolio/mega_tech_20200511.html", pow(1+risk_free_return, 1/365)-1)
 
     # allocate funds for different portfolios
-    elif number == 3.9:
+    elif number == 3.11:
         first_blood = Portfolio()
         first_blood_assets = ['ZTS', 'VEEV', 'MKTX', 'WST', 'MASI', 'KL', 'EXPO', 'SGOL']
-        first_blood_weights = [0.1135, 0.0478, 0.1533, 0.1355, 0.2587, 0.1512, 0.0, 0.1401] #[0.0962, 0.0798, 0.1476, 0.1049, 0.2263, 0.1623, 0.0584, 0.1245]
+        first_blood_weights = [0.0962, 0.0798, 0.1476, 0.1049, 0.2263, 0.1623, 0.0584, 0.1245]
         first_blood.invest(first_blood_assets, strategy= MPT(risk_free_annual_yield=risk_free_return), customized_weights=first_blood_weights, show_details=True)
         mega_tech = Portfolio()
         mega_tech_assets = ["MSFT", "AMZN"]
-        mega_tech_weights = [0.4616, 0.5384] #[0.554, 0.446]
+        mega_tech_weights = [0.554, 0.446]
         mega_tech.invest(mega_tech_assets, strategy= MPT(risk_free_annual_yield=risk_free_return), customized_weights=mega_tech_weights, show_details=True)
         ivv = Portfolio()
         ivv.invest(["IVV"], customized_weights=[1], strategy= MPT(risk_free_annual_yield=risk_free_return), show_details=True)
@@ -139,7 +138,7 @@ if __name__ == "__main__":
         fund_allocation_optimizer(portfolios,risk_free_return)
 
     # average cost strategy and generate back-test report
-    elif number == 3.11:
+    elif number == 3.12:
         p = Portfolio()
         portfolio_name = "first blood"
         no_rebalance_report_path = rf"./data/portfolio/{portfolio_name.replace(' ', '_')}_DAC_becktest_noREB.html"
@@ -174,13 +173,6 @@ if __name__ == "__main__":
         c = Company("ZTS")
         c.plot_stock_price_with_revenue(quarter=False)
 
-    # plot a single stock performance
-    elif number == 4.3:
-        ticker = "MSFT"
-        Asset(ticker).report_asset_stock_performance(report_path=rf"./data/portfolio/{ticker}_report.html")
-
     elif number == 5:
-        # a = Asset("MSFT")
-        # print(a.get_beta())
         c = Company("BT")
         print(c.serialize_fundamentals_summary(risk_free_return))
