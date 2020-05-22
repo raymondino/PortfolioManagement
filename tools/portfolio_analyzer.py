@@ -5,32 +5,58 @@ from core.portfolio import *
 from scipy.optimize import minimize
 
 
-def get_portfolio_performance(json_file_path, report_file_path, risk_free_return):
+def get_portfolio_performance(json_file_path, report_name, report_file_path, risk_free_return, target_weights):
     if not os.path.exists(json_file_path):
         print(f"cannot load data from {json_file_path}")
         return
-    assets = []
-    asset_tickers = []
-    with open(json_file_path, encoding='utf-8') as fp:
-        data = json.load(fp)
-        report_name = data["name"]
-        start_date = data["date"]
-        for asset in data["assets"]:
-            asset_tickers.append(asset["ticker"])
-            a = Asset(asset["ticker"], ohlc="Close")
-            a.get_price(start_date=start_date)
-            a.daily_price.iloc[0] = asset["price"]
-            assets.append(a.daily_price*asset["shares"])
 
-        # portfolio = Portfolio()
-        # portfolio.invest(asset_tickers, start_date=start_date)
-        assets = pd.concat(assets, axis=1)
-        # book_value = assets.sum(axis=1)
-        # for i in range(0, assets.shape[0]):
-        #     weights = (assets.iloc[i] / book_value[i]).values.tolist()
-        p = assets.sum(axis=1).pct_change().dropna()
-        print(f"current weights: {np.round((assets.iloc[-1]/assets.iloc[-1].sum()).values, 4)}")
-        qs.reports.html(p, "IVV", title=report_name, output=report_file_path, rf=risk_free_return)
+    with open(json_file_path, encoding='utf-8') as fp:
+        data = pd.DataFrame.from_dict(json.load(fp))
+        data = data.set_index(data['date'])[data.columns[1:]]
+        cost = data.apply(lambda x: x.apply(lambda y: y['price']*y['share']))
+        shares = data.apply(lambda x: x.apply(lambda y: y['share']))
+        average_cost_basis = cost.sum() / shares.sum()
+
+        daily_prices = []
+        daily_change_index = None
+        for c in data.columns:
+            a = Asset(c, ohlc="Close")
+            a.get_price(start_date=data.index[0])  # assuming the 1st index is the 1st invest day
+            daily_prices.append(a.daily_price)
+            if daily_change_index is None:
+                daily_change_index = a.daily_price_change.index
+
+        daily_prices = pd.concat(daily_prices, axis=1)
+        book_value = []
+        book_value_change = []
+
+        cur_shares = pd.Series([0]*len(data.columns)).reindex(data.columns, fill_value=0)
+        for i in range(len(daily_prices)):
+            date = daily_prices.index[i].strftime("%Y-%m-%d")
+            if date in data.index:
+                cur_shares += shares.loc[date]
+                book_value.append(cur_shares * daily_prices.iloc[i])
+                if i > 0:
+                    book_value_change.append(book_value[-1].sum()/(book_value[-2].sum() + (shares.loc[date] * daily_prices.iloc[i]).sum()) - 1)
+
+            elif i > 0:
+                book_value.append(cur_shares*daily_prices.iloc[i])
+                book_value_change.append(book_value[-1].sum() / book_value[-2].sum() - 1)
+
+        book_value = pd.concat(book_value, axis=1)
+        book_value_change = pd.Series(book_value_change)
+        book_value_change.index = daily_change_index
+        print(f"current invest = {cost.sum().sum()}")
+        print(f"current book   = {round(book_value.iloc[:,-1].sum(), 2)}")
+        print(f"current profit = {round(book_value.iloc[:,-1].sum() - cost.sum().sum(), 2)}")
+        print(f"current assets = {data.columns.values.tolist()}")
+        print(f"current cost basis    = {[round(v, 2) for v in average_cost_basis.values.tolist()]}")
+        print(f"current price (close) = {daily_prices.iloc[-1].values.tolist()}")
+        print(f"cost basis - price    = {[round(v, 2) for v in (average_cost_basis - daily_prices.iloc[-1]).values.tolist()]}")
+        print(f"target weights  = {target_weights}")
+        print(f"current weights = {[round(v, 4) for v in (book_value.iloc[:,-1]/book_value.iloc[:,-1].sum()).values.tolist()]}")
+        qs.reports.html(book_value_change, "IVV", title=report_name, output=report_file_path, rf=risk_free_return)
+
 
 
 def back_test_portfolio(asset_tickers, asset_weights, report_name, report_file_path, risk_free_return, initial_fund=10000):

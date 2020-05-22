@@ -1,0 +1,35 @@
+[
+    {
+        "date": "2020-05-11",
+        "EXPO": {"share":9, "price":66.11},
+        "KL": {"share":38, "price":42.96},
+        "MASI": {"share": 9, "price":245.99},
+        "MKTX": {"share": 3, "price":506.06},
+        "SGOL": {"share": 0, "price": 0},
+        "VEEV": {"share": 4, "price":195.46},
+        "WST": {"share":5, "price":204.29},
+        "ZTS": {"share":8, "price":126.2}
+    },
+    {
+        "date": "2020-05-14",
+        "EXPO": {"share":0, "price": 0},
+        "KL": {"share":0, "price": 0},
+        "MASI": {"share":0, "price": 0},
+        "MKTX": {"share":0, "price": 0},
+        "SGOL": {"share": 75, "price": 16.66},
+        "VEEV": {"share":0, "price": 0},
+        "WST": {"share":0, "price": 0},
+        "ZTS": {"share":0, "price": 0}
+    },
+    {
+        "date": "2020-05-21",
+        "EXPO": {"share": 8, "price":68.445},
+        "KL": {"share":45, "price":38.98},
+        "MASI": {"share":9, "price":245.45},
+        "MKTX": {"share":3, "price":472.21},
+        "SGOL": {"share":74, "price":16.585},
+        "VEEV": {"share":3, "price":197.735},
+        "WST": {"share":6, "price":211.17},
+        "ZTS": {"share":7, "price":130.6241}
+    }
+]
