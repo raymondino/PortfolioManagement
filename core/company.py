@@ -8,6 +8,7 @@ from common.financial_insight import *
 class Company:
     spy = Asset("SPY", interval="1mo")
     spy.get_price()
+    api_key = "ef7be903a5ace951c13f320358723e0f"
 
     def __init__(self, ticker, quarter=False, year=5):
         self.ticker = ticker
@@ -24,8 +25,7 @@ class Company:
         try_times = 0
         try:
             while try_times < 3:
-                data = requests.get(f"https://financialmodelingprep.com/api/v3/company/profile/{ticker}").json()[
-                    "profile"]
+                data = requests.get(f"https://financialmodelingprep.com/api/v3/company/profile/{ticker}?apikey={Company.api_key}").json()["profile"]
                 self.beta = data['beta']
                 self.industry = data['industry']
                 self.current_market_cap = data['mktCap']

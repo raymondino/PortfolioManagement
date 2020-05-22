@@ -12,11 +12,11 @@ if __name__ == "__main__":
     risk_free_return = 0.009
 
     # adjust the number to toggle functions
-    number = 3.9
+    number = 1.1
 
     # get fundamentals & insights for a company
     if number == 1.1:
-        analyze_company("ZTS", risk_free_return, quarter=quarter, year=year)
+        analyze_company("MKTX", risk_free_return, quarter=quarter, year=year)
 
     # compare fundamentals, specifying ticker_list will overwrite tickers loaded from ticker_list_file
     elif number == 1.2:

@@ -186,7 +186,7 @@ class FinancialInsight:
                     latest_revenue * (1 + average_revenue_growth_of_past_5_years) ** 5 * average_net_income_margin_of_past_5_years
                 ]
                 predicted_free_cash_flow_for_coming_5_years = [x * average_ratio_of_free_cash_flow_over_net_income for x in predicted_net_income_for_coming_5_years]
-                perpectual_growth = 0.025
+                perpectual_growth = 0.12/100  # risk-free rate, T-bill 3month rate
                 average_wacc_of_past_5_years = self.investing.loc['wacc'][0]
                 terminal_value = predicted_free_cash_flow_for_coming_5_years[4] / (average_wacc_of_past_5_years - perpectual_growth)
                 predicted_value = 0
@@ -213,7 +213,7 @@ class FinancialInsight:
                     latest_fcf * (1 + average_fcf_growth) ** 4,
                     latest_fcf * (1 + average_fcf_growth) ** 5
                 ]
-                perpectual_growth = 0.025
+                perpectual_growth = 0.12/100
                 average_wacc_of_past_5_years = self.investing.loc['wacc'][0]
                 terminal_value = predicted_fcf[3] / (average_wacc_of_past_5_years - perpectual_growth)
                 predicted_value = 0
