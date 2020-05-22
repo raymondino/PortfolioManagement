@@ -12,7 +12,7 @@ if __name__ == "__main__":
     risk_free_return = 0.009
 
     # adjust the number to toggle functions
-    number = 3.7
+    number = 3.9
 
     # get fundamentals & insights for a company
     if number == 1.1:
@@ -57,13 +57,13 @@ if __name__ == "__main__":
     # plot a list of tickers return & risk from a tsv file with 3 columns: ticker, return, and risk
     elif number == 2.3:
         asset_return_risk_file_path = r"./data/asset_daily_return_risk.tsv"
-        highlights =  ['MSFT', 'ZTS', 'VEEV', 'MKTX', 'WST', 'MASI', 'KL', 'EXPO', 'PDEX']  # to highlight certain assets
+        highlights = ['MSFT', 'ZTS', 'VEEV', 'MKTX', 'WST', 'MASI', 'KL', 'EXPO', 'PDEX']  # to highlight some assets
         only_show = []  # to only plot certain assets
         plot_assets_in_return_risk_plane(asset_return_risk_file_path, set(highlights), set(only_show))
 
     # plot portfolio assets correlation using the latest 5 years of daily price
     elif number == 3.1:
-        asset_tickers = ["NEM", "GOLD", "AEM", "KL", "AU", "KGC", "GFI", "BTG", "BVN", "AUY", "NG", "AGI", "SSRM", "PVG", "CDE", "HMY", "IAG", "HL", "EGO", "EQX", "GSS", "GLD"]
+        asset_tickers = []
         p = Portfolio()
         p.invest(asset_tickers)
         p.plot_asset_correlation()
@@ -104,40 +104,48 @@ if __name__ == "__main__":
     elif number == 3.8:
         asset_tickers = ['EXPO', 'KL',  'MASI', 'MKTX', 'SGOL', 'WST', 'VEEV', 'ZTS']
         customized_weights = [0.0584, 0.1623, 0.2263, 0.1476, 0.1245, 0.1049, 0.0798, 0.0962]
-        # customized_weights = [0.0, 0.1473, 0.2596, 0.1322, 0.1385, 0.1157, 0.0434, 0.1634]
-        back_test_portfolio(asset_tickers, customized_weights, "first blood backtest", r"./data/portfolio/firstblood_backtest_report.html", pow(1+risk_free_return, 1/365)-1)
+        back_test_portfolio(asset_tickers, customized_weights, "first blood backtest",
+                            r"./data/portfolio/firstblood_backtest_report.html", pow(1+risk_free_return, 1/365)-1)
 
         asset_tickers = ["AMZN", "MSFT"]
         customized_weights = [0.446, 0.554]
-        back_test_portfolio(asset_tickers, customized_weights, "mega tech backtest", r"./data/portfolio/megatech_backtest_report.html", pow(1+risk_free_return, 1/365)-1)
+        back_test_portfolio(asset_tickers, customized_weights, "mega tech backtest",
+                            r"./data/portfolio/megatech_backtest_report.html", pow(1+risk_free_return, 1/365)-1)
 
     # generate existing portfolio reports
     elif number == 3.9:
         # this requires you to generate a portfolio json file
-        portfolio_file = r"./data/portfolio/first_blood_20200511.json"
-        print(f"target weight:{[0.0584, 0.1623, 0.2263, 0.1476, 0.1245, 0.1049, 0.0798, 0.0962]}")
-        get_portfolio_performance(portfolio_file, r"./data/portfolio/first_blood_20200511.html", pow(1+risk_free_return, 1/365)-1)
+        get_portfolio_performance(json_file_path=r"./data/portfolio/first_blood.json",
+                                  report_name="first_blood",
+                                  report_file_path=r"./data/portfolio/first_blood.html",
+                                  risk_free_return=pow(1+risk_free_return, 1/365)-1,
+                                  target_weights=[0.0584, 0.1623, 0.2263, 0.1476, 0.1245, 0.1049, 0.0798, 0.0962])
 
-        portfolio_file = r"./data/portfolio/mega_tech_20200511.json"
-        print(f"target weight:{[0.446, 0.554]}")
-        get_portfolio_performance(portfolio_file, r"./data/portfolio/mega_tech_20200511.html", pow(1+risk_free_return, 1/365)-1)
+        get_portfolio_performance(json_file_path=r"./data/portfolio/mega_tech.json",
+                                  report_name="mega_tech",
+                                  report_file_path=r"./data/portfolio/mega_tech.html",
+                                  risk_free_return=pow(1+risk_free_return, 1/365)-1,
+                                  target_weights=[0.446, 0.554])
 
     # allocate funds for different portfolios
     elif number == 3.11:
         first_blood = Portfolio()
         first_blood_assets = ['ZTS', 'VEEV', 'MKTX', 'WST', 'MASI', 'KL', 'EXPO', 'SGOL']
         first_blood_weights = [0.0962, 0.0798, 0.1476, 0.1049, 0.2263, 0.1623, 0.0584, 0.1245]
-        first_blood.invest(first_blood_assets, strategy= MPT(risk_free_annual_yield=risk_free_return), customized_weights=first_blood_weights, show_details=True)
+        first_blood.invest(first_blood_assets, strategy= MPT(risk_free_annual_yield=risk_free_return),
+                           customized_weights=first_blood_weights, show_details=True)
         mega_tech = Portfolio()
         mega_tech_assets = ["MSFT", "AMZN"]
         mega_tech_weights = [0.554, 0.446]
-        mega_tech.invest(mega_tech_assets, strategy= MPT(risk_free_annual_yield=risk_free_return), customized_weights=mega_tech_weights, show_details=True)
+        mega_tech.invest(mega_tech_assets, strategy= MPT(risk_free_annual_yield=risk_free_return),
+                         customized_weights=mega_tech_weights, show_details=True)
         ivv = Portfolio()
-        ivv.invest(["IVV"], customized_weights=[1], strategy= MPT(risk_free_annual_yield=risk_free_return), show_details=True)
+        ivv.invest(["IVV"], customized_weights=[1], strategy= MPT(risk_free_annual_yield=risk_free_return),
+                   show_details=True)
         portfolios= {"first_blood": first_blood, "mega_tech": mega_tech, "ivv": ivv}
         fund_allocation_optimizer(portfolios,risk_free_return)
 
-    # average cost strategy and generate back-test report
+    # average-dollar cost strategy and generate back-test report
     elif number == 3.12:
         p = Portfolio()
         portfolio_name = "first blood"
