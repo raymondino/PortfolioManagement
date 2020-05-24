@@ -12,10 +12,10 @@ class Asset:
         self.daily_price = None
         self.daily_price_change = None
 
-    def report_asset_stock_performance(self, report_path):
+    def report_asset_stock_performance(self, report_path, period='5y'):
         if self.daily_price_change is None:
             self.ohlc = "Close"  # quantstats uses Close to calculate beta
-            self.get_price()
+            self.get_price(period=period)
         qs.reports.html(self.daily_price_change[self.ticker], "IVV", title=f"{self.ticker} 5Y performance", output=report_path)
 
     def get_price(self, period="5y", start_date=None, end_date=None):

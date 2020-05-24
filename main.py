@@ -9,14 +9,14 @@ if __name__ == "__main__":
     # some global parameters
     year = 5
     quarter = False
-    risk_free_return = 0.009
+    risk_free_return = 0.12/100
 
     # adjust the number to toggle functions
-    number = 1.1
+    number = 3.12
 
     # get fundamentals & insights for a company
     if number == 1.1:
-        analyze_company("MKTX", risk_free_return, quarter=quarter, year=year)
+        analyze_company("VEEV", risk_free_return, quarter=quarter, year=year)
 
     # compare fundamentals, specifying ticker_list will overwrite tickers loaded from ticker_list_file
     elif number == 1.2:
@@ -75,8 +75,9 @@ if __name__ == "__main__":
 
     # sharpe ratio-optimized portfolio with MPT
     elif number == 3.3:
-        asset_tickers = ['EXPO', 'KL',  'MASI', 'MKTX', 'SGOL', 'WST', 'VEEV', 'ZTS']
-        # asset_tickers = ["MSFT", "AMZN"]
+        asset_tickers = ["ADBE", "ALSWF", "AMD", "AMT", "AMZN", "BABA", "CCI", "COUP", "CRM", "CSCO", "EQIX", "FTNT",
+                         "GOOG", "IBM", "INTC", "MSFT", "NOW", "NVDA", "OKTA", "ORCL", "RBBN", "RNG", "SPLK", "T",
+                         "TEAM", "TSM", "TWLO", "VEEV", "VZ"]
         mpt_optimization(asset_tickers, risk_free_return)
 
     # sharpe ratio-optimized portfolio with fixed risk
@@ -97,11 +98,16 @@ if __name__ == "__main__":
 
     # back test a single stock
     elif number == 3.7:
-        ticker = "MSFT"
-        Asset(ticker).report_asset_stock_performance(report_path=rf"./data/portfolio/{ticker}_report.html")
+        ticker = "KL"
+        Asset(ticker).report_asset_stock_performance(report_path=rf"./data/portfolio/{ticker}_report.html", period="max")
 
     # back test portfolio with assets and their specified weights
     elif number == 3.8:
+        asset_tickers = ['ALSWF', 'AMT', 'COUP', 'FTNT', 'OKTA', 'RNG', 'TEAM', 'TWLO']
+        customized_weights = [0.1064, 0.1396,  0.1614, 0.0494, 0.0332, 0.3862, 0.1113, 0.0126]
+        back_test_portfolio(asset_tickers, customized_weights, "cloud computing backtest",
+                            r"./data/portfolio/cloudcomputing_backtest_report.html", pow(1+risk_free_return, 1/365)-1)
+
         asset_tickers = ['EXPO', 'KL',  'MASI', 'MKTX', 'SGOL', 'WST', 'VEEV', 'ZTS']
         customized_weights = [0.0584, 0.1623, 0.2263, 0.1476, 0.1245, 0.1049, 0.0798, 0.0962]
         back_test_portfolio(asset_tickers, customized_weights, "first blood backtest",
@@ -152,25 +158,25 @@ if __name__ == "__main__":
         no_rebalance_report_path = rf"./data/portfolio/{portfolio_name.replace(' ', '_')}_DAC_becktest_noREB.html"
         rebalance_report_path = rf"./data/portfolio/{portfolio_name.replace(' ', '_')}_DAC_becktest_REB.html"
         mpt_rebalance_report_path = rf"./data/portfolio/{portfolio_name.replace(' ', '_')}_DAC_becktest_MPT.html"
-        assets_list = ['ZTS', 'VEEV', 'MKTX', 'WST', 'MASI', 'KL', 'EXPO', 'SGOL']
-        assets_weight = [0.3562, 0.0743, 0.0273, 0.0, 0.1549, 0.1915, 0.1958, 0.0]
+        assets_list =  ['EXPO', 'KL',  'MASI', 'MKTX', 'SGOL', 'WST', 'VEEV', 'ZTS']
+        assets_weight = [0.0584, 0.1623, 0.2263, 0.1476, 0.1245, 0.1049, 0.0798, 0.0962]
         s = AverageCostStrategy(portfolio_name=portfolio_name, risk_free_yearly_return=risk_free_return,
                                 report_path=no_rebalance_report_path,
-                                initial_fund=10000, fixed_investment_fund=1000, fixed_investment_interval=10,
+                                initial_fund=10000, fixed_investment_fund=1000, fixed_investment_interval=20,
                                 rebalance_strategy="no", rebalance_interval=20, rebalance_use_data=20)
-        p.invest(assets_list, customized_weights=assets_weight, strategy=s)
+        p.invest(assets_list, customized_weights=assets_weight, strategy=s, start_date="2018-12-03")
 
-        s = AverageCostStrategy(portfolio_name=portfolio_name, risk_free_yearly_return=risk_free_return,
-                                report_path=rebalance_report_path,
-                                initial_fund=10000, fixed_investment_fund=1000, fixed_investment_interval=10,
-                                rebalance_strategy="yes", rebalance_interval=20, rebalance_use_data=20)
-        p.invest(assets_list, customized_weights=assets_weight, strategy=s)
+        # s = AverageCostStrategy(portfolio_name=portfolio_name, risk_free_yearly_return=risk_free_return,
+        #                         report_path=rebalance_report_path,
+        #                         initial_fund=10000, fixed_investment_fund=1000, fixed_investment_interval=20,
+        #                         rebalance_strategy="yes", rebalance_interval=20, rebalance_use_data=20)
+        # p.invest(assets_list, customized_weights=assets_weight, strategy=s,  start_date="2018-12-03")
 
-        s = AverageCostStrategy(portfolio_name=portfolio_name, risk_free_yearly_return=risk_free_return,
-                                report_path=mpt_rebalance_report_path,
-                                initial_fund=10000, fixed_investment_fund=1000, fixed_investment_interval=10,
-                                rebalance_strategy="mpt", rebalance_interval=20, rebalance_use_data=4)
-        p.invest(assets_list, customized_weights=assets_weight, strategy=s)
+        # s = AverageCostStrategy(portfolio_name=portfolio_name, risk_free_yearly_return=risk_free_return,
+        #                         report_path=mpt_rebalance_report_path,
+        #                         initial_fund=10000, fixed_investment_fund=1000, fixed_investment_interval=20,
+        #                         rebalance_strategy="mpt", rebalance_interval=20, rebalance_use_data=-1)
+        # p.invest(assets_list, customized_weights=assets_weight, strategy=s,  start_date="2018-12-03")
 
     # plot 20-day risk & return for an asset
     elif number == 4.1:

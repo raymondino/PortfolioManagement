@@ -148,7 +148,9 @@ class AverageCostStrategy:
                     cur_weights = np.round(self.__rebalance_mpt(self.portfolio.full_asset_price_history_change[i-self.rebalance_use_data:i]), 4)
                 cur_book_value = self.daily_book_value[-1].sum()
                 rebalanced_fund_for_each_asset = [cur_book_value * w for w in cur_weights]
-                rebalanced_shares = round(pd.Series(rebalanced_fund_for_each_asset, index=self.portfolio.full_asset_price_history.columns) / self.portfolio.full_asset_price_history.iloc[i], 4)
+                book_value_diff_for_each_asset = pd.Series(rebalanced_fund_for_each_asset, index=self.portfolio.full_asset_price_history.columns) - self.daily_book_value[-1]
+                sell_or_buy_stock_shares = round(book_value_diff_for_each_asset / self.portfolio.full_asset_price_history.iloc[i], 4)
+                rebalanced_shares = (cur_shares + sell_or_buy_stock_shares).apply(lambda x: 0 if x < 0 else x)
                 rebalanced_book_value = (rebalanced_shares * self.portfolio.full_asset_price_history.iloc[i]).sum()
                 self.accumulated_book_value_diff_due_to_rebalance += cur_book_value - rebalanced_book_value
                 print(f"[REBALANCE] {self.portfolio.full_asset_price_history.index[i].strftime('%Y-%m-%d')}:{np.round(cur_shares.values, 2)} ${round(cur_book_value, 2)} to {np.round(rebalanced_shares.values, 2)} ${round(rebalanced_book_value, 2)}")
