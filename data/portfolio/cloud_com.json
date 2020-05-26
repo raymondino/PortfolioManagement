@@ -1,0 +1,10 @@
+[
+    {
+        "date":"2020-05-26",
+        "ADBE":{"share":3, "price":391},
+        "AMD":{"share":29, "price":56},
+        "AMT":{"share":13, "price":248.59},
+        "EQIX":{"share":2, "price":681.1},
+        "NVDA":{"share":8, "price":366.27}
+    }
+]
