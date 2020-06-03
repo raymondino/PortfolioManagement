@@ -25,9 +25,9 @@ class FinancialInsight:
 
     def __get_company_value(self):
         if self.company_value is None:
-            ev_url = f"https://financialmodelingprep.com/api/v3/enterprise-value/{self.ticker.replace('-', '.')}?apikey={FinancialInsight.api_key}"
+            ev_url = f"https://financialmodelingprep.com/api/v3/enterprise-value/{self.ticker.replace('-', '.')}?{'period=quarter&' if self.quarter else ''}apikey={FinancialInsight.api_key}"
             ev_items = ["date", "Stock Price", "Number of Shares", "Market Capitalization", "Enterprise Value"]
-            data = requests.get(ev_url + ("?period=quarter" if self.quarter else "")).json()["enterpriseValues"]
+            data = requests.get(ev_url).json()["enterpriseValues"]
             data = pd.DataFrame.from_dict(data)[ev_items]
             data = data[data.date.isin(self.balance_sheet.balance_sheet.columns)]
             self.company_value = data.set_index('date').T

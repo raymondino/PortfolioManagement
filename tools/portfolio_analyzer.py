@@ -52,11 +52,10 @@ def get_portfolio_performance(json_file_path, report_name, report_file_path, ris
         print(f"current assets = {data.columns.values.tolist()}")
         print(f"current cost basis    = {[round(v, 2) for v in average_cost_basis.values.tolist()]}")
         print(f"current price (close) = {daily_prices.iloc[-1].values.tolist()}")
-        print(f"cost basis - price    = {[round(v, 2) for v in (average_cost_basis - daily_prices.iloc[-1]).values.tolist()]}")
+        print(f"price - cost basis    = {[round(v, 2) for v in (daily_prices.iloc[-1] - average_cost_basis).values.tolist()]}")
         print(f"target weights  = {target_weights}")
         print(f"current weights = {[round(v, 4) for v in (book_value.iloc[:,-1]/book_value.iloc[:,-1].sum()).values.tolist()]}")
         qs.reports.html(book_value_change, "IVV", title=report_name, output=report_file_path, rf=risk_free_return)
-
 
 
 def back_test_portfolio(asset_tickers, asset_weights, report_name, report_file_path, risk_free_return, initial_fund=10000):
